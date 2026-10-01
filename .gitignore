@@ -1,3 +1,4 @@
+cat > .gitignore <<'EOF'
 # Dependencies
 node_modules/
 
@@ -13,7 +14,6 @@ dist/
 .env
 .env.*
 !.env.example
-!.env.SAMPLE
 
 # Vercel
 .vercel/
@@ -61,8 +61,9 @@ __pycache__/
 .venv/
 venv/
 
-# Local Claude / agent state that should not be committed
+# Local Claude state
 .claude/settings.local.json
 
-# Misc
+# Secrets / certificates
 *.pem
+EOF
