@@ -12,7 +12,11 @@ export function HeroChapter() {
       </p>
 
       {/* Reserved stage for the identity object (P1 checkpoint D). */}
-      <div aria-hidden="true" className={styles.object} />
+      <div
+        aria-hidden="true"
+        className={styles.object}
+        data-scene-anchor="hero"
+      />
 
       <h1 id="name-heading" className={styles.name}>
         <span className={styles.first}>{profile.firstName}</span>{" "}
