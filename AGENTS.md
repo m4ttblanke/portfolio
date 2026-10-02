@@ -1,3 +1,13 @@
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
 # Agent Rules
 
 ## Purpose
@@ -25,6 +35,46 @@ The primary public experience lives at:
 ```
 
 The site is designed as one continuous journey rather than a conventional multi-page portfolio.
+
+---
+
+# Planning Before Implementation
+
+For medium and large implementation tasks, produce a concise implementation
+plan and wait for review before modifying code.
+
+Planning is required when a task involves one or more of:
+
+- multiple files or subsystems
+- new architecture or data/state flow
+- new dependencies
+- new routes or major components
+- substantial UI or UX work
+- significant motion, Three.js, or WebGL work
+- cross-cutting accessibility or performance changes
+- refactors that materially change existing structure
+
+Planning is not required for small, localized work such as:
+
+- typo or copy fixes
+- small styling adjustments
+- obvious one-file bug fixes
+- minor configuration fixes
+- similarly low-risk maintenance
+
+When it is unclear whether a task is small or medium, prefer planning first.
+
+A plan should be proportional to the task. Do not create an elaborate
+planning phase for straightforward work.
+
+During the planning phase:
+
+- do not modify files
+- do not install dependencies
+- do not commit or push
+- do not open or merge a pull request
+
+Wait for explicit approval of the plan before implementation.
 
 ---
 
@@ -538,6 +588,7 @@ For substantial PRs, include:
 
 Before merging production-bound work, verify:
 
+- formatting
 - lint
 - typecheck
 - production build
@@ -580,7 +631,7 @@ docs/DEPLOYMENT.md
 
 # Architecture Decision Records
 
-Use `decisions/` for major cross-cutting choices.
+Use `decisions/` for major cross-cutting choices, following the format in `decisions/README.md`.
 
 Good ADR topics:
 

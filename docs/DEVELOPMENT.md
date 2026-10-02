@@ -1177,10 +1177,10 @@ Do not:
 
 # Open Development Decisions
 
-These remain intentionally open until project initialization/prototyping:
+Settled during P0: Node.js 24 (`.nvmrc`), Next.js 16 with a `src/` directory, and pnpm.
 
-- exact Node LTS version
-- exact Next.js version
+These remain intentionally open until prototyping:
+
 - whether Prettier needs extra plugins
 - whether Playwright is justified
 - test runner choice if unit tests become necessary

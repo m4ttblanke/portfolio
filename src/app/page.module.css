@@ -1,0 +1,33 @@
+.skipLink {
+  position: fixed;
+  inset-block-start: var(--space-md);
+  inset-inline-start: var(--space-md);
+  z-index: var(--z-overlay);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  transform: translateY(calc(-100% - 2 * var(--space-md)));
+}
+
+.skipLink:focus-visible,
+.skipLink:focus {
+  transform: none;
+}
+
+.main {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Provisional P0 structure: real chapter compositions arrive in P1+. */
+.chapter {
+  min-block-size: 100svh;
+  padding: var(--space-lg);
+}
+
+@media (min-width: 48rem) {
+  /* Reserve the corner occupied by the fixed chapter navigator. */
+  .chapter {
+    padding-inline-end: 14rem;
+  }
+}
