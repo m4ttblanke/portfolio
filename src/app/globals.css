@@ -21,6 +21,8 @@
   --display-weight: 700;
   --display-stretch: 112%;
   --display-tracking: -0.035em;
+  --display-size: 15.6;
+  --display-size-narrow: 18.2;
   --text-body: 1rem;
   --text-meta: 0.875rem;
   --text-h2: clamp(1.75rem, 1.2rem + 2.5vw, 3rem);
@@ -51,6 +53,8 @@
   --display-weight: 600;
   --display-stretch: 75%;
   --display-tracking: -0.02em;
+  --display-size: 22;
+  --display-size-narrow: 30;
 }
 
 :root[data-type="schibsted"] {
@@ -59,6 +63,8 @@
   --display-weight: 800;
   --display-stretch: 100%;
   --display-tracking: -0.045em;
+  --display-size: 17.9;
+  --display-size-narrow: 20;
 }
 
 *,

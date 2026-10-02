@@ -1,28 +1,108 @@
+/*
+ * Hero: bottom-anchored monumental name, object stage floating upper right,
+ * descriptor in the otherwise empty upper-left field.
+ */
+
 .hero {
+  --step: calc((100% - 11 * var(--gutter)) / 12 * 3 + 3 * var(--gutter));
+
   position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  column-gap: var(--gutter);
   min-block-size: 100svh;
-  padding: var(--space-lg) var(--margin);
+  padding-block: max(1.125rem, env(safe-area-inset-top))
+    clamp(1.5rem, 1rem + 3vh, 3.5rem);
+  padding-inline: var(--margin);
+  container-type: inline-size;
 }
 
 .descriptor {
   position: relative;
   z-index: var(--z-content);
+  grid-column: 1 / span 5;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  text-transform: uppercase;
 }
 
+/*
+ * Reserved stage for the identity object (checkpoint D). Absolutely placed in
+ * its grid area so it never adds to the hero's height.
+ */
 .object {
-  display: none;
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  grid-column: 8 / span 4;
+  grid-row: 1 / 3;
+  margin-inline: auto;
+  inline-size: min(100%, 46svh);
+  aspect-ratio: 1;
+  /* Sink the stage into the first line so the object overlaps the name. */
+  translate: 0 14%;
 }
 
 .name {
   position: relative;
   z-index: var(--z-type);
+  grid-column: 1 / -1;
+  grid-row: 3;
   font-family: var(--font-display);
+  /* Fit the width, but never push the second line below the fold. */
+  font-size: min(calc(var(--display-size) * 1cqi), 30svh);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.84;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .first,
 .last {
   display: block;
+  /* Optical left alignment: pull the M stem onto the margin. */
+  margin-inline-start: -0.04em;
+}
+
+.last {
+  padding-inline-start: var(--step);
+}
+
+/* Mobile: stacked, flush left, object centered in the upper field. */
+@media (max-width: 40rem) {
+  .hero {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .descriptor {
+    grid-column: 1 / -1;
+  }
+
+  .object {
+    inset-block: 0;
+    grid-column: 1 / -1;
+    margin-block: auto;
+    inline-size: min(78%, 40svh);
+    translate: 0 6%;
+  }
+
+  .name {
+    font-size: min(calc(var(--display-size-narrow) * 1cqi), 24svh);
+  }
+
+  .last {
+    padding-inline-start: 0;
+  }
+}
+
+/* Gate 1 exploration only (?guides): outline the reserved object stage. */
+:root[data-guides] .object {
+  outline: 1px dashed var(--color-muted);
 }

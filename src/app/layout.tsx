@@ -34,10 +34,10 @@ const fontVariables = [archivo, instrumentSans, schibstedGrotesk]
 
 /*
  * Runs before paint: marks JS as available so enhanced components (the
- * chapter navigator) may collapse their no-JS layout. The `type` parameter
- * is Gate 1 exploration only.
+ * chapter navigator) may collapse their no-JS layout. The `type` and
+ * `guides` parameters are Gate 1 exploration only.
  */
-const bootScript = `(function(){var d=document.documentElement;d.dataset.js="";var t=new URLSearchParams(location.search).get("type");if(t==="instrument"||t==="schibsted")d.dataset.type=t;})();`;
+const bootScript = `(function(){var d=document.documentElement;d.dataset.js="";var p=new URLSearchParams(location.search);var t=p.get("type");if(t==="instrument"||t==="schibsted")d.dataset.type=t;if(p.has("guides"))d.dataset.guides="";})();`;
 
 export const metadata: Metadata = {
   title: "Matthew Blanke",
