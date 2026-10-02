@@ -837,6 +837,29 @@ Fallbacks should preserve:
 
 They should not look like error states.
 
+## P1 Fallback Renders
+
+| Scene | Canonical pose | Desktop | Mobile |
+|---|---|---|---|
+| Hero | MB relief at rest | `hero-desktop.webp` 16 KB | `hero-mobile.webp` 9 KB |
+| Rankle | comparison hold | `rankle-desktop.webp` 45 KB | `rankle-mobile.webp` 26 KB |
+| Plannr | syllabus beside the calendar | `plannr-desktop.webp` 15 KB | `plannr-mobile.webp` 12 KB |
+
+- **Role:** the static composition for reduced motion, no WebGL and scene failure, and the placeholder until WebGL's first frame.
+- **Location:** `public/fallbacks/`, registered with dimensions and stage insets in `src/lib/assets/fallbacks.ts`, rendered by `SceneFallback` as an art-directed `<picture>` (mobile below `40rem`).
+- **Loading:** the hero image loads eagerly with high fetch priority; the others load lazily.
+
+**Re-capturing.** Regenerate a scene's renders whenever its canonical composition changes:
+
+1. Run the production build in headless Chrome with GPU rendering.
+2. For desktop, use 1440×900 at DPR 2. For mobile, use 390×844 at DPR 2.
+3. Scroll to the scene's canonical pose.
+4. Hide the DOM and capture with a transparent background, clipped to the scene's stage plus a margin.
+5. Trim to the alpha bounds and encode as WebP with alpha.
+6. Record the new dimensions and the image's offset from the stage as `inset` fractions.
+
+The capture tooling used in P1 is not part of the repository.
+
 ---
 
 # Mobile Asset Strategy
@@ -1062,25 +1085,36 @@ After integrating Batch 1, evaluate:
 
 Only then generate later assets.
 
+P1 outcome: Batch 1 was realized without generated model files.
+
+- **Hero:** the identity object is procedural. Extruded MB plates are built in code (`scenes/hero/heroPose.ts`, `canvas/Kit.tsx`).
+- **Rankle and Plannr:** the object systems reuse those plates, plus simple procedural cards, chips, a page and a calendar grid.
+- **3D payload:** none beyond the three.js runtime.
+- **Rendered assets:** the six static fallback renders above.
+
+Generated 3D assets remain an option for later chapters, subject to this gate.
+
 ---
 
 # Open Asset Decisions
 
-Remain unresolved until prototyping:
+Settled in P1:
 
-- exact hero material
-- exact hero silhouette
-- whether hero is literal MB or abstract
-- exact Rankle geometry
-- exact Plannr document style
+- hero material: machined alloy
+- hero silhouette: a literal MB relief built from plates
+- Rankle geometry: the plates become tier rows, plus item cards
+- Plannr document style: a matte paper page, gold highlights, a navy calendar
+- fallback strategy: a captured static render per scene (above)
+
+Still open:
+
 - whether KTX2 is needed
-- compression method
-- exact triangle budgets
+- compression method (P1 loads no models or textures)
+- exact triangle budgets (the P1 peak is about 6.9k triangles per frame)
 - exact texture budgets
 - whether education needs 3D
 - exact Off the Clock object set
 - whether some scenes use rendered loops instead of real-time 3D
-- final fallback strategy per scene
 
 ---
 

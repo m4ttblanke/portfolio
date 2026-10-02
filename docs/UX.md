@@ -990,11 +990,9 @@ Do not force full-page snap sections unless prototype testing proves it improves
 
 # Smooth Scrolling
 
-A smooth scrolling library may be evaluated.
+A smooth scrolling library was evaluated in P1 and not adopted: the journey uses native scrolling (`decisions/001-gsap-scrolltrigger-native-scroll.md`).
 
-Lenis is the current likely choice.
-
-However:
+If one is reconsidered:
 
 - native scroll behavior remains the conceptual foundation
 - smooth scrolling must not break keyboard navigation

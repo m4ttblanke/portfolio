@@ -114,16 +114,16 @@ TypeScript
 CSS Modules
 ```
 
-Planned for prototype validation:
+Validated in P1:
 
 ```text
 GSAP
 ScrollTrigger
-Lenis
 Three.js
 @react-three/fiber
-@react-three/drei
 ```
+
+Evaluated and not adopted in P1: Lenis, @react-three/drei (`decisions/001`, `decisions/002`).
 
 Potential later dependency:
 

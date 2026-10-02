@@ -48,21 +48,19 @@ Confirmed:
 - TypeScript
 - CSS Modules
 
-Installed for the persistent-canvas foundation (still validated through P1):
+Validated in P1:
 
-- Three.js
-- React Three Fiber
+- GSAP + ScrollTrigger, on native scrolling (`decisions/001`)
+- Three.js + React Three Fiber, one persistent canvas (`decisions/002`)
 
-Planned for prototype validation:
+Evaluated and not adopted in P1:
 
-- GSAP
-- ScrollTrigger
 - Lenis
 - Drei
 
 Potential later addition:
 
-- Zustand, only if real cross-scene state complexity justifies it
+- Zustand, only if real cross-scene state complexity justifies it (P1 did not need it)
 
 Deployment:
 
@@ -478,11 +476,25 @@ CLAUDE.md
 
 ## Current Status
 
-The project is in **P0 — Foundation**.
+The project has completed **P1 — Creative Prototype** (branch `prototype/p1-opening`, pending final review).
 
-P0 provides a visually neutral semantic journey (six chapters with stable anchors), a chapter source of truth (`src/content/navigation.ts`), a static accessible chapter navigator, a skip link, one decorative persistent R3F canvas with a temporary calibration object, minimal CSS tokens, and the `decisions/` ADR folder.
+P1 delivers the opening journey:
 
-No creative scenes, final typography, palette, or motion exist yet; those begin in P1.
+- the compact chapter navigator
+- the hero (an MB relief of machined plates overlapping the name)
+- the hero → Rankle transition, in which the plates become Rankle's tier boards
+- the Rankle comparison scene
+- the Rankle → Plannr transition, in which cards become extracted dates and rows become syllabus lines
+- the Plannr syllabus → review → calendar workflow
+- separate mobile compositions
+- static compositions for reduced motion, no WebGL and scene failure
+
+Experience, Education, Off the Clock and Contact are still P0 placeholders.
+
+Where to read more:
+
+- P1 decisions: `decisions/001`, `decisions/002`
+- P1 outcomes: the "Established in P1" and "P1 …" sections of `docs/DESIGN.md`, `docs/MOTION.md`, `docs/ARCHITECTURE.md`, `docs/ASSETS.md`, `docs/CONTENT.md`, `docs/ACCESSIBILITY.md` and `docs/PERFORMANCE.md`
 
 The previous portfolio is not the implementation baseline for this project.
 

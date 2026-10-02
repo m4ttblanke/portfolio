@@ -1,32 +1,43 @@
 /*
  * Global foundation: reset, tokens, base type, focus, root behavior.
  * Component and chapter styles belong in CSS Modules.
- * Values here are provisional P0 neutrals, not the final palette or type.
+ * P1 values: initial palette and type roles. Archivo is the P1 working
+ * typeface.
  */
 
 :root {
   /* Color */
-  --color-bg: #f7f7f5;
-  --color-ink: #111111;
-  --color-muted: #5c5c5c;
-  --color-focus: #0047ff;
+  --color-bg: #f2f0eb;
+  --color-ink: #0e0e0c;
+  --color-muted: #57544e;
+  --color-rule: #cbc7be;
 
   /* Type */
-  --font-sans:
+  --font-fallback:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
+  --font-sans: var(--font-archivo), var(--font-fallback);
+  --font-display: var(--font-archivo), var(--font-fallback);
+  --display-weight: 700;
+  --display-stretch: 112%;
+  --display-tracking: -0.035em;
+  --display-size: 15.6;
+  --display-size-narrow: 18.2;
   --text-body: 1rem;
-  --text-small: 0.875rem;
+  --text-meta: 0.875rem;
   --text-h2: clamp(1.75rem, 1.2rem + 2.5vw, 3rem);
-  --text-h1: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
 
-  /* Space */
+  /* Space and layout */
+  --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  --margin: clamp(1rem, 0.4rem + 2.6vw, 3rem);
+  --gutter: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
 
-  /* Layers */
+  /* Layers: display type sits behind the scene so objects can overlap it. */
   --z-base: 0;
+  --z-type: 5;
   --z-scene: 10;
   --z-content: 30;
   --z-nav: 40;
@@ -68,11 +79,6 @@ h3 {
   text-wrap: balance;
 }
 
-h1 {
-  font-size: var(--text-h1);
-  letter-spacing: -0.03em;
-}
-
 h2 {
   font-size: var(--text-h2);
   letter-spacing: -0.02em;
@@ -89,9 +95,20 @@ a {
   color: inherit;
 }
 
+/* Double ring: ink outside, ground inside, legible on light and colored scenes. */
 :focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-bg);
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /*

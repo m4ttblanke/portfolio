@@ -274,15 +274,15 @@ Every dependency should justify:
 - runtime cost
 - maintenance cost
 
-Likely major runtime dependencies:
+Major runtime dependencies after P1:
 
 ```text
-GSAP
+GSAP (+ ScrollTrigger)
 Three.js
 React Three Fiber
-Drei
-Lenis
 ```
+
+Drei and Lenis were evaluated and not adopted.
 
 This is already a substantial visual stack.
 
@@ -555,9 +555,9 @@ Measure complex effects instead of assuming.
 
 # Lenis Performance
 
-Lenis is provisional.
+Not adopted in P1 (`decisions/001`); scrolling is native.
 
-It should remain only if it improves the experience without introducing:
+A smooth-scroll layer would only be justified if it improved the experience without introducing:
 
 - input latency
 - mobile issues
@@ -828,6 +828,46 @@ Track at minimum:
 
 Do not choose arbitrary numbers before measuring the prototype.
 
+## P1 Baseline
+
+Measured on the production build (`pnpm build && pnpm start`) in headless Chrome with GPU rendering, cache disabled. Sizes are compressed transfer sizes.
+
+**Transfer**
+
+| Path | JS | Fonts | CSS | Fallback images | Total |
+|---|---|---|---|---|---|
+| Desktop, WebGL live | 427 KB (183 KB initial + 245 KB lazy 3D chunk) | 88 KB | 5 KB | 62 KB (hero, Rankle) | 614 KB |
+| Mobile 390, WebGL live | 427 KB | 88 KB | 5 KB | 35 KB | 587 KB |
+| Reduced motion, desktop | 183 KB (no 3D chunk) | 88 KB | 5 KB | 78 KB (all three) | 385 KB |
+| Reduced motion, mobile | 183 KB | 88 KB | 5 KB | 48 KB | 355 KB |
+| No WebGL, desktop | 183 KB | 88 KB | 5 KB | 78 KB | 385 KB |
+
+- The 3D chunk is three.js plus R3F and the scenes: 939 KB raw.
+- It is requested only when WebGL is available and reduced motion is off.
+- No models or textures are loaded.
+
+**Rendering, per frame at 1440×900**
+
+| Point | Draw calls | Triangles |
+|---|---|---|
+| Hero | 21 | 3.0k |
+| Rankle hold (peak) | 61 | 6.9k |
+| Hand-off | 33 | 3.5k |
+| Plannr review | 46 | 3.7k |
+| Calendar hold | 49 | 3.7k |
+
+- **DPR cap:** 1.5. The canvas is 2160×1350 on a 2× desktop and 585×1266 on a 3× phone.
+- **Idle:** 0 draw calls over 5 s (demand rendering).
+- **Scripted scroll, hero to the end of Plannr in 8 s:** 480 frames, average 16.67 ms, p95 16.7 ms, none over 20 ms. This is vsync-bound on a fast GPU; it is not a mid-range phone figure.
+
+**Lab vitals (localhost, unthrottled)**
+
+- LCP 44–68 ms (the hero name on desktop, the hero render on mobile).
+- CLS ≤ 0.004.
+- These only show that nothing blocks the first paint and nothing shifts. Field numbers need a deployed, throttled or real-device measurement.
+
+Budgets for later chapters should be set against this baseline: keep the initial (non-3D) JS near 180 KB, add no per-scene 3D downloads without a measured reason, and keep peak draw calls in the tens.
+
 ---
 
 # Performance Decision Gate
@@ -845,6 +885,13 @@ After P1, ask:
 ### Are models worth their transfer cost?
 
 ### Is Lenis helping?
+
+P1 answers:
+
+- Lenis: not adopted.
+- Postprocessing: none.
+- DPR: capped at 1.5; no further reduction was needed in P1 measurements.
+- Models: none were needed; scenes are procedural.
 
 ### Are postprocessing effects necessary?
 
@@ -927,21 +974,25 @@ Before launch:
 
 # Open Performance Decisions
 
-These should remain unresolved until real measurement:
+Settled in P1 (see the baseline above):
+
+- DPR cap: 1.5
+- Lenis: not adopted
+- demand rendering for the whole canvas
+- no postprocessing
+- the hero scene loads lazily after hydration, behind its static render
+
+Still open:
 
 - exact JS budget
 - exact initial transfer budget
-- exact DPR caps
 - exact model size limits
 - exact triangle budgets
 - exact texture format
 - whether KTX2 is necessary
 - whether Draco or Meshopt is preferred
-- whether Lenis stays
-- whether hero model loads immediately
-- whether any scenes use demand rendering
-- whether any postprocessing survives
 - exact low-power detection strategy
+- whether to defer the Rankle fallback download on the live path (about 45 KB on desktop; accepted for P1, revisit only if profiling shows it matters)
 
 ---
 

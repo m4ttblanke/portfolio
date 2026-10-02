@@ -1,0 +1,10 @@
+/* Laid out like a chapter's content box: full width less the margins, one
+   small viewport tall. Never visible, never interactive. */
+.probe {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: var(--margin);
+  block-size: 100svh;
+  visibility: hidden;
+  pointer-events: none;
+}

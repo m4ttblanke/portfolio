@@ -1,0 +1,138 @@
+/*
+ * Hero: bottom-anchored monumental name, object stage floating upper right,
+ * descriptor in the otherwise empty upper-left field.
+ */
+
+.hero {
+  --step: calc((100% - 11 * var(--gutter)) / 12 * 3 + 3 * var(--gutter));
+
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  column-gap: var(--gutter);
+  min-block-size: 100svh;
+  padding-block: max(1.125rem, env(safe-area-inset-top))
+    clamp(1.5rem, 1rem + 3vh, 3.5rem);
+  padding-inline: var(--margin);
+  container-type: inline-size;
+  /* The name parts past the edges on exit without causing overflow. */
+  overflow: clip;
+}
+
+.descriptor {
+  position: relative;
+  z-index: var(--z-content);
+  grid-column: 1 / span 5;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+/*
+ * Stage for the identity relief. Absolutely placed in its grid area so it
+ * never adds to the hero's height.
+ */
+.object {
+  position: absolute;
+  /* In front of the name, like the live relief (static render inside). */
+  z-index: var(--z-scene);
+  inset-block-end: 0;
+  inset-inline: 0;
+  grid-column: 8 / span 4;
+  grid-row: 1 / 3;
+  margin-inline: auto;
+  inline-size: min(100%, 46svh);
+  aspect-ratio: 1;
+  /* Sink the stage into the first line so the object overlaps the name. */
+  translate: 0 14%;
+}
+
+.name {
+  position: relative;
+  z-index: var(--z-type);
+  grid-column: 1 / -1;
+  grid-row: 3;
+  font-family: var(--font-display);
+  /* Fit the width, but never push the second line below the fold.
+     --cq/--svh: zoom-safe measured units (see MeasuredUnits). */
+  font-size: min(
+    calc(var(--display-size) * var(--cq, 1cqi)),
+    calc(30 * var(--svh, 1svh))
+  );
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.84;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.first,
+.last {
+  display: block;
+  /* Optical left alignment: pull the M stem onto the margin. */
+  margin-inline-start: -0.04em;
+}
+
+.last {
+  padding-inline-start: var(--step);
+}
+
+/* Mobile: stacked, flush left, object centered in the upper field. */
+@media (max-width: 40rem) {
+  .hero {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .descriptor {
+    grid-column: 1 / -1;
+  }
+
+  .object {
+    inset-block: 0;
+    grid-column: 1 / -1;
+    margin-block: auto;
+    inline-size: min(78%, 40svh);
+    translate: 0 6%;
+  }
+
+  .name {
+    font-size: min(
+      calc(var(--display-size-narrow) * var(--cq, 1cqi)),
+      calc(24 * var(--svh, 1svh))
+    );
+  }
+
+  .last {
+    padding-inline-start: 0;
+  }
+}
+
+/*
+ * Compact viewport (narrow AND short, e.g. 250%+ page zoom; set on <html>
+ * from COMPACT_VIEWPORT in lib/motion/presentation.ts). Static presentation:
+ * the hero stacks in normal flow — descriptor, relief, name — at
+ * width-fitted size instead of squeezing into one short viewport.
+ */
+:root[data-presentation="compact"] .hero {
+  grid-template-rows: auto auto auto;
+  row-gap: var(--space-md);
+}
+
+:root[data-presentation="compact"] .object {
+  position: relative;
+  inset: auto;
+  grid-row: 2;
+  inline-size: min(60%, 16rem);
+  margin-block: 0;
+  translate: none;
+}
+
+:root[data-presentation="compact"] .name {
+  font-size: calc(var(--display-size-narrow) * var(--cq, 1cqi));
+}

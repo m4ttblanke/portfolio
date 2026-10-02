@@ -1050,6 +1050,14 @@ This matters for:
 - crawlers
 - testing
 
+P1 implementation: each scene's static state is a render of the live scene at its canonical pose, placed in the same stage the canvas draws into:
+
+- hero: the MB relief at rest
+- Rankle: the comparison hold
+- Plannr: the syllabus page beside the calendar
+
+Desktop and mobile get separate crops. Under reduced motion or without WebGL, the sticky runways collapse so each scene is one composed viewport in normal flow.
+
 ---
 
 # Design Anti-Patterns
@@ -1126,23 +1134,63 @@ Does the scene feel authored rather than template-derived?
 
 ---
 
+# Design Established in P1
+
+These are working values proven in the P1 opening (hero, Rankle, Plannr). Tokens live in `src/app/globals.css`.
+
+## Type
+
+- **Archivo** (variable, with the width axis) for both display and body, via `next/font`. It is the P1 working typeface and may be revisited.
+- Display type: weight 700, `font-stretch: 112%`, tracking −0.035em, sized from the chapter content width and capped by viewport height so it can define, crop against and overlap the viewport. Write those sizes as `calc(k * var(--cq, 1cqi))` and `calc(k * var(--svh, 1svh))`, never bare `cqi`/`svh`/`vw` in `font-size`: Safari's page zoom otherwise inflates them (see `docs/ACCESSIBILITY.md`).
+- Body is 1rem and meta 0.875rem; labels and metadata are set in uppercase.
+
+## Colour
+
+- Ground `#f2f0eb`, ink `#0e0e0c`, muted `#57544e`, rule `#cbc7be`. Light only; no global accent.
+- Scene colour comes from the projects. Plannr uses its verified palette (navy `#002e61`, gold `#fdb814`, paper `#f7f2e7`). Rankle's item colours are an exploratory scene palette.
+
+## Layout
+
+- A 12-column grid with fluid `--margin` and `--gutter`.
+- One composition breakpoint at `40rem`. Below it, mobile is a separate composition, not a scaled desktop.
+- Scene stages are CSS grid areas that the canvas measures, so type and objects are composed together in CSS.
+
+## Layering
+
+- Display type sits behind the scene (`--z-type` < `--z-scene`), so objects may overlap monumental type.
+- Small copy, links and navigation sit above it (`--z-content`, `--z-nav`).
+
+## Navigator
+
+- A compact corner index: the current chapter number plus one tick per chapter.
+- It expands to the full list on hover (fine pointers), keyboard focus or tap. Without JavaScript it renders expanded.
+
+## Objects
+
+- Machined alloy plates (metalness 0.6, roughness 0.25–0.38) with coloured back faces.
+- On the way into Plannr they blend to matte ink, and the syllabus lines are matte paper ink (metalness 0, roughness 0.9).
+- Lighting is generated (room environment plus one directional light) with neutral tone mapping and no postprocessing.
+
 # Open Design Decisions
 
-The following remain intentionally unresolved until visual prototyping:
+Settled in P1 (above):
 
-- exact display font
-- exact body font
-- base background color
-- global accent color if any
-- exact desktop grid
-- exact breakpoint values
-- exact chapter navigator appearance
+- display and body type
+- background
+- no global accent
+- desktop grid
+- breakpoint
+- navigator appearance
 - hero object material
+- the Rankle and Plannr compositions
+- the mobile hero composition
+
+Still open:
+
 - exact button style
-- exact project scene compositions
-- whether any project scene uses dark mode
+- whether any later scene uses dark mode
 - exact contact closing phrase
-- exact mobile hero composition
+- compositions for Experience, Education, Off the Clock and Contact
 
 Do not lock these through documentation alone.
 

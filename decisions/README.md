@@ -41,4 +41,5 @@ When a decision changes, add a new ADR that supersedes the old one, and update t
 
 ## Index
 
-No ADRs yet.
+- [001 — GSAP and ScrollTrigger on native scrolling](001-gsap-scrolltrigger-native-scroll.md) (Accepted)
+- [002 — Scroll-derived scene state, one shared object system, static fallbacks](002-scroll-derived-scene-state-and-static-fallbacks.md) (Accepted)

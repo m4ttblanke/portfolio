@@ -394,7 +394,7 @@ Anchor navigation should be immediate or nearly immediate.
 
 # Smooth Scrolling
 
-If Lenis or another smooth-scroll layer is used, reduced-motion preferences must be respected.
+P1 uses native scrolling (no Lenis). If a smooth-scroll layer is ever added, reduced-motion preferences must be respected.
 
 Smooth scrolling must not interfere with:
 
@@ -992,6 +992,65 @@ The first creative prototype must already validate:
 
 Do not postpone these until the full site is finished.
 
+## P1 Results
+
+Verified on the production build. Desktop checks used headless Chrome; mobile checks used Chrome mobile emulation.
+
+**Structure**
+
+- One `h1` (the name), `h2` per chapter, `h3` per flagship project.
+- All copy and links are in the DOM.
+- The canvas and the stage elements are `aria-hidden`; the fallback images have empty `alt` because the copy beside them carries the meaning.
+
+**Skip link and keyboard**
+
+- The skip link is the first tab stop, visible on focus, and moves focus to `<main>`.
+- Keyboard focus opens the navigator. Escape closes it and returns focus to its toggle.
+- Enter on a chapter link follows the native hash link.
+- Focus rings are 2px solid.
+
+**Navigation**
+
+- `aria-current="location"` follows the visible chapter.
+- Direct loads of `/#projects` and `/#contact` land exactly at desktop and mobile widths.
+- Back and Forward restore the sections.
+
+**No JavaScript**
+
+- The full journey and the expanded chapter list are present.
+- Static renders show for every scene, and anchors work.
+
+**Reduced motion**
+
+- Checked with DevTools emulation; the OS setting was not changed.
+- No canvas and no 3D download. Runways collapse to normal flow.
+- Static compositions show, all Plannr steps are at full ink, and navigation is instant.
+
+**WebGL unsupported, scene error, context loss**
+
+- `data-webgl="off"`: static renders, collapsed runways, and working navigation.
+- A restored context does not draw over the fallbacks.
+
+**Zoom and widths**
+
+- Real Chrome page zoom at 200% from a 1440-wide window (a 720 CSS px viewport) works: nothing clips, no horizontal overflow, and the calendar is readable.
+- In the final Plannr hold the last provenance line sits just below the short viewport, and becomes readable as the hold releases.
+- 390 and 360 widths show no overflow, the Rankle boards are fully contained, and moving objects never cross small copy.
+- Safari page zoom, from a 1440×900 window at 100, 115, 125, 150, 175, 200, 250 and 300%, was measured in Safari 18.6 via layout geometry:
+  - MATTHEW and BLANKE stay fully inside the viewport.
+  - No horizontal overflow.
+  - The Rankle and Plannr titles stay clear of their stages and the viewport edge.
+  - The MB stage keeps the same proportion and overlap with the name as at 100%.
+
+  **Extreme zoom (250%+).** The CSS viewport becomes narrow and short (Safari 576×339 and 480×282; Chrome 576×325, 480×271, 360×203, and 320×178 from a 1280 window). A held 100svh frame then squeezes each stage to a sliver. The compact-viewport condition, `(max-width: 40rem) and (max-height: 30rem)`, switches to static presentation in normal flow. Verified with real page zoom in Safari 18.6 and Chrome: no overflow, no clipped copy, no image over copy, logical order, both project links reachable by Tab, the navigator and hash links working, and no sticky frames. Safari 100–200% and Chrome 200% keep the animated experience.
+
+  **Cause and fix.** WebKit resolves viewport and container units inside `font-size` against the unzoomed viewport, even through rem mixes or typed custom properties. Display type sized in `cqi`/`svh` therefore grew with the zoom and overflowed. `MeasuredUnits` measures those units with a hidden probe (layout properties resolve them correctly) and publishes `--cq` and `--svh` in px. Display type uses `var(--cq, 1cqi)` and `var(--svh, 1svh)`, so without JavaScript it keeps the native units. In Chrome the computed sizes are identical to the native units.
+- Pinch zoom is not disabled.
+
+**Not yet verified**
+
+- Safari, real mobile devices and screen-reader passes: these are manual tests.
+
 ---
 
 # Open Accessibility Decisions
@@ -999,9 +1058,12 @@ Do not postpone these until the full site is finished.
 The following may be refined during implementation:
 
 - exact focus-ring visual treatment
-- whether reduced motion uses static 3D or rendered images
-- whether Lenis is disabled entirely under reduced motion
 - final chapter navigator expansion semantics
+
+Settled in P1:
+
+- Reduced motion uses captured static renders, never live 3D.
+- Lenis was not adopted, so there is no smooth-scroll layer to disable.
 - exact accessibility treatment for any future 3D direct manipulation
 - final `/resume` accessibility approach
 

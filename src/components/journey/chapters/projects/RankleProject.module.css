@@ -1,0 +1,236 @@
+/*
+ * Rankle: a tall block whose sticky frame holds the scene while it composes.
+ * Copy on the left; the stage (two tier boards rendered by the canvas) on the
+ * right. The stage grid is the layout the canvas reads.
+ */
+
+.block {
+  block-size: 300svh;
+}
+
+.frame {
+  position: sticky;
+  inset-block-start: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: var(--gutter);
+  block-size: 100svh;
+  padding-block: max(1.125rem, env(safe-area-inset-top))
+    clamp(1.5rem, 1rem + 3vh, 3.5rem);
+  padding-inline: var(--margin);
+  container-type: inline-size;
+}
+
+.frame > :first-child {
+  grid-column: 1 / span 6;
+  grid-row: 1;
+}
+
+.copy {
+  grid-column: 1 / span 5;
+  grid-row: 2;
+  align-self: center;
+}
+
+/* Display type sits behind the canvas layer. */
+.title {
+  position: relative;
+  z-index: var(--z-type);
+  /* Size the mask to the word itself so it only clips vertically. */
+  inline-size: max-content;
+  overflow: clip;
+  font-family: var(--font-display);
+  font-size: min(calc(10.5 * var(--cq, 1cqi)), calc(20 * var(--svh, 1svh)));
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.titleInner {
+  display: block;
+}
+
+.summary,
+.meta {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+.summary {
+  max-inline-size: 26ch;
+  margin-block-start: var(--space-lg);
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  line-height: 1.3;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-lg);
+  margin-block-start: var(--space-md);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Two tier boards: tier letters, your board, a gutter for threads, a friend's. */
+.stage {
+  position: relative;
+  display: grid;
+  grid-column: 7 / -1;
+  grid-row: 1 / -1;
+  grid-template-columns: 1.5rem minmax(0, 1fr) clamp(3rem, 9cqi, 8rem) minmax(
+      0,
+      1fr
+    );
+  grid-template-rows: auto repeat(5, minmax(0, 1fr));
+  align-self: center;
+  block-size: min(78%, 40rem);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.boardLabel {
+  grid-row: 1;
+  padding-block-end: var(--space-sm);
+  color: var(--color-muted);
+}
+
+.boardLabel[data-board="you"] {
+  grid-column: 2;
+}
+
+.boardLabel[data-board="friend"] {
+  grid-column: 4;
+}
+
+.tier {
+  grid-column: 1;
+  align-self: center;
+  font-weight: 600;
+}
+
+.board {
+  grid-row: 2 / -1;
+}
+
+.board[data-rankle-board="you"] {
+  grid-column: 2;
+}
+
+.board[data-rankle-board="friend"] {
+  grid-column: 4;
+}
+
+/* Mobile: copy above, boards below, a shorter hold. */
+@media (max-width: 40rem) {
+  .block {
+    block-size: 240svh;
+  }
+
+  .frame {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .frame > :first-child,
+  .copy {
+    grid-column: 1 / -1;
+  }
+
+  .copy {
+    align-self: start;
+    margin-block-start: var(--space-lg);
+  }
+
+  .title {
+    font-size: min(calc(22 * var(--cq, 1cqi)), calc(14 * var(--svh, 1svh)));
+  }
+
+  .summary {
+    margin-block-start: var(--space-md);
+  }
+
+  .meta {
+    margin-block-start: var(--space-sm);
+  }
+
+  .stage {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    grid-template-columns: 1.25rem minmax(0, 1fr) 2.75rem minmax(0, 1fr);
+    block-size: 92%;
+    margin-block-start: var(--space-md);
+  }
+}
+
+/*
+ * Static presentation (reduced motion, or WebGL off): no hold — the runway
+ * exists only for choreography — so the scene reads in normal flow.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    block-size: auto;
+  }
+
+  .frame {
+    position: static;
+    min-block-size: 100svh;
+  }
+}
+
+:root[data-webgl="off"] .block {
+  block-size: auto;
+}
+
+:root[data-webgl="off"] .frame {
+  position: static;
+  min-block-size: 100svh;
+}
+
+/*
+ * Compact viewport (narrow AND short; set on <html> from COMPACT_VIEWPORT in
+ * lib/motion/presentation.ts). Static presentation in normal flow: no hold,
+ * the title fits the width, and the stage keeps the static render's
+ * proportions instead of taking what is left of a short viewport.
+ */
+:root[data-presentation="compact"] .block {
+  block-size: auto;
+}
+
+:root[data-presentation="compact"] .frame {
+  position: static;
+  block-size: auto;
+  min-block-size: 0;
+}
+
+:root[data-presentation="compact"] .title {
+  font-size: calc(22 * var(--cq, 1cqi));
+}
+
+:root[data-presentation="compact"] .stage {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  block-size: auto;
+  aspect-ratio: 0.7;
+}

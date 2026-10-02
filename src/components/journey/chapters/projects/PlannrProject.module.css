@@ -1,0 +1,321 @@
+/*
+ * Plannr: mirrors Rankle — the stage (page, review, calendar; rendered by the
+ * canvas) on the left, copy and the workflow list on the right. Calmer and
+ * stricter than Rankle: aligned zones, no overlap with the copy.
+ */
+
+.block {
+  block-size: 300svh;
+}
+
+.frame {
+  position: sticky;
+  inset-block-start: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;
+  column-gap: var(--gutter);
+  block-size: 100svh;
+  padding-block: max(1.125rem, env(safe-area-inset-top))
+    clamp(1.5rem, 1rem + 3vh, 3.5rem);
+  padding-inline: var(--margin);
+  container-type: inline-size;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  /* Column 7 stays empty: breathing room between calendar and copy. */
+  grid-column: 1 / span 6;
+  grid-row: 1;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.4fr) minmax(0, 1.25fr);
+  grid-template-areas: "page review rest";
+  column-gap: clamp(1rem, 2.5cqi, 2.5rem);
+  block-size: min(70%, 34rem);
+  /* Inset so the turned page stays inside the margin. */
+  padding-inline-start: clamp(0.5rem, 2.5cqi, 2.5rem);
+}
+
+.zone[data-plannr-zone="page"] {
+  grid-area: page;
+}
+
+/* Where the page recedes to as the calendar arrives. */
+.zone[data-plannr-zone="page-end"] {
+  grid-area: page;
+  align-self: start;
+  inline-size: 72%;
+  block-size: 72%;
+}
+
+.zone[data-plannr-zone="review"] {
+  grid-area: review;
+}
+
+/*
+ * The calendar is the payoff: landscape, spanning the review column (empty by
+ * the time it arrives) and the rest of the stage.
+ */
+.zone[data-plannr-zone="calendar"] {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  align-self: center;
+  aspect-ratio: 3 / 2;
+}
+
+.copy {
+  grid-column: 8 / -1;
+  grid-row: 1;
+}
+
+/* Display type sits behind the canvas layer. */
+.title {
+  position: relative;
+  z-index: var(--z-type);
+  inline-size: max-content;
+  overflow: clip;
+  font-family: var(--font-display);
+  font-size: min(calc(7 * var(--cq, 1cqi)), calc(16 * var(--svh, 1svh)));
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.titleInner {
+  display: block;
+}
+
+.summary,
+.steps,
+.meta,
+.origin {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+.summary {
+  max-inline-size: 24ch;
+  margin-block-start: var(--space-lg);
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  line-height: 1.3;
+}
+
+/* The workflow, readable without motion; the current step is marked. */
+.steps {
+  display: grid;
+  gap: 0.375rem;
+  margin-block-start: var(--space-lg);
+  padding: 0;
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  gap: var(--space-md);
+  padding-inline-start: var(--space-md);
+  color: var(--color-muted);
+}
+
+.stepNumber {
+  font-variant-numeric: tabular-nums;
+}
+
+.step[data-current] {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* Static presentation: every step reads at full strength, none "current". */
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    color: var(--color-ink);
+  }
+}
+
+.step[data-current]::before {
+  position: absolute;
+  inset-block: 0.15em;
+  inset-inline-start: 0;
+  inline-size: 2px;
+  background: var(--color-ink);
+  content: "";
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-lg);
+  margin-block-start: var(--space-lg);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.origin {
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+}
+
+/*
+ * Mobile: the stage first, then the copy — the reverse of Rankle, so pieces
+ * arriving from Rankle's boards land on the page without crossing any copy.
+ * Page and review side by side, the calendar below; steps in two columns.
+ */
+@media (max-width: 40rem) {
+  .block {
+    block-size: 280svh;
+  }
+
+  .frame {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .copy {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-block-start: var(--space-md);
+  }
+
+  .title {
+    font-size: min(calc(20 * var(--cq, 1cqi)), calc(12 * var(--svh, 1svh)));
+  }
+
+  .summary {
+    margin-block-start: var(--space-sm);
+    font-size: 1rem;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, max-content);
+    justify-content: start;
+    column-gap: var(--space-lg);
+    margin-block-start: var(--space-sm);
+  }
+
+  .step {
+    gap: 0.375rem;
+    padding-inline-start: 0;
+    padding-block-end: 0.25rem;
+  }
+
+  .step[data-current]::before {
+    inset-block: auto 0;
+    inset-inline: 0;
+    inline-size: auto;
+    block-size: 2px;
+  }
+
+  .meta {
+    column-gap: var(--space-md);
+    margin-block-start: var(--space-xs);
+  }
+
+  .stage {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "page review"
+      "page review";
+    row-gap: var(--space-md);
+    align-self: stretch;
+    block-size: auto;
+    margin-block: var(--space-lg) 0;
+  }
+
+  /* The page starts tall across both rows, then recedes into the top row. */
+  .zone[data-plannr-zone="page-end"] {
+    grid-area: auto;
+    grid-column: 1;
+    grid-row: 1;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .zone[data-plannr-zone="calendar"] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    aspect-ratio: auto;
+    block-size: 100%;
+  }
+}
+
+/*
+ * Static presentation (reduced motion, or WebGL off): no hold — the runway
+ * exists only for choreography — so the scene reads in normal flow.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    block-size: auto;
+  }
+
+  .frame {
+    position: static;
+    min-block-size: 100svh;
+  }
+}
+
+:root[data-webgl="off"] .block {
+  block-size: auto;
+}
+
+:root[data-webgl="off"] .frame {
+  position: static;
+  min-block-size: 100svh;
+}
+
+/*
+ * Compact viewport (narrow AND short; set on <html> from COMPACT_VIEWPORT in
+ * lib/motion/presentation.ts). Static presentation in normal flow: no hold,
+ * every step at full strength, the title fits the width, and the stage keeps
+ * the static render's proportions.
+ */
+:root[data-presentation="compact"] .block {
+  block-size: auto;
+}
+
+:root[data-presentation="compact"] .frame {
+  position: static;
+  block-size: auto;
+  min-block-size: 0;
+}
+
+:root[data-presentation="compact"] .title {
+  font-size: calc(20 * var(--cq, 1cqi));
+}
+
+:root[data-presentation="compact"] .step {
+  color: var(--color-ink);
+}
+
+:root[data-presentation="compact"] .stage {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  block-size: auto;
+  aspect-ratio: 0.75;
+}
