@@ -1,8 +1,8 @@
 /*
  * Global foundation: reset, tokens, base type, focus, root behavior.
  * Component and chapter styles belong in CSS Modules.
- * P1 values: initial palette and type roles. Typeface is exploratory until
- * Gate 1.
+ * P1 values: initial palette and type roles. Archivo is the P1 working
+ * typeface.
  */
 
 :root {
@@ -44,27 +44,6 @@
   --z-overlay: 50;
 
   color-scheme: light;
-}
-
-/* Gate 1 exploration: alternate candidates, selected with ?type=… */
-:root[data-type="instrument"] {
-  --font-sans: var(--font-instrument), var(--font-fallback);
-  --font-display: var(--font-instrument), var(--font-fallback);
-  --display-weight: 600;
-  --display-stretch: 75%;
-  --display-tracking: -0.02em;
-  --display-size: 22;
-  --display-size-narrow: 30;
-}
-
-:root[data-type="schibsted"] {
-  --font-sans: var(--font-schibsted), var(--font-fallback);
-  --font-display: var(--font-schibsted), var(--font-fallback);
-  --display-weight: 800;
-  --display-stretch: 100%;
-  --display-tracking: -0.045em;
-  --display-size: 17.9;
-  --display-size-narrow: 20;
 }
 
 *,

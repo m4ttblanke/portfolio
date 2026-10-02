@@ -115,6 +115,14 @@
   display: none;
 }
 
+/* No JS on narrow screens: the plain list sits in flow above the hero. */
+@media (max-width: 40rem) {
+  :root:not([data-js]) .nav {
+    position: static;
+    padding-block-start: var(--space-sm);
+  }
+}
+
 :root[data-js] .list {
   position: absolute;
   inset-block-start: 100%;
