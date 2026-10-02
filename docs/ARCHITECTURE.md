@@ -252,6 +252,7 @@ components/journey/
                           *Pose.ts (pure pose constants/functions)
                           RankleScene, PlannrScene (scene-only objects)
   fallback/               SceneFallback (<picture> static render per scene)
+  units/                  MeasuredUnits (zoom-safe --cq/--svh for display type)
 lib/motion/               gsap.ts, scene-progress.ts, reduced-motion.ts
 lib/assets/               fallbacks.ts (static render registry)
 public/fallbacks/         six WebP scene renders

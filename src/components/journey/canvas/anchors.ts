@@ -109,6 +109,8 @@ export function useAnchors() {
     measure();
     const observer = new ResizeObserver(measure);
     const observed = [
+      // Chapters move when type above them resizes (fonts, measured units).
+      document.querySelector("main"),
       hero,
       rankleBlock,
       rankleBlock?.querySelector('[data-scene-anchor="rankle"]'),

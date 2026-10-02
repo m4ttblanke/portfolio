@@ -1141,7 +1141,7 @@ These are working values proven in the P1 opening (hero, Rankle, Plannr). Tokens
 ## Type
 
 - **Archivo** (variable, with the width axis) for both display and body, via `next/font`. It is the P1 working typeface and may be revisited.
-- Display type: weight 700, `font-stretch: 112%`, tracking −0.035em, sized from the container (`cqi`) and capped by viewport height (`svh`) so it can define, crop against and overlap the viewport.
+- Display type: weight 700, `font-stretch: 112%`, tracking −0.035em, sized from the chapter content width and capped by viewport height so it can define, crop against and overlap the viewport. Write those sizes as `calc(k * var(--cq, 1cqi))` and `calc(k * var(--svh, 1svh))`, never bare `cqi`/`svh`/`vw` in `font-size`: Safari's page zoom otherwise inflates them (see `docs/ACCESSIBILITY.md`).
 - Body is 1rem and meta 0.875rem; labels and metadata are set in uppercase.
 
 ## Colour

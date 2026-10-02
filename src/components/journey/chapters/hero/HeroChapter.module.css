@@ -58,8 +58,12 @@
   grid-column: 1 / -1;
   grid-row: 3;
   font-family: var(--font-display);
-  /* Fit the width, but never push the second line below the fold. */
-  font-size: min(calc(var(--display-size) * 1cqi), 30svh);
+  /* Fit the width, but never push the second line below the fold.
+     --cq/--svh: zoom-safe measured units (see MeasuredUnits). */
+  font-size: min(
+    calc(var(--display-size) * var(--cq, 1cqi)),
+    calc(30 * var(--svh, 1svh))
+  );
   font-stretch: var(--display-stretch);
   font-weight: var(--display-weight);
   letter-spacing: var(--display-tracking);
@@ -98,7 +102,10 @@
   }
 
   .name {
-    font-size: min(calc(var(--display-size-narrow) * 1cqi), 24svh);
+    font-size: min(
+      calc(var(--display-size-narrow) * var(--cq, 1cqi)),
+      calc(24 * var(--svh, 1svh))
+    );
   }
 
   .last {

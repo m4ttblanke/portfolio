@@ -2,6 +2,7 @@ import { JourneyCanvas } from "@/components/journey/canvas/JourneyCanvas";
 import { HeroChapter } from "@/components/journey/chapters/hero/HeroChapter";
 import { ProjectsChapter } from "@/components/journey/chapters/projects/ProjectsChapter";
 import { ChapterNavigator } from "@/components/journey/navigation/ChapterNavigator";
+import { MeasuredUnits } from "@/components/journey/units/MeasuredUnits";
 import { chapters } from "@/content/navigation";
 import styles from "./page.module.css";
 
@@ -36,6 +37,7 @@ export default function Home() {
             );
           })}
       </main>
+      <MeasuredUnits />
       <JourneyCanvas />
     </>
   );

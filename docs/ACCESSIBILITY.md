@@ -1036,6 +1036,13 @@ Verified on the production build. Desktop checks used headless Chrome; mobile ch
 - Real Chrome page zoom at 200% from a 1440-wide window (a 720 CSS px viewport) works: nothing clips, no horizontal overflow, and the calendar is readable.
 - In the final Plannr hold the last provenance line sits just below the short viewport, and becomes readable as the hold releases.
 - 390 and 360 widths show no overflow, the Rankle boards are fully contained, and moving objects never cross small copy.
+- Safari page zoom, from a 1440×900 window at 100, 115, 125, 150, 175, 200, 250 and 300%, was measured in Safari 18.6 via layout geometry:
+  - MATTHEW and BLANKE stay fully inside the viewport.
+  - No horizontal overflow.
+  - The Rankle and Plannr titles stay clear of their stages and the viewport edge.
+  - The MB stage keeps the same proportion and overlap with the name as at 100%.
+
+  **Cause and fix.** WebKit resolves viewport and container units inside `font-size` against the unzoomed viewport, even through rem mixes or typed custom properties. Display type sized in `cqi`/`svh` therefore grew with the zoom and overflowed. `MeasuredUnits` measures those units with a hidden probe (layout properties resolve them correctly) and publishes `--cq` and `--svh` in px. Display type uses `var(--cq, 1cqi)` and `var(--svh, 1svh)`, so without JavaScript it keeps the native units. In Chrome the computed sizes are identical to the native units.
 - Pinch zoom is not disabled.
 
 **Not yet verified**

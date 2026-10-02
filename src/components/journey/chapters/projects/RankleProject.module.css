@@ -41,7 +41,7 @@
   inline-size: max-content;
   overflow: clip;
   font-family: var(--font-display);
-  font-size: min(10.5cqi, 20svh);
+  font-size: min(calc(10.5 * var(--cq, 1cqi)), calc(20 * var(--svh, 1svh)));
   font-stretch: var(--display-stretch);
   font-weight: var(--display-weight);
   letter-spacing: var(--display-tracking);
@@ -164,7 +164,7 @@
   }
 
   .title {
-    font-size: min(22cqi, 14svh);
+    font-size: min(calc(22 * var(--cq, 1cqi)), calc(14 * var(--svh, 1svh)));
   }
 
   .summary {
