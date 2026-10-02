@@ -24,7 +24,8 @@
 
 .stage {
   display: grid;
-  grid-column: 1 / span 7;
+  /* Column 7 stays empty: breathing room between calendar and copy. */
+  grid-column: 1 / span 6;
   grid-row: 1;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.42fr) minmax(0, 1.1fr);
   grid-template-areas: "page review calendar";
