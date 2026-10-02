@@ -178,3 +178,18 @@ export function createPlates(): PlateDef[] {
     ),
   ];
 }
+
+/*
+ * Hero exit (progress 0 → 1). Keyframes, as fractions of hero progress:
+ * canonical MB → dissolved (turned off-axis, depth planes pulled apart) →
+ * exploded and turning over → settled in the Rankle stage.
+ */
+export const EXIT_KEYS = [0, 0.3, 0.62, 1] as const;
+/** Group turn at the dissolve key; the MB no longer aligns from here. */
+export const DISSOLVE_TURN = { pitch: -0.18, yaw: 0.85 };
+/** How far depth planes separate at the dissolve key. */
+export const DISSOLVE_DEPTH = 2.4;
+/** Outward spread of the exploded plates, relative to the relief. */
+export const EXPLODE_SPREAD = 1.8;
+/** Per-plate delay so the plates peel away in sequence. */
+export const EXIT_STAGGER = 0.015;

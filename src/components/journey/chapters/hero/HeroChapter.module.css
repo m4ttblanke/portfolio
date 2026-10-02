@@ -16,6 +16,8 @@
     clamp(1.5rem, 1rem + 3vh, 3.5rem);
   padding-inline: var(--margin);
   container-type: inline-size;
+  /* The name parts past the edges on exit without causing overflow. */
+  overflow: clip;
 }
 
 .descriptor {
@@ -32,8 +34,8 @@
 }
 
 /*
- * Reserved stage for the identity object (checkpoint D). Absolutely placed in
- * its grid area so it never adds to the hero's height.
+ * Stage for the identity relief. Absolutely placed in its grid area so it
+ * never adds to the hero's height.
  */
 .object {
   position: absolute;

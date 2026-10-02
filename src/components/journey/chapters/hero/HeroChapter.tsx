@@ -1,4 +1,5 @@
 import { profile } from "@/content/profile";
+import { HeroMotion } from "./HeroMotion";
 import styles from "./HeroChapter.module.css";
 
 /** 01 — Name. Server-rendered identity composition. */
@@ -11,7 +12,7 @@ export function HeroChapter() {
         ))}
       </p>
 
-      {/* Reserved stage for the identity object (P1 checkpoint D). */}
+      {/* Stage for the identity relief, rendered by the persistent canvas. */}
       <div
         aria-hidden="true"
         className={styles.object}
@@ -19,9 +20,14 @@ export function HeroChapter() {
       />
 
       <h1 id="name-heading" className={styles.name}>
-        <span className={styles.first}>{profile.firstName}</span>{" "}
-        <span className={styles.last}>{profile.lastName}</span>
+        <span className={styles.first} data-name-line="first">
+          {profile.firstName}
+        </span>{" "}
+        <span className={styles.last} data-name-line="last">
+          {profile.lastName}
+        </span>
       </h1>
+      <HeroMotion />
     </section>
   );
 }

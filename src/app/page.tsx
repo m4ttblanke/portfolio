@@ -1,5 +1,6 @@
 import { JourneyCanvas } from "@/components/journey/canvas/JourneyCanvas";
 import { HeroChapter } from "@/components/journey/chapters/hero/HeroChapter";
+import { ProjectsChapter } from "@/components/journey/chapters/projects/ProjectsChapter";
 import { ChapterNavigator } from "@/components/journey/navigation/ChapterNavigator";
 import { chapters } from "@/content/navigation";
 import styles from "./page.module.css";
@@ -15,9 +16,12 @@ export default function Home() {
       </header>
       <main id="main" tabIndex={-1}>
         <HeroChapter />
+        <ProjectsChapter />
         {/* P0 structural placeholders until their chapters are designed. */}
         {chapters
-          .filter((chapter) => chapter.id !== "name")
+          .filter(
+            (chapter) => chapter.id !== "name" && chapter.id !== "projects",
+          )
           .map((chapter) => {
             const headingId = `${chapter.id}-heading`;
             return (
