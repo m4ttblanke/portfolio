@@ -15,8 +15,12 @@ export const PLANNR_COLORS = {
   navy: "#002e61",
   gold: "#fdb814",
   paper: "#f7f2e7",
-  line: "#b3aea4",
+  /** Syllabus lines: matte ink on paper, not alloy. */
+  line: "#a39d92",
 };
+
+/** Matte paper-ink response for syllabus lines (vs. the kit's alloy). */
+export const LINE_SURFACE = { metalness: 0, roughness: 0.9 };
 
 /** Turn of the Plannr objects: the scene sits left, turned toward center. */
 export const PLANNR_TURN = { pitch: 0.05, yaw: 0.1 };
@@ -48,13 +52,34 @@ export const HANDOFF_KEYS = {
 
 /** Plannr stages (fractions of scene.plannr). */
 export const PLANNR_KEYS = {
-  dates: [0.04, 0.2],
-  lift: [0.14, 0.28],
-  review: [0.28, 0.44],
-  verdict: [0.42, 0.56],
-  calendar: [0.56, 0.68],
-  settle: [0.62, 0.82],
+  dates: [0.03, 0.18],
+  lift: [0.13, 0.26],
+  review: [0.26, 0.41],
+  verdict: [0.39, 0.53],
+  calendar: [0.52, 0.66],
+  settle: [0.6, 0.82],
 } as const;
+
+/** The page recedes as the calendar arrives, so the calendar dominates. */
+const PAGE_RECEDE = 0.72;
+
+/**
+ * The syllabus page's rect at a given workflow progress: full size, then
+ * shrinking toward its top-left corner during the calendar stage. Lines,
+ * chips and highlights all derive from it, so they recede together.
+ */
+export function pageAt(page: Rect, progress: number): Rect {
+  const [from, to] = PLANNR_KEYS.calendar;
+  const t = Math.min(Math.max((progress - from) / (to - from), 0), 1);
+  const eased = t * t * (3 - 2 * t);
+  const scale = 1 - (1 - PAGE_RECEDE) * eased;
+  return {
+    left: page.left,
+    top: page.top,
+    width: page.width * scale,
+    height: page.height * scale,
+  };
+}
 
 /** Workflow step shown in the DOM list for a given scene.plannr. */
 export function plannrStep(progress: number) {

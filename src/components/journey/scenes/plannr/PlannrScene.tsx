@@ -22,6 +22,8 @@ import {
   ITEM_LINE,
   line,
   LINE_COUNT,
+  LINE_SURFACE,
+  pageAt,
   PLANNR_COLORS,
   PLANNR_KEYS,
   PLANNR_TURN,
@@ -86,8 +88,7 @@ export function PlannrScene({
     });
     const lineMaterial = new MeshStandardMaterial({
       color: new Color(PLANNR_COLORS.line),
-      metalness: 0.6,
-      roughness: 0.34,
+      ...LINE_SURFACE,
     });
     const gold = new MeshStandardMaterial({
       color: new Color(PLANNR_COLORS.gold),
@@ -168,14 +169,15 @@ export function PlannrScene({
 
     // The page unrolls downward beneath Rankle's arriving rows.
     const pageGrow = easeOut(smooth(...HANDOFF_KEYS.page, handoff));
-    const pageHeight = p.page.height * pageGrow;
-    const pageY = p.page.top + pageHeight / 2;
-    const pageX = p.page.left + p.page.width / 2;
+    const pageRect = pageAt(p.page, progress);
+    const pageHeight = pageRect.height * pageGrow;
+    const pageY = pageRect.top + pageHeight / 2;
+    const pageX = pageRect.left + pageRect.width / 2;
     place(
       page.current,
       pageX,
       pageY,
-      p.page.width,
+      pageRect.width,
       pageHeight,
       SHEET_DEPTH_PX,
       -12,
@@ -184,7 +186,7 @@ export function PlannrScene({
       pageBack.current,
       pageX,
       pageY,
-      p.page.width + OUTLINE_PX * 2,
+      pageRect.width + OUTLINE_PX * 2,
       pageHeight + OUTLINE_PX * 2 * pageGrow,
       SHEET_DEPTH_PX,
       -16,
@@ -192,7 +194,7 @@ export function PlannrScene({
 
     // The rest of the syllabus lines draw in, top to bottom.
     EXTRA_LINES.forEach((index, n) => {
-      const l = line(p.page, index);
+      const l = line(pageRect, index);
       const w = stagger(HANDOFF_KEYS.lines, n, EXTRA_LINES.length, handoff);
       const width = l.width * w;
       place(lines.current[n], l.left + width / 2, l.y, width, l.height, 2, -4);
@@ -200,7 +202,7 @@ export function PlannrScene({
 
     // Dates: each date's span on its line is marked, like a highlighter.
     ITEM_LINE.forEach((_, item) => {
-      const h = highlight(p.page, item);
+      const h = highlight(pageRect, item);
       const w = stagger(PLANNR_KEYS.dates, item, ITEM_LINE.length, progress);
       const width = h.width * w;
       place(

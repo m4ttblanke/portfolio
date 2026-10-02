@@ -25,6 +25,8 @@ import {
   line,
   PLANNR_COLORS,
   PLANNR_KEYS,
+  LINE_SURFACE,
+  pageAt,
   PLANNR_TURN,
   plannrPivot,
   reviewSlot,
@@ -178,7 +180,24 @@ export function RankleScene({
       (color) =>
         new MeshBasicMaterial({ color: new Color(color), toneMapped: false }),
     );
-    return { card, box, faces, backs, outline, yourRow, row, threads };
+    const alloyRow = {
+      color: yourRow.color.clone(),
+      metalness: 0.6,
+      roughness: 0.34,
+    };
+    const lineColor = new Color(PLANNR_COLORS.line);
+    return {
+      card,
+      box,
+      faces,
+      backs,
+      outline,
+      yourRow,
+      alloyRow,
+      lineColor,
+      row,
+      threads,
+    };
   }, []);
 
   useEffect(
@@ -255,6 +274,18 @@ export function RankleScene({
     if (!g.visible) return;
 
     const progress = scene.rankle;
+
+    // Your bands turn from alloy to matte ink as they become syllabus lines.
+    const ink = MathUtils.smoothstep(handoff, 0.4, 0.9);
+    resources.yourRow.color.lerpColors(
+      resources.alloyRow.color,
+      resources.lineColor,
+      ink,
+    );
+    resources.yourRow.setValues({
+      metalness: MathUtils.lerp(0.6, LINE_SURFACE.metalness, ink),
+      roughness: MathUtils.lerp(0.34, LINE_SURFACE.roughness, ink),
+    });
     const plannr = scene.plannr;
     const items = ITEM_COLORS.length;
 
@@ -281,7 +312,7 @@ export function RankleScene({
           hFrom + row * 0.03,
           hTo - (4 - row) * 0.03,
         );
-        const l = line(pl.page, ROW_LINE[row]);
+        const l = line(pageAt(pl.page, plannr), ROW_LINE[row]);
         const to: Pose = {
           x: l.left + l.width / 2,
           y: plannrTop + l.y,
@@ -536,7 +567,8 @@ function workflowPose(
   progress: number,
 ) {
   const count = APPROVED.length;
-  const chip = chipOnLine(pl.page, item);
+  const page = pageAt(pl.page, progress);
+  const chip = chipOnLine(page, item);
   const onLine: Pose = {
     x: chip.x,
     y: top + chip.y,

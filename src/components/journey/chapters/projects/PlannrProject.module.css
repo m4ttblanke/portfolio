@@ -5,7 +5,7 @@
  */
 
 .block {
-  block-size: 340svh;
+  block-size: 300svh;
 }
 
 .frame {
@@ -27,8 +27,8 @@
   /* Column 7 stays empty: breathing room between calendar and copy. */
   grid-column: 1 / span 6;
   grid-row: 1;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.42fr) minmax(0, 1.1fr);
-  grid-template-areas: "page review calendar";
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.4fr) minmax(0, 1.25fr);
+  grid-template-areas: "page review rest";
   column-gap: clamp(1rem, 2.5cqi, 2.5rem);
   block-size: min(70%, 34rem);
   /* Inset so the turned page stays inside the margin. */
@@ -43,10 +43,15 @@
   grid-area: review;
 }
 
+/*
+ * The calendar is the payoff: landscape, spanning the review column (empty by
+ * the time it arrives) and the rest of the stage.
+ */
 .zone[data-plannr-zone="calendar"] {
-  grid-area: calendar;
+  grid-column: 2 / 4;
+  grid-row: 1;
   align-self: center;
-  block-size: 78%;
+  aspect-ratio: 3 / 2;
 }
 
 .copy {
@@ -228,6 +233,9 @@
   }
 
   .zone[data-plannr-zone="calendar"] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    aspect-ratio: auto;
     block-size: 100%;
   }
 }

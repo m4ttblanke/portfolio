@@ -37,6 +37,9 @@ import {
 import {
   HANDOFF_KEYS,
   line,
+  LINE_SURFACE,
+  pageAt,
+  PLANNR_COLORS,
   PLANNR_TURN,
   plannrPivot,
   ROW_LINE,
@@ -189,7 +192,13 @@ export function Kit({
       (color) =>
         new MeshStandardMaterial({ color: new Color(color), roughness: 0.5 }),
     );
-    return { dark, light, edge, backs };
+    // As the stems settle into the syllabus, their alloy turns to matte ink.
+    const alloy = {
+      light: { color: light.color.clone(), metalness: 0.6, roughness: 0.34 },
+      edge: { color: edge.color.clone(), metalness: 0.6, roughness: 0.25 },
+      line: new Color(PLANNR_COLORS.line),
+    };
+    return { dark, light, edge, backs, alloy };
   }, []);
 
   useEffect(
@@ -472,7 +481,7 @@ export function Kit({
           to - (4 - row) * 0.03,
         );
         if (h > 0) {
-          const l = line(pl.page, ROW_LINE[row]);
+          const l = line(pageAt(pl.page, scene.plannr), ROW_LINE[row]);
           const extent = laidExtents[i];
           const plannrTop = heldFrameTop(pl, window.scrollY);
           const across = (l.height / extent.height) * toWorld;
@@ -501,6 +510,18 @@ export function Kit({
       mesh.scale.copy(scratch.scale);
       mesh.visible = scratch.scale.x > 1e-4;
     });
+
+    // Paper-ink response for the stems once they are syllabus lines.
+    const ink = MathUtils.smoothstep(scene.handoff, 0.4, 0.9);
+    for (const key of ["light", "edge"] as const) {
+      const material = materials[key];
+      const from = materials.alloy[key];
+      material.color.lerpColors(from.color, materials.alloy.line, ink);
+      material.setValues({
+        metalness: MathUtils.lerp(from.metalness, LINE_SURFACE.metalness, ink),
+        roughness: MathUtils.lerp(from.roughness, LINE_SURFACE.roughness, ink),
+      });
+    }
 
     if (group.current) {
       const pl = a.plannr;
