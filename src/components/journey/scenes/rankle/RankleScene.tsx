@@ -5,6 +5,7 @@ import {
   Color,
   Euler,
   ExtrudeGeometry,
+  MathUtils,
   MeshBasicMaterial,
   MeshStandardMaterial,
   Quaternion,
@@ -13,7 +14,7 @@ import {
   type Mesh,
 } from "three";
 import { scene } from "@/lib/motion/scene-progress";
-import { rankleFrameTop, type Anchors } from "../../canvas/anchors";
+import { rankleFrameTop, type Anchors, type Rect } from "../../canvas/anchors";
 import {
   cardCenter,
   cardSize,
@@ -23,6 +24,7 @@ import {
   RANKLE_TURN,
   rowCenter,
   rowHeight,
+  RANKLE_KEYS,
   SUPPLEMENT_ROWS,
   TIERS,
   YOU,
@@ -39,6 +41,37 @@ const THREAD_COLORS = ITEM_COLORS.map((color, item) =>
   item === ITEM_COLORS.length - 1 ? "#9c978d" : color,
 );
 const THREAD_WIDTH = 3;
+
+const smooth = (edge0: number, edge1: number, x: number) =>
+  MathUtils.smoothstep(x, edge0, edge1);
+const easeOut = (t: number) => 1 - (1 - t) ** 3;
+
+/**
+ * Eased 0 → 1 for the n-th of `count` elements sharing a progress range;
+ * each takes half the range, starts staggered evenly across the rest.
+ */
+function stagger(
+  range: readonly [number, number],
+  n: number,
+  count: number,
+  progress: number,
+) {
+  const [from, to] = range;
+  const length = (to - from) * 0.5;
+  const step = count > 1 ? (to - from - length) / (count - 1) : 0;
+  const start = from + n * step;
+  return easeOut(MathUtils.clamp((progress - start) / length, 0, 1));
+}
+
+/** Items in the order they are placed: best tier first, then board order. */
+function rankOrder(placement: number[]) {
+  const sorted = placement
+    .map((row, item) => ({ row, item }))
+    .sort((a, b) => a.row - b.row || a.item - b.item);
+  const order: number[] = [];
+  sorted.forEach(({ item }, rank) => (order[item] = rank));
+  return order;
+}
 const OUTLINE = 1.14;
 
 function roundedSquare(radius: number) {
@@ -134,59 +167,92 @@ export function RankleScene({
     const worldX = (px: number) => (px - size.width / 2) * toWorld;
     const worldY = (py: number) => (size.height / 2 - py) * toWorld;
 
-    // Composed once the plates have arrived (choreography: checkpoint G).
-    g.visible = scene.hero > 0.98 && frameTop > -r.frameHeight;
+    g.visible = frameTop > -r.frameHeight;
     if (!g.visible) return;
 
+    const progress = scene.rankle;
     const items = ITEM_COLORS.length;
-    const boards = [
-      { board: r.you, placement: YOU },
-      { board: r.friend, placement: FRIEND },
-    ];
 
-    boards.forEach(({ board, placement }, b) => {
+    // Supplementary bands for your rows A and C grow in with the stems.
+    const [rowsFrom, rowsTo] = RANKLE_KEYS.rows;
+    SUPPLEMENT_ROWS.forEach((row, i) => {
+      const band = rows.current[TIERS.length + i];
+      if (!band) return;
+      const w = easeOut(
+        smooth(rowsFrom + row * 0.025, rowsTo + row * 0.025, progress),
+      );
+      placeBand(band, r.you, row, w);
+    });
+
+    // A friend's board: its rows extend in, top to bottom.
+    TIERS.forEach((_, row) => {
+      const band = rows.current[row];
+      if (band) {
+        placeBand(
+          band,
+          r.friend,
+          row,
+          stagger(RANKLE_KEYS.friendRows, row, TIERS.length, progress),
+        );
+      }
+    });
+
+    // Cards are placed in rank order: yours slide out of the gutter into
+    // their tiers, a friend's come in from the right.
+    const boards = [
+      {
+        board: r.you,
+        placement: YOU,
+        range: RANKLE_KEYS.you,
+        fromX:
+          r.you.left +
+          r.you.width +
+          (r.friend.left - r.you.left - r.you.width) / 2,
+      },
+      {
+        board: r.friend,
+        placement: FRIEND,
+        range: RANKLE_KEYS.friend,
+        fromX: r.friend.left + r.friend.width * 1.25,
+      },
+    ];
+    boards.forEach(({ board, placement, range, fromX }, b) => {
       const size = cardSize(board) * toWorld;
+      const order = rankOrder(placement);
       for (let item = 0; item < items; item++) {
         const index = b * items + item;
+        const w = stagger(range, order[item], items, progress);
         const center = cardCenter(board, placement, item);
-        const x = worldX(center.x);
+        const x = worldX(MathUtils.lerp(fromX, center.x, w));
         const y = worldY(frameTop + center.y);
+        // Lifted while it travels, set down as it lands.
+        const lift = Math.sin(Math.PI * w) * size * 0.9;
+        const scale = size * MathUtils.lerp(0.55, 1, w);
         const card = cards.current[index];
         const outline = outlines.current[index];
+        const shown = w > 0.001;
         if (card) {
-          card.position.set(x, y, 0.12 * size);
+          card.visible = shown;
+          card.position.set(x, y, 0.12 * size + lift);
           card.quaternion.copy(turn);
-          card.scale.setScalar(size);
+          card.scale.setScalar(scale);
         }
         if (outline) {
-          outline.position.set(x, y, 0.12 * size - CARD_THICKNESS * size * 0.6);
+          outline.visible = shown;
+          outline.position.set(
+            x,
+            y,
+            0.12 * size + lift - CARD_THICKNESS * scale * 0.6,
+          );
           outline.quaternion.copy(turn);
-          outline.scale.set(size * OUTLINE, size * OUTLINE, size);
+          outline.scale.set(scale * OUTLINE, scale * OUTLINE, scale);
         }
       }
     });
 
-    // Bands: a friend's five rows, then your two supplementary rows.
-    const bandRows = [
-      ...TIERS.map((_, row) => ({ board: r.friend, row })),
-      ...SUPPLEMENT_ROWS.map((row) => ({ board: r.you, row })),
-    ];
-    bandRows.forEach(({ board, row }, index) => {
-      const band = rows.current[index];
-      if (!band) return;
-      const height = rowHeight(board) * 0.82 * toWorld;
-      band.position.set(
-        worldX(board.left + board.width / 2),
-        worldY(frameTop + rowCenter(board, row)),
-        -0.2 * height,
-      );
-      band.quaternion.copy(turn);
-      band.scale.set(board.width * toWorld, height, height * 0.2);
-    });
-
-    // Threads cross the gutter: from the end of an item's row on your board
-    // to its row on a friend's. Items sharing a row are offset slightly.
-    const offset = (board: typeof r.you, placement: number[], item: number) => {
+    // Threads draw from your board across the gutter to a friend's, one per
+    // item: flat where you agree, crossing where you don't.
+    const offset = (board: Rect, placement: number[], item: number) => {
       const row = placement[item];
       const shared = placement.filter((p) => p === row).length;
       const index = placement.slice(0, item).filter((p) => p === row).length;
@@ -195,6 +261,8 @@ export function RankleScene({
     for (let item = 0; item < items; item++) {
       const thread = threads.current[item];
       if (!thread) continue;
+      const w = stagger(RANKLE_KEYS.threads, item, items, progress);
+      thread.visible = w > 0.001;
       const x0 = worldX(r.you.left + r.you.width);
       const y0 = worldY(
         frameTop + rowCenter(r.you, YOU[item]) + offset(r.you, YOU, item),
@@ -205,10 +273,33 @@ export function RankleScene({
           rowCenter(r.friend, FRIEND[item]) +
           offset(r.friend, FRIEND, item),
       );
-      const length = Math.hypot(x1 - x0, y1 - y0);
-      thread.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0);
-      thread.rotation.set(0, 0, Math.atan2(y1 - y0, x1 - x0));
-      thread.scale.set(length, THREAD_WIDTH * toWorld, THREAD_WIDTH * toWorld);
+      const length = Math.hypot(x1 - x0, y1 - y0) * w;
+      const angle = Math.atan2(y1 - y0, x1 - x0);
+      thread.position.set(
+        x0 + (Math.cos(angle) * length) / 2,
+        y0 + (Math.sin(angle) * length) / 2,
+        0,
+      );
+      thread.rotation.set(0, 0, angle);
+      thread.scale.set(
+        Math.max(length, 1e-4),
+        THREAD_WIDTH * toWorld,
+        THREAD_WIDTH * toWorld,
+      );
+    }
+
+    function placeBand(band: Mesh, board: Rect, row: number, w: number) {
+      band.visible = w > 0.001;
+      const height = rowHeight(board) * 0.82 * toWorld;
+      const width = board.width * toWorld * Math.max(w, 1e-4);
+      // Grows from the board's left edge.
+      band.position.set(
+        worldX(board.left) + width / 2,
+        worldY(frameTop + rowCenter(board, row)),
+        -0.2 * height,
+      );
+      band.quaternion.copy(turn);
+      band.scale.set(width, height, height * 0.2);
     }
   });
 
