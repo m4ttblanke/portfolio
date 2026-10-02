@@ -1211,7 +1211,10 @@ The opening journey (hero → Rankle → Plannr) is one continuous object story.
 - The page fills the stage and then recedes for the full-width calendar.
 - Moving objects may cross the monumental name type during the hero exit. They never cross small copy, links, metadata or navigation.
 
-## Reduced Motion
+## Reduced Motion and Compact Viewports
+
+The same static presentation applies on a compact viewport, `(max-width: 40rem) and (max-height: 30rem)`, where a held 100svh frame cannot fit a scene and its copy (for example 250%+ page zoom). Here the scenes flow at natural height. Width alone never disables motion.
+
 
 - No timelines are created and the canvas never mounts.
 - Runways collapse to one viewport per scene.

@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/motion/gsap";
+import { ANIMATED_PRESENTATION } from "@/lib/motion/presentation";
 import { setScene } from "@/lib/motion/scene-progress";
 import { plannrStep } from "../../scenes/plannr/plannrPose";
 
@@ -28,7 +29,7 @@ export function PlannrMotion() {
     };
 
     const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
+    mm.add(ANIMATED_PRESENTATION, () => {
       const handoff = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {

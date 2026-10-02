@@ -288,3 +288,36 @@
   position: static;
   min-block-size: 100svh;
 }
+
+/*
+ * Compact viewport (narrow AND short; mirrors COMPACT_VIEWPORT in
+ * lib/motion/presentation.ts). Static presentation in normal flow: no hold,
+ * every step at full strength, the title fits the width, and the stage keeps
+ * the static render's proportions.
+ */
+@media (max-width: 40rem) and (max-height: 30rem) {
+  .block {
+    block-size: auto;
+  }
+
+  .frame {
+    position: static;
+    block-size: auto;
+    min-block-size: 0;
+  }
+
+  .title {
+    font-size: calc(20 * var(--cq, 1cqi));
+  }
+
+  .step {
+    color: var(--color-ink);
+  }
+
+  .stage {
+    inline-size: 100%;
+    max-inline-size: 26rem;
+    block-size: auto;
+    aspect-ratio: 0.75;
+  }
+}

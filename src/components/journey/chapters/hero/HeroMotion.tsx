@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/motion/gsap";
+import { ANIMATED_PRESENTATION } from "@/lib/motion/presentation";
 import { setScene } from "@/lib/motion/scene-progress";
 
 /**
@@ -20,7 +21,7 @@ export function HeroMotion() {
     mm.add(
       {
         wide: "(min-width: 40.0625rem)",
-        motion: "(prefers-reduced-motion: no-preference)",
+        motion: ANIMATED_PRESENTATION,
       },
       (context) => {
         const { wide, motion } = context.conditions ?? {};

@@ -112,3 +112,29 @@
     padding-inline-start: 0;
   }
 }
+
+/*
+ * Compact viewport (narrow AND short, e.g. 250%+ page zoom; the query mirrors
+ * COMPACT_VIEWPORT in lib/motion/presentation.ts). Static presentation: the
+ * hero stacks in normal flow — descriptor, relief, name — at width-fitted
+ * size instead of squeezing into one short viewport.
+ */
+@media (max-width: 40rem) and (max-height: 30rem) {
+  .hero {
+    grid-template-rows: auto auto auto;
+    row-gap: var(--space-md);
+  }
+
+  .object {
+    position: relative;
+    inset: auto;
+    grid-row: 2;
+    inline-size: min(60%, 16rem);
+    margin-block: 0;
+    translate: none;
+  }
+
+  .name {
+    font-size: calc(var(--display-size-narrow) * var(--cq, 1cqi));
+  }
+}

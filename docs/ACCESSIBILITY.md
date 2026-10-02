@@ -1042,6 +1042,8 @@ Verified on the production build. Desktop checks used headless Chrome; mobile ch
   - The Rankle and Plannr titles stay clear of their stages and the viewport edge.
   - The MB stage keeps the same proportion and overlap with the name as at 100%.
 
+  **Extreme zoom (250%+).** The CSS viewport becomes narrow and short (Safari 576×339 and 480×282; Chrome 576×325, 480×271, 360×203, and 320×178 from a 1280 window). A held 100svh frame then squeezes each stage to a sliver. The compact-viewport condition, `(max-width: 40rem) and (max-height: 30rem)`, switches to static presentation in normal flow. Verified with real page zoom in Safari 18.6 and Chrome: no overflow, no clipped copy, no image over copy, logical order, both project links reachable by Tab, the navigator and hash links working, and no sticky frames. Safari 100–200% and Chrome 200% keep the animated experience.
+
   **Cause and fix.** WebKit resolves viewport and container units inside `font-size` against the unzoomed viewport, even through rem mixes or typed custom properties. Display type sized in `cqi`/`svh` therefore grew with the zoom and overflowed. `MeasuredUnits` measures those units with a hidden probe (layout properties resolve them correctly) and publishes `--cq` and `--svh` in px. Display type uses `var(--cq, 1cqi)` and `var(--svh, 1svh)`, so without JavaScript it keeps the native units. In Chrome the computed sizes are identical to the native units.
 - Pinch zoom is not disabled.
 

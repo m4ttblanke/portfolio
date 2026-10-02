@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
-import { useReducedMotion } from "@/lib/motion/reduced-motion";
+import { useStaticPresentation } from "@/lib/motion/presentation";
 import styles from "./JourneyCanvas.module.css";
 
 const JourneyScene = dynamic(() => import("./JourneyScene"), { ssr: false });
@@ -77,13 +77,14 @@ class CanvasErrorBoundary extends Component<
 
 /**
  * The single persistent, decorative WebGL layer for the journey. Not mounted
- * under reduced motion (those visitors get the static compositions) or where
+ * under static presentation (reduced motion or a compact viewport: those get
+ * the static compositions) or where
  * WebGL is unavailable — which also skips downloading the 3D runtime.
  */
 export function JourneyCanvas() {
-  const reducedMotion = useReducedMotion();
+  const staticPresentation = useStaticPresentation();
   const webgl = useWebGLSupport();
-  const enabled = webgl && !reducedMotion;
+  const enabled = webgl && !staticPresentation;
   const onReady = useCallback(() => setWebGL("live"), []);
 
   // Checked directly (not via the hook) so the hydration render, which

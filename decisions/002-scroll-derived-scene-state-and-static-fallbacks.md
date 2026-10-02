@@ -37,6 +37,7 @@ P1 needed the hero, Rankle and Plannr to read as one continuous object story: th
   - **`live`** only after the scene's first rendered frame: fallbacks hidden.
   - **`off`** when WebGL is unsupported, the scene throws, or the context is lost: fallbacks visible, the canvas layer hidden for the rest of the visit, and the scroll runways collapse to normal flow.
 - Reduced motion never mounts the canvas or downloads the 3D chunk, and collapses the runways.
+- Amended 2026-10-01: a compact viewport, `(max-width: 40rem) and (max-height: 30rem)` (narrow and short together, e.g. 250%+ page zoom), triggers the same static presentation, defined once in `src/lib/motion/presentation.ts`.
 
 ## Why
 
