@@ -588,6 +588,7 @@ For substantial PRs, include:
 
 Before merging production-bound work, verify:
 
+- formatting
 - lint
 - typecheck
 - production build
@@ -630,7 +631,7 @@ docs/DEPLOYMENT.md
 
 # Architecture Decision Records
 
-Use `decisions/` for major cross-cutting choices.
+Use `decisions/` for major cross-cutting choices, following the format in `decisions/README.md`.
 
 Good ADR topics:
 

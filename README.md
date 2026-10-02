@@ -48,13 +48,16 @@ Confirmed:
 - TypeScript
 - CSS Modules
 
+Installed for the persistent-canvas foundation (still validated through P1):
+
+- Three.js
+- React Three Fiber
+
 Planned for prototype validation:
 
 - GSAP
 - ScrollTrigger
 - Lenis
-- Three.js
-- React Three Fiber
 - Drei
 
 Potential later addition:
@@ -122,7 +125,7 @@ Instead, the site should communicate through:
 
 ## Project Structure
 
-The intended architecture is roughly:
+The intended architecture is roughly as follows. Application paths live under `src/` (for example `src/app/`, `src/components/`, `src/content/`); `docs/` and `decisions/` stay at the repository root.
 
 ```text
 app/
@@ -217,6 +220,10 @@ The documentation is part of the project foundation and should remain current as
 
 - `AGENTS.md` — durable repository-level rules for coding agents
 - `CLAUDE.md` — operating guide for Claude when planning and implementing work
+
+### Decisions
+
+- `decisions/` — lightweight Architecture Decision Records; see `decisions/README.md`
 
 ---
 
@@ -393,17 +400,22 @@ Do not fully build Experience, Education, Off the Clock, or Contact until P1 pro
 
 ## Development Commands
 
-Commands will be finalized once the project is initialized.
+Requirements:
 
-Expected shape:
+- Node.js 24 (see `.nvmrc`)
+- pnpm (version pinned by `packageManager` in `package.json`)
 
 ```bash
-pnpm install
-pnpm dev
-pnpm lint
-pnpm typecheck
-pnpm build
+pnpm install        # install dependencies
+pnpm dev            # local development server
+pnpm lint           # ESLint
+pnpm typecheck      # TypeScript (no emit)
+pnpm format         # Prettier write
+pnpm format:check   # Prettier check
+pnpm build          # production build
 ```
+
+Prettier intentionally ignores `docs/`, `.claude/skills/`, and `pnpm-lock.yaml`.
 
 Testing commands will be added only when the selected test tooling is justified.
 
@@ -466,9 +478,11 @@ CLAUDE.md
 
 ## Current Status
 
-The project is currently in the **documentation and foundation phase**.
+The project is in **P0 — Foundation**.
 
-The codebase should remain intentionally small until the documentation is accepted and the initial technical foundation is created.
+P0 provides a visually neutral semantic journey (six chapters with stable anchors), a chapter source of truth (`src/content/navigation.ts`), a static accessible chapter navigator, a skip link, one decorative persistent R3F canvas with a temporary calibration object, minimal CSS tokens, and the `decisions/` ADR folder.
+
+No creative scenes, final typography, palette, or motion exist yet; those begin in P1.
 
 The previous portfolio is not the implementation baseline for this project.
 

@@ -125,7 +125,7 @@ Avoid rebuilding a conventional multi-page portfolio unless future usage proves 
 
 # Expected Project Structure
 
-A target structure:
+A target structure. Application paths are relative to `src/`; `docs/` and `decisions/` live at the repository root.
 
 ```text
 app/
@@ -1195,10 +1195,10 @@ If no, simplify it.
 
 # Open Architectural Decisions
 
+Settled during P0: Next.js 16 (App Router, `src/` directory) and pnpm.
+
 These should remain unresolved until prototyping:
 
-- exact Next.js version
-- exact package manager choice
 - whether Lenis remains
 - whether Zustand becomes necessary
 - exact global/client component boundary

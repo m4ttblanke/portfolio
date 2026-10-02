@@ -1,0 +1,47 @@
+/* Structural placement only. Final navigator treatment is a P1 decision. */
+
+.nav {
+  padding: var(--space-md) var(--space-lg) 0;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-block-size: 44px;
+  font-size: var(--text-small);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.number {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 48rem) {
+  .nav {
+    position: fixed;
+    inset-block-start: var(--space-md);
+    inset-inline-end: var(--space-lg);
+    z-index: var(--z-nav);
+    padding: 0;
+  }
+
+  .list {
+    flex-direction: column;
+  }
+}
