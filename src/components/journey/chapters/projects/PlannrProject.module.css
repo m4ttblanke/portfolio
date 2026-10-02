@@ -187,10 +187,10 @@
   }
 
   .steps {
-    grid-template-columns: repeat(4, auto);
+    grid-template-columns: repeat(2, max-content);
     justify-content: start;
-    column-gap: var(--space-md);
-    margin-block-start: var(--space-md);
+    column-gap: var(--space-lg);
+    margin-block-start: var(--space-sm);
   }
 
   .step {
