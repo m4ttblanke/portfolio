@@ -9,6 +9,7 @@ import {
   MeshStandardMaterial,
   Object3D,
   Quaternion,
+  Vector3,
   type Group,
   type Mesh,
 } from "three";
@@ -24,6 +25,7 @@ import {
   PLANNR_COLORS,
   PLANNR_KEYS,
   PLANNR_TURN,
+  plannrPivot,
   ROW_LINE,
 } from "./plannrPose";
 
@@ -113,6 +115,7 @@ export function PlannrScene({
         new Euler(PLANNR_TURN.pitch, PLANNR_TURN.yaw, 0),
       ),
       dummy: new Object3D(),
+      pivot: new Vector3(),
     }),
     [],
   );
@@ -127,6 +130,16 @@ export function PlannrScene({
     const worldX = (px: number) => (px - size.width / 2) * toWorld;
     const worldY = (py: number) => (size.height / 2 - py) * toWorld;
     const handoff = scene.handoff;
+    // Everything here lies on one plane, turned rigidly about the stage
+    // center, so small depth offsets between sheet, lines and marks hold.
+    const pv = plannrPivot(p);
+    scratch.pivot.set(worldX(pv.x), worldY(top + pv.y), 0);
+    const onPlane = (out: Vector3, x: number, y: number, z: number) =>
+      out
+        .set(worldX(x), worldY(top + y), z * toWorld)
+        .sub(scratch.pivot)
+        .applyQuaternion(scratch.turn)
+        .add(scratch.pivot);
     const progress = scene.plannr;
 
     g.visible = handoff > 0.001 && top > -p.frameHeight;
@@ -144,7 +157,7 @@ export function PlannrScene({
     ) => {
       if (!mesh) return;
       mesh.visible = width > 0.5 && height > 0.5;
-      mesh.position.set(worldX(x), worldY(top + y), z * toWorld);
+      onPlane(mesh.position, x, y, z);
       mesh.quaternion.copy(scratch.turn);
       mesh.scale.set(
         Math.max(width, 1e-3) * toWorld,
@@ -265,7 +278,7 @@ export function PlannrScene({
       width: number,
       height: number,
     ) {
-      dummy.position.set(worldX(x), worldY(top + y), -9 * toWorld);
+      onPlane(dummy.position, x, y, -9);
       dummy.quaternion.copy(scratch.turn);
       dummy.scale.set(
         Math.max(width, 1e-3) * toWorld,

@@ -19,7 +19,7 @@ export const PLANNR_COLORS = {
 };
 
 /** Turn of the Plannr objects: the scene sits left, turned toward center. */
-export const PLANNR_TURN = { pitch: 0.05, yaw: 0.16 };
+export const PLANNR_TURN = { pitch: 0.05, yaw: 0.1 };
 
 export const LINE_COUNT = 13;
 /** Line lengths as a fraction of the page's inner width (line 0: title). */

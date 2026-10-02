@@ -26,6 +26,7 @@ import {
   PLANNR_COLORS,
   PLANNR_KEYS,
   PLANNR_TURN,
+  plannrPivot,
   reviewSlot,
   ROW_LINE,
 } from "../plannr/plannrPose";
@@ -208,6 +209,8 @@ export function RankleScene({
       turn,
       plannrTurn,
       flipped,
+      pivot: new Vector3(),
+      onPlane: new Vector3(),
       paper: new Color(PLANNR_COLORS.paper),
       navy: new Color(PLANNR_COLORS.navy),
       quat: new Quaternion(),
@@ -226,6 +229,25 @@ export function RankleScene({
     const plannrTop = pl ? frameTop(pl, window.scrollY) : 0;
     const worldX = (px: number) => (px - size.width / 2) * toWorld;
     const worldY = (py: number) => (size.height / 2 - py) * toWorld;
+
+    // Plannr's plane turns rigidly about the stage center; pieces arriving
+    // there are projected onto it in proportion to how far they've traveled.
+    if (pl) {
+      const pv = plannrPivot(pl);
+      fixed.pivot.set(worldX(pv.x), worldY(plannrTop + pv.y), 0);
+    }
+    const project = (out: Vector3, pose: Pose, plane: number) => {
+      out.set(worldX(pose.x), worldY(pose.y), pose.z * toWorld);
+      if (pl && plane > 0) {
+        fixed.onPlane
+          .copy(out)
+          .sub(fixed.pivot)
+          .applyQuaternion(fixed.plannrTurn)
+          .add(fixed.pivot);
+        out.lerp(fixed.onPlane, plane);
+      }
+      return out;
+    };
 
     const handoff = pl ? scene.handoff : 0;
     const plannrVisible = !!pl && plannrTop > -pl.frameHeight;
@@ -270,7 +292,7 @@ export function RankleScene({
         pose = mix(from, to, h);
       }
       fixed.quat.slerpQuaternions(fixed.turn, fixed.plannrTurn, h);
-      placeBox(band, pose, fixed.quat, 0.3);
+      placeBox(band, pose, fixed.quat, 0.3, h);
     });
 
     // A friend's rows: extend in, top to bottom; retract on the hand-off.
@@ -281,7 +303,7 @@ export function RankleScene({
         stagger(RANKLE_KEYS.friendRows, row, TIERS.length, progress),
         retract(TIERS.length - 1 - row, TIERS.length),
       );
-      placeBox(band, bandPose(r.friend, row, w, top), fixed.turn, 0.2);
+      placeBox(band, bandPose(r.friend, row, w, top), fixed.turn, 0.2, 0);
     });
 
     // Cards. A friend's arrive from the right and leave the same way. Yours
@@ -316,6 +338,7 @@ export function RankleScene({
         let pose = rankle;
         let flip = 0;
         let accepted = 0;
+        let plane = 0;
         if (b === 0 && pl && handoff > 0) {
           // Turn over to the paper side, then travel to the date's line.
           flip = MathUtils.smootherstep(
@@ -330,6 +353,7 @@ export function RankleScene({
           );
           const plannrPose = workflowPose(pl, plannrTop, item, plannr);
           accepted = plannrPose.accepted;
+          plane = travel;
           pose = mix(rankle, plannrPose.pose, travel);
           if (travel > 0) {
             // Lifted out of the board, set onto the page.
@@ -341,7 +365,7 @@ export function RankleScene({
         card.visible = shown;
         outline.visible = shown;
         fixed.quat.slerpQuaternions(fixed.turn, fixed.flipped, flip);
-        card.position.set(worldX(pose.x), worldY(pose.y), pose.z * toWorld);
+        project(card.position, pose, plane);
         card.quaternion.copy(fixed.quat);
         card.scale.set(
           pose.width * toWorld,
@@ -435,9 +459,10 @@ export function RankleScene({
       pose: Pose,
       rotation: Quaternion,
       depth: number,
+      plane: number,
     ) {
       mesh.visible = pose.width > 0.5;
-      mesh.position.set(worldX(pose.x), worldY(pose.y), pose.z * toWorld);
+      project(mesh.position, pose, plane);
       mesh.quaternion.copy(rotation);
       mesh.scale.set(
         pose.width * toWorld,

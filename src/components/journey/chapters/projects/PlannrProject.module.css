@@ -30,6 +30,8 @@
   grid-template-areas: "page review calendar";
   column-gap: clamp(1rem, 2.5cqi, 2.5rem);
   block-size: min(70%, 34rem);
+  /* Inset so the turned page stays inside the margin. */
+  padding-inline-start: clamp(0.5rem, 2.5cqi, 2.5rem);
 }
 
 .zone[data-plannr-zone="page"] {

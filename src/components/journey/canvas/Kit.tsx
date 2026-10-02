@@ -38,6 +38,7 @@ import {
   HANDOFF_KEYS,
   line,
   PLANNR_TURN,
+  plannrPivot,
   ROW_LINE,
 } from "../scenes/plannr/plannrPose";
 
@@ -216,6 +217,7 @@ export function Kit({
       new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), angle);
     return {
       turn,
+      plannrTurn,
       dissolveGroup: dissolve,
       dissolve: dissolve.clone().multiply(turn),
       perPlate: plates.map((plate, i) => {
@@ -475,11 +477,18 @@ export function Kit({
           const plannrTop = heldFrameTop(pl, window.scrollY);
           const across = (l.height / extent.height) * toWorld;
           const along = (l.width / extent.width) * toWorld;
-          scratch.rowPosition.set(
-            worldX(l.left + l.width / 2),
-            worldY(plannrTop + l.y),
-            -4 * toWorld,
-          );
+          // On the Plannr plane, turned rigidly about the stage's center.
+          const pivot = plannrPivot(pl);
+          scratch.local.set(worldX(pivot.x), worldY(plannrTop + pivot.y), 0);
+          scratch.rowPosition
+            .set(
+              worldX(l.left + l.width / 2),
+              worldY(plannrTop + l.y),
+              -4 * toWorld,
+            )
+            .sub(scratch.local)
+            .applyQuaternion(fixed.plannrTurn)
+            .add(scratch.local);
           scratch.rowScale.set(across, along, across * 0.5);
           scratch.position.lerp(scratch.rowPosition, h);
           scratch.rotation.slerp(per.line, h);
