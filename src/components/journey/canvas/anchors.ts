@@ -20,7 +20,8 @@ export type Anchors = {
   /** Hero stage, document coordinates (px). */
   hero: { x: number; bottom: number; width: number };
   rankle: (Held & { stage: Rect; you: Rect; friend: Rect }) | null;
-  plannr: (Held & { page: Rect; review: Rect; calendar: Rect }) | null;
+  plannr:
+    (Held & { page: Rect; pageEnd: Rect; review: Rect; calendar: Rect }) | null;
 };
 
 /** Viewport top of a scene's sticky frame at a given scroll position. */
@@ -85,10 +86,11 @@ export function useAnchors() {
       const pm = plannrBlock && measureHeld(plannrBlock);
       if (pm) {
         const page = pm.rect('[data-plannr-zone="page"]');
+        const pageEnd = pm.rect('[data-plannr-zone="page-end"]');
         const review = pm.rect('[data-plannr-zone="review"]');
         const calendar = pm.rect('[data-plannr-zone="calendar"]');
-        if (page && review && calendar) {
-          plannr = { ...pm.held, page, review, calendar };
+        if (page && pageEnd && review && calendar) {
+          plannr = { ...pm.held, page, pageEnd, review, calendar };
         }
       }
 

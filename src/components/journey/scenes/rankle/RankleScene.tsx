@@ -312,7 +312,7 @@ export function RankleScene({
           hFrom + row * 0.03,
           hTo - (4 - row) * 0.03,
         );
-        const l = line(pageAt(pl.page, plannr), ROW_LINE[row]);
+        const l = line(pageAt(pl, plannr), ROW_LINE[row]);
         const to: Pose = {
           x: l.left + l.width / 2,
           y: plannrTop + l.y,
@@ -567,7 +567,7 @@ function workflowPose(
   progress: number,
 ) {
   const count = APPROVED.length;
-  const page = pageAt(pl.page, progress);
+  const page = pageAt(pl, progress);
   const chip = chipOnLine(page, item);
   const onLine: Pose = {
     x: chip.x,

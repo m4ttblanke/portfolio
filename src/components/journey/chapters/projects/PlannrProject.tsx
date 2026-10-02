@@ -17,6 +17,7 @@ export function PlannrProject() {
           data-scene-anchor="plannr"
         >
           <div className={styles.zone} data-plannr-zone="page" />
+          <div className={styles.zone} data-plannr-zone="page-end" />
           <div className={styles.zone} data-plannr-zone="review" />
           <div className={styles.zone} data-plannr-zone="calendar" />
         </div>

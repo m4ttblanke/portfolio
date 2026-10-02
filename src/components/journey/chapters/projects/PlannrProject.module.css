@@ -39,6 +39,14 @@
   grid-area: page;
 }
 
+/* Where the page recedes to as the calendar arrives. */
+.zone[data-plannr-zone="page-end"] {
+  grid-area: page;
+  align-self: start;
+  inline-size: 72%;
+  block-size: 72%;
+}
+
 .zone[data-plannr-zone="review"] {
   grid-area: review;
 }
@@ -225,11 +233,20 @@
     grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
     grid-template-areas:
       "page review"
-      "calendar calendar";
+      "page review";
     row-gap: var(--space-md);
     align-self: stretch;
     block-size: auto;
     margin-block: var(--space-lg) 0;
+  }
+
+  /* The page starts tall across both rows, then recedes into the top row. */
+  .zone[data-plannr-zone="page-end"] {
+    grid-area: auto;
+    grid-column: 1;
+    grid-row: 1;
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   .zone[data-plannr-zone="calendar"] {

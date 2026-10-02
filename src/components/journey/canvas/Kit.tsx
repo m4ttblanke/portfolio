@@ -481,7 +481,7 @@ export function Kit({
           to - (4 - row) * 0.03,
         );
         if (h > 0) {
-          const l = line(pageAt(pl.page, scene.plannr), ROW_LINE[row]);
+          const l = line(pageAt(pl, scene.plannr), ROW_LINE[row]);
           const extent = laidExtents[i];
           const plannrTop = heldFrameTop(pl, window.scrollY);
           const across = (l.height / extent.height) * toWorld;

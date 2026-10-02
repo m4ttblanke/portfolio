@@ -169,7 +169,7 @@ export function PlannrScene({
 
     // The page unrolls downward beneath Rankle's arriving rows.
     const pageGrow = easeOut(smooth(...HANDOFF_KEYS.page, handoff));
-    const pageRect = pageAt(p.page, progress);
+    const pageRect = pageAt(p, progress);
     const pageHeight = pageRect.height * pageGrow;
     const pageY = pageRect.top + pageHeight / 2;
     const pageX = pageRect.left + pageRect.width / 2;

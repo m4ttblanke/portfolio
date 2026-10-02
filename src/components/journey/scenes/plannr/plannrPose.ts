@@ -60,24 +60,24 @@ export const PLANNR_KEYS = {
   settle: [0.6, 0.82],
 } as const;
 
-/** The page recedes as the calendar arrives, so the calendar dominates. */
-const PAGE_RECEDE = 0.72;
-
 /**
- * The syllabus page's rect at a given workflow progress: full size, then
- * shrinking toward its top-left corner during the calendar stage. Lines,
- * chips and highlights all derive from it, so they recede together.
+ * The syllabus page's rect at a given workflow progress: its full zone, then
+ * receding into its end zone (CSS-owned, per breakpoint) during the calendar
+ * stage so the calendar leads. Lines, chips and highlights derive from it.
  */
-export function pageAt(page: Rect, progress: number): Rect {
+export function pageAt(
+  pl: { page: Rect; pageEnd: Rect },
+  progress: number,
+): Rect {
   const [from, to] = PLANNR_KEYS.calendar;
   const t = Math.min(Math.max((progress - from) / (to - from), 0), 1);
-  const eased = t * t * (3 - 2 * t);
-  const scale = 1 - (1 - PAGE_RECEDE) * eased;
+  const e = t * t * (3 - 2 * t);
+  const lerp = (a: number, b: number) => a + (b - a) * e;
   return {
-    left: page.left,
-    top: page.top,
-    width: page.width * scale,
-    height: page.height * scale,
+    left: lerp(pl.page.left, pl.pageEnd.left),
+    top: lerp(pl.page.top, pl.pageEnd.top),
+    width: lerp(pl.page.width, pl.pageEnd.width),
+    height: lerp(pl.page.height, pl.pageEnd.height),
   };
 }
 
