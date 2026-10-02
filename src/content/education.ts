@@ -16,7 +16,10 @@ export type EducationLine = {
   readonly id: string;
   readonly title: string;
   readonly credentials: readonly Credential[];
+  /** Visible areas: thematic, a few per line. */
   readonly areas: readonly string[];
+  /** Representative courses behind the areas; not necessarily rendered. */
+  readonly courses?: readonly string[];
   /** One compressed academic annotation, where the evidence supports it. */
   readonly note?: string;
 };
@@ -38,11 +41,17 @@ export const education = [
       },
     ],
     areas: [
+      "Algorithms & theory",
+      "Computer networks",
+      "Machine learning & computer vision",
+      "Software engineering",
+    ],
+    courses: [
+      "Optimization foundations",
+      "Automata and formal languages",
       "Computer networks",
       "Machine learning",
       "Computer vision",
-      "Randomized algorithms",
-      "Automata and formal languages",
       "Advanced applications programming",
     ],
   },
@@ -61,9 +70,9 @@ export const education = [
         date: { iso: "2025-05", label: "May 2025" },
       },
     ],
-    areas: [
-      "Linear algebra and discrete mathematics, West Valley College, 2024–25",
-    ],
+    areas: ["Linear algebra", "Discrete mathematics"],
+    // Linear algebra and discrete mathematics were taken at West Valley
+    // College, 2024–25.
     note: "Honors modeling: charged particles in crossed electric and magnetic fields; wave–particle duality, modeled and tested with a laser and double slit.",
   },
   {

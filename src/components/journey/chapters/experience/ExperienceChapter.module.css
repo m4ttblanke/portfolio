@@ -1,47 +1,265 @@
-/* Gate 0: provisional skeleton styling; the composition arrives in Gate 1. */
+/*
+ * Experience: one shared time field (January 2022 → present). Each entry
+ * hangs from its duration rule; the rules step down in a tight band under the
+ * year scale, so the long ongoing rule visibly runs over the shorter ones. Names share one display size: duration is encoded only by the rules.
+ *
+ * Below the field breakpoint (60rem, where hanging columns would get too
+ * narrow) each entry carries its own full-width gauge on the same scale.
+ */
+
 .chapter {
+  --column: 21%;
+  --step: clamp(2.25rem, 1.25rem + 2.5vh, 3.75rem);
+  --year-size: calc(3.3 * var(--cq, 1cqi));
+  --head: calc(var(--year-size) + var(--space-lg));
+
   position: relative;
   z-index: var(--z-content);
-  padding: var(--space-lg) var(--margin) calc(2 * var(--space-lg));
+  padding-block: calc(2 * var(--space-lg)) calc(3 * var(--space-lg));
+  padding-inline: var(--margin);
+  /* The ongoing rule runs to the viewport edge, never past it. */
+  overflow-x: clip;
 }
 
+.field {
+  position: relative;
+  margin-block-start: var(--space-lg);
+}
+
+/*
+ * The scale: year hairlines from the numerals down to the first (longest)
+ * rule. They never cross the hanging text.
+ */
+.scale {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: var(--head);
+  pointer-events: none;
+}
+
+.year {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--at) * 100%);
+  padding-inline-start: 0.5rem;
+  border-inline-start: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-family: var(--font-display);
+  font-size: var(--year-size);
+  font-stretch: var(--display-stretch);
+  font-variant-numeric: tabular-nums;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 0.8;
+}
+
+.present {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  padding-inline-end: 0.5rem;
+  border-inline-end: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* All entries share one grid cell, each stepped down by its index. */
 .entries {
   display: grid;
-  gap: calc(2 * var(--space-lg));
-  max-inline-size: 40rem;
-  margin-block-start: calc(2 * var(--space-lg));
-  padding: 0;
+  margin: 0;
+  padding: var(--head) 0 0;
   list-style: none;
 }
 
 .entry {
-  display: grid;
-  gap: var(--space-xs);
+  grid-area: 1 / 1;
+  padding-block-start: calc(var(--index) * var(--step));
+  /* Entries overlap as boxes; only their text columns take input. */
+  pointer-events: none;
+}
+
+.rule {
+  position: relative;
+  block-size: 2px;
+}
+
+.span {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(var(--start) * 100%);
+  inline-size: calc((var(--end) - var(--start)) * 100%);
+  background: var(--color-ink);
+  transform-origin: left center;
+}
+
+/* Ongoing: the rule runs through "present" and off the edge. */
+.span[data-ongoing] {
+  inline-size: calc((1 - var(--start)) * 100% + var(--margin));
+}
+
+.tick,
+.gaugeStart,
+.gaugeEnd {
+  display: none;
+}
+
+/* The entry's text hangs from the start of its rule. */
+.text {
+  inline-size: var(--column);
+  margin-inline-start: min(
+    calc(var(--start) * 100%),
+    calc(100% - var(--column))
+  );
+  padding-block-start: var(--space-md);
+  pointer-events: auto;
 }
 
 .organization {
-  font-size: var(--text-h2);
+  font-family: var(--font-display);
+  font-size: calc(3.3 * var(--cq, 1cqi));
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.92;
+  text-transform: uppercase;
 }
 
-.meta {
-  color: var(--color-muted);
+.place {
+  display: block;
+  margin-block-start: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-stretch: 100%;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+}
+
+.kind,
+.dates {
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+.kind {
+  margin-block-start: var(--space-lg);
+  color: var(--color-muted);
+}
+
 .role {
+  margin-block-start: var(--space-xs);
   font-weight: 600;
+  line-height: 1.35;
+}
+
+.dates {
+  margin-block-start: var(--space-xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .signal {
-  max-inline-size: 48ch;
+  margin-block-start: var(--space-md);
+  line-height: 1.45;
 }
 
 .link {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
   min-block-size: 2.75rem;
+  text-decoration-thickness: 1px;
   text-underline-offset: 0.3em;
+}
+
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/*
+ * Narrow (and 200% zoom on laptops): entries stack, each with a full-width
+ * 2022 → present gauge. Every gauge uses the same scale, so overlaps still
+ * read down the column.
+ */
+@media (max-width: 60rem) {
+  .scale {
+    display: none;
+  }
+
+  .entries {
+    gap: calc(2.5 * var(--space-lg));
+    padding-block-start: 0;
+  }
+
+  .entry {
+    grid-area: auto;
+    padding-block-start: 0;
+  }
+
+  .rule {
+    block-size: 3px;
+  }
+
+  /* The track: the whole field, behind the span. */
+  .rule::before {
+    position: absolute;
+    inset-block-start: 1px;
+    inset-inline: 0;
+    block-size: 1px;
+    background: var(--color-rule);
+    content: "";
+  }
+
+  .tick {
+    position: absolute;
+    display: block;
+    inset-block-start: -0.25rem;
+    inset-inline-start: calc(var(--at) * 100%);
+    inline-size: 1px;
+    block-size: calc(0.5rem + 3px);
+    background: var(--color-rule);
+  }
+
+  .span[data-ongoing] {
+    inline-size: calc((1 - var(--start)) * 100%);
+  }
+
+  .gaugeStart,
+  .gaugeEnd {
+    position: absolute;
+    display: block;
+    inset-block-start: calc(100% + 0.5rem);
+    color: var(--color-muted);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .gaugeStart {
+    inset-inline-start: 0;
+  }
+
+  .gaugeEnd {
+    inset-inline-end: 0;
+  }
+
+  .text {
+    inline-size: auto;
+    max-inline-size: 34rem;
+    margin-inline-start: 0;
+    padding-block-start: calc(var(--space-lg) + 1.5rem);
+  }
+
+  .organization {
+    font-size: min(calc(9 * var(--cq, 1cqi)), 3rem);
+  }
+
+  .kind {
+    margin-block-start: var(--space-md);
+  }
 }

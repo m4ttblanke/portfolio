@@ -1,8 +1,7 @@
 /*
- * Off the Clock content. Three subjects approved for the first composition.
- * Only "former pitcher" is an approved fact; the others stay empty until
- * Matthew supplies and approves them. Images (photographs of Matthew's own
- * objects) arrive at Gate 4.
+ * Off the Clock content. Three subjects and their facts, approved by Matthew
+ * as provisional. Gate 4 sets the caption treatment and adds photographs of
+ * Matthew's own objects.
  */
 
 export type PersonalObject = {
@@ -14,6 +13,6 @@ export type PersonalObject = {
 
 export const personal = [
   { id: "baseball", label: "Baseball", fact: "Former pitcher" },
-  { id: "vinyl", label: "Vinyl" },
-  { id: "games", label: "Games" },
+  { id: "vinyl", label: "Vinyl", fact: "100+ records" },
+  { id: "games", label: "Games", fact: "Elden Ring ×3" },
 ] as const satisfies readonly PersonalObject[];
