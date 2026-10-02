@@ -1,18 +1,30 @@
 /*
- * Gate 0: provisional skeleton styling; the bookend arrives in Gate 3.
- * Contact is the last chapter: at least one viewport tall so its section
- * reaches the navigator's midline band when the page is scrolled to the end.
+ * Contact: the hero's grammar, settled. Links sit where the hero's descriptor
+ * does; the closing line is anchored to the bottom at the hero name's scale,
+ * its indent mirrored (the first line steps in, not the second). The MB stands
+ * at the end of the first line, at cap height, like a final glyph.
+ *
+ * At least one viewport tall so the section holds the navigator's midline
+ * band when the page is scrolled to the end.
  */
+
 .chapter {
+  --step: calc((100% - 11 * var(--gutter)) / 12 * 3 + 3 * var(--gutter));
+
   position: relative;
   z-index: var(--z-content);
+  display: grid;
+  grid-template-rows: auto minmax(var(--space-lg), 1fr) auto auto;
   min-block-size: 100svh;
-  padding: var(--space-lg) var(--margin);
+  padding-block: max(1.125rem, env(safe-area-inset-top))
+    clamp(1.5rem, 1rem + 3vh, 3.5rem);
+  padding-inline: var(--margin);
+  container-type: inline-size;
 }
 
 .links {
   display: grid;
-  margin-block-start: calc(2 * var(--space-lg));
+  margin-block-start: var(--space-lg);
   padding: 0;
   list-style: none;
 }
@@ -20,16 +32,136 @@
 .link {
   display: inline-flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   column-gap: var(--space-md);
   min-block-size: 2.75rem;
-  text-underline-offset: 0.3em;
+  padding-block: 0.375rem;
+  text-decoration: none;
 }
 
 .name {
-  min-inline-size: 6rem;
+  min-inline-size: 6.5rem;
   font-size: var(--text-meta);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.value {
+  font-size: 1.25rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.link:hover .value {
+  text-decoration-thickness: 2px;
+}
+
+/* The closing line: monumental, bottom-anchored, and the email link. */
+.closing {
+  grid-row: 3;
+  font-family: var(--font-display);
+  /* As the hero name: fit the width, never push the last line below the
+     fold. --cq/--svh: zoom-safe measured units (see MeasuredUnits). */
+  font-size: min(
+    calc(var(--display-size) * var(--cq, 1cqi)),
+    calc(30 * var(--svh, 1svh))
+  );
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.84;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.closingLink {
+  display: block;
+  text-decoration: none;
+}
+
+.line {
+  display: block;
+  /* Optical left alignment, as the hero name. */
+  margin-inline-start: -0.04em;
+}
+
+/* The first line steps in and carries the MB at its far end. */
+.line:first-child {
+  display: flex;
+  align-items: baseline;
+  padding-inline-start: var(--step);
+}
+
+/*
+ * The link reads as one: the last line carries a heavy rule, the last of the
+ * site's rules.
+ */
+.line + .line {
+  text-decoration: underline;
+  text-decoration-thickness: 0.03em;
+  text-underline-offset: 0.08em;
+}
+
+.closingLink:hover .line + .line {
+  text-decoration-thickness: 0.05em;
+}
+
+.closingLink:focus-visible {
+  outline-offset: 0.12em;
+}
+
+/* The MB at cap height, standing on the first line's baseline. */
+.mb {
+  display: block;
+  margin-inline-start: auto;
+}
+
+.mb img {
+  inline-size: auto;
+  block-size: 0.72em;
+}
+
+.colophon {
+  grid-row: 4;
+  margin-block-start: var(--space-lg);
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+}
+
+/* Mobile: stacked, flush left, the MB a small signature on the first line. */
+@media (max-width: 40rem) {
+  .closing {
+    font-size: min(
+      calc(var(--display-size-narrow) * var(--cq, 1cqi)),
+      calc(24 * var(--svh, 1svh))
+    );
+  }
+
+  .line:first-child {
+    padding-inline-start: 0;
+  }
+
+  /* Label over value, so the long email never wraps differently. */
+  .link {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .name {
+    min-inline-size: 0;
+  }
+}
+
+/*
+ * Compact viewport (narrow AND short; see lib/motion/presentation.ts): normal
+ * document height, and the closing line fits the width only.
+ */
+:root[data-presentation="compact"] .chapter {
+  min-block-size: auto;
+}
+
+:root[data-presentation="compact"] .closing {
+  font-size: calc(var(--display-size-narrow) * var(--cq, 1cqi));
 }

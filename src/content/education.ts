@@ -22,8 +22,11 @@ export type EducationLine = {
   readonly areas: readonly string[];
   /** Representative courses behind the areas; not necessarily rendered. */
   readonly courses?: readonly string[];
-  /** One compressed academic annotation, where the evidence supports it. */
-  readonly note?: string;
+  /** One compressed margin annotation, where the evidence supports it. */
+  readonly honors?: {
+    readonly label: string;
+    readonly items: readonly string[];
+  };
 };
 
 export const education = [
@@ -80,7 +83,10 @@ export const education = [
     // Cabrillo honors projects: a charged particle in crossed E and B fields
     // (Fall 2024); wave–particle duality, a Python interference model checked
     // against a laser and double slit (Spring 2025).
-    note: "Honors projects: crossed electric and magnetic field modeling; wave–particle duality, modeled and tested.",
+    honors: {
+      label: "Honors modeling",
+      items: ["Crossed E and B fields", "Wave–particle duality"],
+    },
   },
   {
     id: "technology-management",

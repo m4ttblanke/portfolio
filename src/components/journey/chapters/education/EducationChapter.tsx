@@ -9,8 +9,8 @@ import styles from "./EducationChapter.module.css";
 /**
  * 04 — Education. Four academic areas set as three monumental lines that
  * form one block; each line's Archivo width is tuned so the three share a
- * measure. Credentials sit in a ruled margin beside their line, and the areas
- * (plus the honors note) are glossed in the gap beneath it. Static: no motion.
+ * measure. Credentials (and the honors note) sit in a ruled margin beside
+ * their line; the areas are glossed in the gap beneath it. Static: no motion.
  */
 export function EducationChapter() {
   return (
@@ -41,6 +41,16 @@ export function EducationChapter() {
                   </span>
                 </p>
               ))}
+              {"honors" in line && (
+                <p className={styles.honors}>
+                  <span className={styles.honorsLabel}>
+                    {line.honors.label}{" "}
+                  </span>
+                  {line.honors.items.map((item) => (
+                    <span key={item}>{item} </span>
+                  ))}
+                </p>
+              )}
             </div>
             <div className={styles.gloss}>
               <ul className={styles.areas}>
@@ -48,7 +58,6 @@ export function EducationChapter() {
                   <li key={area}>{area}</li>
                 ))}
               </ul>
-              {"note" in line && <p className={styles.note}>{line.note}</p>}
             </div>
           </div>
         ))}
