@@ -973,11 +973,40 @@ RÉSUMÉ
 
 ---
 
+# Content Established in P1
+
+Live copy is in `src/content/` (`profile.ts`, `projects.ts`, `navigation.ts`).
+
+**Hero**
+
+- MATTHEW BLANKE
+- Descriptor: "Computer Science / Software / Product"
+
+**Rankle**
+
+- "A daily ranking game built for arguments with friends."
+- Next.js / Supabase
+- rankle.io
+
+**Plannr**
+
+- "Drop in a syllabus. Review the dates. Get back a calendar."
+- Steps: Syllabus, Dates, Review, Calendar
+- SwiftUI / FastAPI
+- Free TestFlight beta
+- tryplannr.app
+- Provenance, kept subordinate: "Began as a UCSB team project."
+
+**Sources and limits**
+
+- The Plannr facts are verified against the Plannr repository and tryplannr.app. The scene's review step shows one declined date because accepting, declining and editing are verified product behaviour.
+- No metrics, roles or dates are shown for either project.
+- Each scene stays well under the 40–60 word budget.
+
 # Open Content Questions
 
 These should be resolved later, not prematurely.
 
-- exact hero descriptor
 - whether location appears in hero
 - whether GPA appears anywhere outside résumé
 - exact experience chronology shown publicly

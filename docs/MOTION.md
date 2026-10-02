@@ -987,11 +987,9 @@ DOM animation and 3D animation should be coordinated through shared scene progre
 
 # Lenis Responsibility
 
-Lenis may be used for scroll feel.
+Not adopted in P1 (`decisions/001-gsap-scrolltrigger-native-scroll.md`): scrolling is native, and each timeline smooths its own values with `scrub: 0.6`.
 
-Its use is provisional.
-
-It must not:
+Any future smooth-scroll layer must not:
 
 - break anchor navigation
 - interfere with keyboard scroll
@@ -1000,7 +998,7 @@ It must not:
 - fight ScrollTrigger
 - behave poorly on touch
 
-If Lenis does not materially improve the experience, remove it.
+A smooth-scroll layer is only justified if it materially improves the experience.
 
 ---
 
@@ -1185,23 +1183,61 @@ Does it belong to the portfolio's motion language?
 
 ---
 
+# Motion Established in P1
+
+The opening journey (hero → Rankle → Plannr) is one continuous object story. The same machined plates are rearranged scene by scene; nothing fades in from nowhere.
+
+## System
+
+- Each chapter owns its timelines in a client `*Motion` component (`HeroMotion`, `RankleMotion`, `PlannrMotion`), created inside `gsap.matchMedia("(prefers-reduced-motion: no-preference)")`.
+- Timelines are linear (`ease: "none"`) and scrubbed with `scrub: 0.6`. They write normalized progress into the shared `scene` object, and the canvas derives every pose from it, so reversing, fast flings and direct hash loads all land on the same frame.
+- Eased tweens are used only for DOM type reveals inside those timelines (`power2.in` for the name parting, `power3.out` for title rises).
+- Holds are CSS sticky frames inside tall runway blocks. There is no ScrollTrigger pinning, snapping or scroll hijacking.
+- Rendering is on demand. Nothing animates while the page is idle.
+
+## Choreography
+
+| Moment | Runway | What changes |
+|---|---|---|
+| Hero | not pinned (one viewport) | The MB plates form an anamorphic, slightly turned relief that overlaps the name. On fine pointers they tilt up to 5°/3.5°, damped, fading out over the first quarter of the exit. |
+| Hero → Rankle | first viewport of scroll | The name lines part like curtains, cropping off opposite edges. The plates turn over and travel into the Rankle stage; the long plates become your board's tier rows. |
+| Rankle | 300svh desktop / 240svh mobile | The title rises out of a mask. While the frame is held, items settle into your tiers, the friend's board fills, and comparison lines connect the matching items, ending in the comparison hold. |
+| Rankle → Plannr | Plannr frame rising (one viewport) | Item cards retract and flip to become date chips. Tier rows flatten into syllabus lines on a paper page. |
+| Plannr | 300svh desktop / 280svh mobile | Dates are highlighted, lift into a review queue and receive verdicts (one declined date stays on the page). The approved dates land in a landscape calendar while the page recedes. The DOM step list (Syllabus, Dates, Review, Calendar) tracks the current stage. |
+
+## Mobile
+
+- Mobile is its own composition, set by CSS stage zones: the Rankle boards sit under the copy, and the Plannr stage sits above its copy.
+- The page fills the stage and then recedes for the full-width calendar.
+- Moving objects may cross the monumental name type during the hero exit. They never cross small copy, links, metadata or navigation.
+
+## Reduced Motion
+
+- No timelines are created and the canvas never mounts.
+- Runways collapse to one viewport per scene.
+- Each scene shows its captured static composition: the canonical MB, the Rankle comparison hold, and the Plannr syllabus plus calendar.
+- All four Plannr steps are shown at full ink, so no meaning depends on motion.
+- Chapter links jump instantly.
+
 # Open Motion Decisions
 
-These should remain unresolved until P1 testing:
+Settled in P1:
 
-- exact easing curves
-- exact scroll smoothing
-- whether Lenis stays
-- whether the hero is pinned
-- exact Name → Projects choreography
-- exact Rankle interaction
-- exact Rankle → Plannr transition
-- exact Plannr pin duration
+- easing and smoothing (as above)
+- Lenis: not adopted
+- the hero is not pinned
+- the Name → Projects choreography
+- the Rankle hold
+- the Rankle → Plannr transition
+- the Plannr runway
+
+Still open:
+
 - whether magnetic links are used
-- whether pointer response appears outside hero/projects
+- whether pointer response appears outside the hero
 - whether custom shaders are needed
-- exact low-power fallback threshold
-- exact motion timing tokens
+- exact low-power fallback threshold (P1: full WebGL or static only)
+- motion timing tokens for later chapters
 
 These should be learned through prototype quality and performance testing.
 

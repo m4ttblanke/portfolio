@@ -51,18 +51,19 @@ Confirmed foundation:
 - **React**
 - **TypeScript**
 
-Planned visual stack, pending prototype validation:
+Visual stack, validated in P1:
 
-- **GSAP**
-- **ScrollTrigger**
-- **Lenis**
-- **Three.js**
-- **React Three Fiber**
-- **Drei**
+- **GSAP** + **ScrollTrigger**, on native scrolling (`decisions/001`)
+- **Three.js** + **React Three Fiber**, one persistent canvas (`decisions/002`)
+
+Evaluated and not adopted in P1:
+
+- **Lenis**: native scroll with per-timeline `scrub` was enough (`decisions/001`)
+- **Drei**: nothing in P1 needed it; geometry is procedural and lighting is generated with three's own `RoomEnvironment`
 
 Potential state tool:
 
-- **Zustand**, only if prototype complexity proves React state is insufficient
+- **Zustand**, only if future complexity proves the shared scene object insufficient (P1 did not need it, see `decisions/002`)
 
 Styling:
 
@@ -231,6 +232,32 @@ decisions/
 This is a direction, not an immutable structure.
 
 Do not create folders before they are needed.
+
+## Structure Established in P1
+
+What actually exists after P1 (under `src/`):
+
+```text
+app/                      layout (Archivo, boot script), page (journey order)
+content/                  navigation.ts, profile.ts, projects.ts
+components/journey/
+  navigation/             ChapterNavigator (client)
+  chapters/hero/          HeroChapter (server) + HeroMotion (client timeline)
+  chapters/projects/      ProjectsChapter, RankleProject, PlannrProject (server)
+                          RankleMotion, PlannrMotion (client timelines)
+  canvas/                 JourneyCanvas (client gate, error boundary, data-webgl)
+                          JourneyScene (lazy: the only three/R3F import)
+                          Kit (shared plates), anchors (DOM stage measurement)
+  scenes/hero|rankle|plannr/
+                          *Pose.ts (pure pose constants/functions)
+                          RankleScene, PlannrScene (scene-only objects)
+  fallback/               SceneFallback (<picture> static render per scene)
+lib/motion/               gsap.ts, scene-progress.ts, reduced-motion.ts
+lib/assets/               fallbacks.ts (static render registry)
+public/fallbacks/         six WebP scene renders
+```
+
+Chapters render on the server; only the navigator, the per-chapter `*Motion` timelines and the canvas are client components.
 
 ---
 
@@ -468,9 +495,9 @@ Do not depend on magic hard-coded page pixel values.
 
 # Lenis Architecture
 
-Lenis is provisional.
+Not adopted in P1 (`decisions/001`). Scrolling is native; timelines smooth their own values with `scrub`.
 
-If used:
+If a future scene proves it needs a smooth-scroll layer, that is a new decision. It would then have to:
 
 - create one instance
 - integrate cleanly with GSAP/ScrollTrigger
@@ -480,8 +507,6 @@ If used:
 - test touch carefully
 
 Do not create multiple scroll containers.
-
-If Lenis adds little value, remove it.
 
 ---
 
@@ -507,6 +532,8 @@ Zustand becomes justified only if:
 - state remains conceptually simple but globally consumed
 
 Do not use a global store merely because the reference repo uses one.
+
+P1 outcome: React state covers the navigator; scene progress and the pointer live in one mutable object (`lib/motion/scene-progress.ts`) that timelines write and the canvas reads per frame. No store library (`decisions/002`).
 
 ---
 
@@ -653,6 +680,20 @@ DOM-only composition
 ```
 
 The site should not fail visually because one model cannot load.
+
+## P1 Implementation
+
+P1 uses two tiers: full WebGL, and a static render.
+
+- Each scene stage contains `SceneFallback`: a `<picture>` of the live scene captured at its canonical pose. It has desktop and mobile crops (switching at 40rem) and is positioned by measured insets so it registers with the stage.
+- `JourneyCanvas` mounts the scene only when WebGL is available and reduced motion is off. It wraps the scene in an error boundary and records state on `<html data-webgl>`:
+  - absent: pending, or reduced motion. Fallbacks show.
+  - `live`: set by the scene's first rendered frame. Fallbacks hide.
+  - `off`: WebGL unsupported, a scene error, or context loss. Fallbacks show, the canvas layer is hidden for the rest of the visit, and the sticky runways collapse to one viewport each.
+- Reduced motion collapses the runways the same way, and never downloads the 3D chunk.
+- ScrollTrigger re-measures when `data-webgl` changes.
+
+There is no "simplified WebGL" tier yet. Mobile gets a different composition from CSS, not a different renderer.
 
 ---
 
@@ -1101,6 +1142,8 @@ P1 should validate:
 - Rankle
 - Plannr
 
+P1 outcome: R3F, GSAP and ScrollTrigger were validated. Lenis was not needed. The hero, Rankle and Plannr scenes are built on one shared object system.
+
 Only then should later chapter architecture expand.
 
 ---
@@ -1197,16 +1240,19 @@ If no, simplify it.
 
 Settled during P0: Next.js 16 (App Router, `src/` directory) and pnpm.
 
-These should remain unresolved until prototyping:
+Settled during P1:
 
-- whether Lenis remains
-- whether Zustand becomes necessary
-- exact global/client component boundary
-- exact scene-controller API
-- active-chapter detection strategy
-- whether hero canvas initializes immediately or lazily
-- exact quality-tier strategy
-- exact model compression pipeline
+- Lenis: not adopted (`decisions/001`)
+- Zustand: not needed; one shared scene object (`decisions/002`)
+- client boundary: navigator, per-chapter `*Motion` timelines and the canvas only
+- scene control: scroll-derived progress plus DOM-measured stages; no separate scene-controller layer
+- active chapter: `IntersectionObserver` on a thin band at the viewport midline
+- canvas initialization: lazily loaded after hydration; the hero's static render shows until the first frame
+
+Still open:
+
+- exact quality-tier strategy (P1 has full WebGL or static only)
+- exact model compression pipeline (P1 loads no models)
 - whether `/resume` is HTML, PDF, or both
 - whether any project detail route is eventually justified
 

@@ -394,7 +394,7 @@ Anchor navigation should be immediate or nearly immediate.
 
 # Smooth Scrolling
 
-If Lenis or another smooth-scroll layer is used, reduced-motion preferences must be respected.
+P1 uses native scrolling (no Lenis). If a smooth-scroll layer is ever added, reduced-motion preferences must be respected.
 
 Smooth scrolling must not interfere with:
 
@@ -992,6 +992,56 @@ The first creative prototype must already validate:
 
 Do not postpone these until the full site is finished.
 
+## P1 Results
+
+Verified on the production build. Desktop checks used headless Chrome; mobile checks used Chrome mobile emulation.
+
+**Structure**
+
+- One `h1` (the name), `h2` per chapter, `h3` per flagship project.
+- All copy and links are in the DOM.
+- The canvas and the stage elements are `aria-hidden`; the fallback images have empty `alt` because the copy beside them carries the meaning.
+
+**Skip link and keyboard**
+
+- The skip link is the first tab stop, visible on focus, and moves focus to `<main>`.
+- Keyboard focus opens the navigator. Escape closes it and returns focus to its toggle.
+- Enter on a chapter link follows the native hash link.
+- Focus rings are 2px solid.
+
+**Navigation**
+
+- `aria-current="location"` follows the visible chapter.
+- Direct loads of `/#projects` and `/#contact` land exactly at desktop and mobile widths.
+- Back and Forward restore the sections.
+
+**No JavaScript**
+
+- The full journey and the expanded chapter list are present.
+- Static renders show for every scene, and anchors work.
+
+**Reduced motion**
+
+- Checked with DevTools emulation; the OS setting was not changed.
+- No canvas and no 3D download. Runways collapse to normal flow.
+- Static compositions show, all Plannr steps are at full ink, and navigation is instant.
+
+**WebGL unsupported, scene error, context loss**
+
+- `data-webgl="off"`: static renders, collapsed runways, and working navigation.
+- A restored context does not draw over the fallbacks.
+
+**Zoom and widths**
+
+- Real Chrome page zoom at 200% from a 1440-wide window (a 720 CSS px viewport) works: nothing clips, no horizontal overflow, and the calendar is readable.
+- In the final Plannr hold the last provenance line sits just below the short viewport, and becomes readable as the hold releases.
+- 390 and 360 widths show no overflow, the Rankle boards are fully contained, and moving objects never cross small copy.
+- Pinch zoom is not disabled.
+
+**Not yet verified**
+
+- Safari, real mobile devices and screen-reader passes: these are manual tests.
+
 ---
 
 # Open Accessibility Decisions
@@ -999,9 +1049,12 @@ Do not postpone these until the full site is finished.
 The following may be refined during implementation:
 
 - exact focus-ring visual treatment
-- whether reduced motion uses static 3D or rendered images
-- whether Lenis is disabled entirely under reduced motion
 - final chapter navigator expansion semantics
+
+Settled in P1:
+
+- Reduced motion uses captured static renders, never live 3D.
+- Lenis was not adopted, so there is no smooth-scroll layer to disable.
 - exact accessibility treatment for any future 3D direct manipulation
 - final `/resume` accessibility approach
 
