@@ -3,6 +3,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { NeutralToneMapping, PMREMGenerator } from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { registerInvalidate } from "@/lib/motion/scene-progress";
+import { PlannrScene } from "../scenes/plannr/PlannrScene";
 import { RankleScene } from "../scenes/rankle/RankleScene";
 import { useAnchors } from "./anchors";
 import { Kit } from "./Kit";
@@ -44,6 +45,7 @@ function Scenes({ onReady }: { onReady: () => void }) {
     <>
       <Kit anchors={anchors} onFirstFrame={onReady} />
       <RankleScene anchors={anchors} />
+      <PlannrScene anchors={anchors} />
     </>
   );
 }

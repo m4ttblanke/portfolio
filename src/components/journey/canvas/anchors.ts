@@ -9,30 +9,25 @@ import { useThree } from "@react-three/fiber";
 
 export type Rect = { left: number; top: number; width: number; height: number };
 
+/** A tall scene block with a sticky frame; rects are frame-relative (px). */
+type Held = {
+  blockTop: number;
+  blockBottom: number;
+  frameHeight: number;
+};
+
 export type Anchors = {
   /** Hero stage, document coordinates (px). */
   hero: { x: number; bottom: number; width: number };
-  rankle: {
-    /** The tall block, document coordinates (px). */
-    blockTop: number;
-    blockBottom: number;
-    /** Height of the sticky frame. */
-    frameHeight: number;
-    /** Rects relative to the sticky frame's top-left corner (px). */
-    stage: Rect;
-    you: Rect;
-    friend: Rect;
-  } | null;
+  rankle: (Held & { stage: Rect; you: Rect; friend: Rect }) | null;
+  plannr: (Held & { page: Rect; review: Rect; calendar: Rect }) | null;
 };
 
-/** Viewport top of the Rankle sticky frame at a given scroll position. */
-export function rankleFrameTop(
-  rankle: NonNullable<Anchors["rankle"]>,
-  scrollY: number,
-) {
+/** Viewport top of a scene's sticky frame at a given scroll position. */
+export function frameTop(held: Held, scrollY: number) {
   return Math.min(
-    Math.max(rankle.blockTop - scrollY, 0),
-    rankle.blockBottom - scrollY - rankle.frameHeight,
+    Math.max(held.blockTop - scrollY, 0),
+    held.blockBottom - scrollY - held.frameHeight,
   );
 }
 
@@ -46,34 +41,57 @@ function relative(element: Element, frame: DOMRect): Rect {
   };
 }
 
+function measureHeld(block: Element) {
+  const frame = block.querySelector("[data-sticky]");
+  if (!frame) return null;
+  const b = block.getBoundingClientRect();
+  const f = frame.getBoundingClientRect();
+  return {
+    held: {
+      blockTop: b.top + window.scrollY,
+      blockBottom: b.bottom + window.scrollY,
+      frameHeight: f.height,
+    },
+    rect: (selector: string) => {
+      const element = block.querySelector(selector);
+      return element ? relative(element, f) : null;
+    },
+  };
+}
+
 export function useAnchors() {
   const anchors = useRef<Anchors | null>(null);
   const invalidate = useThree((state) => state.invalidate);
 
   useLayoutEffect(() => {
     const hero = document.querySelector('[data-scene-anchor="hero"]');
-    const block = document.querySelector('[data-scene="rankle"]');
-    const frame = block?.querySelector("[data-sticky]");
-    const stage = block?.querySelector('[data-scene-anchor="rankle"]');
-    const you = block?.querySelector('[data-rankle-board="you"]');
-    const friend = block?.querySelector('[data-rankle-board="friend"]');
+    const rankleBlock = document.querySelector('[data-scene="rankle"]');
+    const plannrBlock = document.querySelector('[data-scene="plannr"]');
     if (!hero) return;
 
     const measure = () => {
       const h = hero.getBoundingClientRect();
+
       let rankle: Anchors["rankle"] = null;
-      if (block && frame && stage && you && friend) {
-        const b = block.getBoundingClientRect();
-        const f = frame.getBoundingClientRect();
-        rankle = {
-          blockTop: b.top + window.scrollY,
-          blockBottom: b.bottom + window.scrollY,
-          frameHeight: f.height,
-          stage: relative(stage, f),
-          you: relative(you, f),
-          friend: relative(friend, f),
-        };
+      const rm = rankleBlock && measureHeld(rankleBlock);
+      if (rm) {
+        const stage = rm.rect('[data-scene-anchor="rankle"]');
+        const you = rm.rect('[data-rankle-board="you"]');
+        const friend = rm.rect('[data-rankle-board="friend"]');
+        if (stage && you && friend) rankle = { ...rm.held, stage, you, friend };
       }
+
+      let plannr: Anchors["plannr"] = null;
+      const pm = plannrBlock && measureHeld(plannrBlock);
+      if (pm) {
+        const page = pm.rect('[data-plannr-zone="page"]');
+        const review = pm.rect('[data-plannr-zone="review"]');
+        const calendar = pm.rect('[data-plannr-zone="calendar"]');
+        if (page && review && calendar) {
+          plannr = { ...pm.held, page, review, calendar };
+        }
+      }
+
       anchors.current = {
         hero: {
           x: h.left + h.width / 2,
@@ -81,13 +99,21 @@ export function useAnchors() {
           width: h.width,
         },
         rankle,
+        plannr,
       };
       invalidate();
     };
 
     measure();
     const observer = new ResizeObserver(measure);
-    for (const element of [hero, block, stage]) {
+    const observed = [
+      hero,
+      rankleBlock,
+      rankleBlock?.querySelector('[data-scene-anchor="rankle"]'),
+      plannrBlock,
+      plannrBlock?.querySelector('[data-scene-anchor="plannr"]'),
+    ];
+    for (const element of observed) {
       if (element) observer.observe(element);
     }
     // Scene poses depend on raw scroll position as well as progress.

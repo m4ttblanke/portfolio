@@ -11,6 +11,10 @@ export const scene = {
   hero: 0,
   /** Rankle scene while its frame is held, 0 (arrived) → 1 (composed). */
   rankle: 0,
+  /** Rankle → Plannr hand-off while Plannr's frame rises, 0 → 1. */
+  handoff: 0,
+  /** Plannr workflow while its frame is held, 0 (syllabus) → 1 (calendar). */
+  plannr: 0,
   /** Fine-pointer position, -1…1 on each axis (0 when no mouse). */
   pointerX: 0,
   pointerY: 0,

@@ -12,7 +12,7 @@ import {
   type Mesh,
 } from "three";
 import { scene } from "@/lib/motion/scene-progress";
-import { rankleFrameTop, type Anchors } from "./anchors";
+import { frameTop as heldFrameTop, type Anchors } from "./anchors";
 import {
   CANONICAL_TURN,
   createPlates,
@@ -34,6 +34,12 @@ import {
   rowCenter,
   rowHeight,
 } from "../scenes/rankle/ranklePose";
+import {
+  HANDOFF_KEYS,
+  line,
+  PLANNR_TURN,
+  ROW_LINE,
+} from "../scenes/plannr/plannrPose";
 
 /*
  * The kit: one set of machined plates that every P1 scene arranges.
@@ -203,6 +209,7 @@ export function Kit({
     const turn = quat(CANONICAL_TURN.pitch, CANONICAL_TURN.yaw);
     const dissolve = quat(DISSOLVE_TURN.pitch, DISSOLVE_TURN.yaw);
     const settledTurn = quat(RANKLE_TURN.pitch, RANKLE_TURN.yaw);
+    const plannrTurn = quat(PLANNR_TURN.pitch, PLANNR_TURN.yaw);
     const flip = (angle: number) =>
       new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), angle);
     const roll = (angle: number) =>
@@ -227,6 +234,8 @@ export function Kit({
             .multiply(roll(lie)),
           // As a tier row: turned back over, exactly horizontal.
           row: settledTurn.clone().multiply(roll(-plate.axis)),
+          // As a syllabus line: flat to Plannr's page, exactly horizontal.
+          line: plannrTurn.clone().multiply(roll(-plate.axis)),
         };
       }),
     };
@@ -303,7 +312,7 @@ export function Kit({
     // Rankle stage, tracked live with its sticky frame (arriving, held,
     // released): plates always land where the stage actually is.
     const r = a.rankle;
-    const frameTop = r ? rankleFrameTop(r, window.scrollY) : 0;
+    const frameTop = r ? heldFrameTop(r, window.scrollY) : 0;
     const poolCenter = scratch.poolCenter;
     let tileScale = s;
     let poolHeight = 0;
@@ -449,6 +458,35 @@ export function Kit({
         }
       }
 
+      // 5 — Plannr hand-off: your rows flatten and thin into the first lines
+      // of the syllabus as the page resolves beneath them.
+      const pl = a.plannr;
+      const row = PLATE_ROW[i];
+      if (pl && row !== null && scene.handoff > 0) {
+        const [from, to] = HANDOFF_KEYS.travel;
+        const h = MathUtils.smootherstep(
+          scene.handoff,
+          from + row * 0.03,
+          to - (4 - row) * 0.03,
+        );
+        if (h > 0) {
+          const l = line(pl.page, ROW_LINE[row]);
+          const extent = laidExtents[i];
+          const plannrTop = heldFrameTop(pl, window.scrollY);
+          const across = (l.height / extent.height) * toWorld;
+          const along = (l.width / extent.width) * toWorld;
+          scratch.rowPosition.set(
+            worldX(l.left + l.width / 2),
+            worldY(plannrTop + l.y),
+            -4 * toWorld,
+          );
+          scratch.rowScale.set(across, along, across * 0.5);
+          scratch.position.lerp(scratch.rowPosition, h);
+          scratch.rotation.slerp(per.line, h);
+          scratch.scale.lerp(scratch.rowScale, h);
+        }
+      }
+
       mesh.position.copy(scratch.position);
       mesh.quaternion.copy(scratch.rotation);
       mesh.scale.copy(scratch.scale);
@@ -456,7 +494,11 @@ export function Kit({
     });
 
     if (group.current) {
-      group.current.visible = !r || frameTop > -r.frameHeight;
+      const pl = a.plannr;
+      const plannrVisible =
+        !!pl && heldFrameTop(pl, window.scrollY) > -pl.frameHeight;
+      group.current.visible =
+        !r || frameTop > -r.frameHeight || (scene.handoff > 0 && plannrVisible);
     }
 
     if (!firstFrame.current) {
