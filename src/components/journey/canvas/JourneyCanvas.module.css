@@ -4,3 +4,12 @@
   z-index: var(--z-scene);
   pointer-events: none;
 }
+
+/*
+ * Once WebGL is off (failed or context lost), the static fallbacks own the
+ * presentation for the rest of the visit: a context the browser later
+ * restores must not draw over them.
+ */
+:root[data-webgl="off"] .layer {
+  display: none;
+}
