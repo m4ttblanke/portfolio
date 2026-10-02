@@ -11,7 +11,8 @@ const { desktop, mobile } = fallbacks.hero;
  * descriptor sits, and monumental type anchored to the bottom. The MB relief
  * returns at rest, standing on the closing line like its last glyph (the
  * hero's own static render, so it costs nothing to load). The closing line is
- * the email link. No motion, no canvas.
+ * the email link, and its rule is the last mark on the page. No motion, no
+ * canvas.
  */
 export function ContactChapter() {
   return (
@@ -70,10 +71,6 @@ export function ContactChapter() {
           <span className={styles.line}>{closingLine[1]}</span>
           <span className="visually-hidden"> Email {email.value}</span>
         </a>
-      </p>
-
-      <p className={styles.colophon}>
-        © {new Date().getFullYear()} Matthew Blanke
       </p>
     </section>
   );

@@ -9,12 +9,14 @@
  */
 
 .chapter {
-  --step: calc((100% - 11 * var(--gutter)) / 12 * 3 + 3 * var(--gutter));
+  /* Two columns: YOUR plus the MB need the line's width, and the MB must
+     never read as part of the word. */
+  --step: calc((100% - 11 * var(--gutter)) / 12 * 2 + 2 * var(--gutter));
 
   position: relative;
   z-index: var(--z-content);
   display: grid;
-  grid-template-rows: auto minmax(var(--space-lg), 1fr) auto auto;
+  grid-template-rows: auto minmax(var(--space-lg), 1fr) auto;
   min-block-size: 100svh;
   padding-block: max(1.125rem, env(safe-area-inset-top))
     clamp(1.5rem, 1rem + 3vh, 3.5rem);
@@ -91,6 +93,7 @@
 .line:first-child {
   display: flex;
   align-items: baseline;
+  column-gap: 0.35em;
   padding-inline-start: var(--step);
 }
 
@@ -121,13 +124,6 @@
 .mb img {
   inline-size: auto;
   block-size: 0.72em;
-}
-
-.colophon {
-  grid-row: 4;
-  margin-block-start: var(--space-lg);
-  color: var(--color-muted);
-  font-size: var(--text-meta);
 }
 
 /* Mobile: stacked, flush left, the MB a small signature on the first line. */

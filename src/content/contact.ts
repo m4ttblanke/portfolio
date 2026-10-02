@@ -35,8 +35,5 @@ export const contactLinks = [
 /** Set to the PDF path once the corrected résumé is in `public/`. */
 export const resume: { readonly href: string } | null = null;
 
-/**
- * The closing line, set in two lines. PLACEHOLDER: structurally neutral copy
- * so the composition can be judged; the final line is chosen at review.
- */
-export const closingLine = ["Say", "hello."] as const;
+/** The closing line, set in two lines (approved at Gate 3). */
+export const closingLine = ["Your", "move."] as const;
