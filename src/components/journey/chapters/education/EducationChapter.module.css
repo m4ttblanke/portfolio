@@ -1,53 +1,244 @@
-/* Gate 0: provisional skeleton styling; the typographic block arrives in Gate 2. */
+/*
+ * Education: one typographic block. Three lines (four academic areas) share
+ * one size and cap height; each line's Archivo width (wdth) is tuned so the
+ * three fill the same measure. Credentials sit in a ruled margin beside their
+ * line, areas are glossed in the gap beneath it. Static: no motion.
+ */
+
 .chapter {
   position: relative;
   z-index: var(--z-content);
-  padding: var(--space-lg) var(--margin) calc(2 * var(--space-lg));
+  padding-block: calc(3 * var(--space-lg)) calc(4 * var(--space-lg));
+  padding-inline: var(--margin);
+  /* So display type's 1cqi fallback (no JS, before measuring) is this
+     chapter's content width, as the measured --cq is. */
+  container-type: inline-size;
 }
 
-.lines {
-  display: grid;
-  gap: calc(2 * var(--space-lg));
-  max-inline-size: 40rem;
-  margin-block-start: calc(2 * var(--space-lg));
+.block {
+  margin-block-start: calc(1.5 * var(--space-lg));
 }
 
-.line {
+.area {
   display: grid;
-  gap: var(--space-sm);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+/*
+ * One size for all three lines; each line's width (wdth) brings it to the
+ * same measure, 11.6em (measured at Archivo 700 with display tracking), and
+ * --k sizes that measure to the ten-column block.
+ */
+.block {
+  --k: 7.1;
 }
 
 .title {
-  font-size: var(--text-h2);
+  grid-column: 1 / span 10;
+  grid-row: 1;
+  font-family: var(--font-display);
+  font-size: calc(var(--k) * var(--cq, 1cqi));
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.84;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.credentials,
-.areas,
-.other {
-  padding: 0;
-  list-style: none;
+.area[data-area="computer-science"] .title {
+  font-stretch: 112.7%;
+}
+
+.area[data-area="mathematics-physics"] .title {
+  font-stretch: 94.1%;
+}
+
+.area[data-area="technology-management"] .title {
+  font-stretch: 80%;
+}
+
+/* The margin: credentials beside their line, behind one continuous rule. */
+.margin {
+  grid-column: 11 / -1;
+  grid-row: 1 / span 2;
+  display: grid;
+  align-content: start;
+  gap: var(--space-sm);
+  padding-block: 0.125rem var(--space-md);
+  padding-inline-start: var(--space-md);
+  border-inline-start: 1px solid var(--color-rule);
+  font-size: var(--text-meta);
+  line-height: 1.35;
 }
 
 .credential {
+  display: grid;
+}
+
+.credential + .credential {
+  margin-block-start: var(--space-xs);
+}
+
+.degree {
   font-weight: 600;
 }
 
-.meta {
-  margin-block-start: var(--space-sm);
+.place {
   color: var(--color-muted);
+}
+
+/*
+ * The gloss: one line in the gap beneath each display line (areas, then any
+ * note), so the three gaps keep one rhythm and the lines hold as a block.
+ */
+.gloss {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: calc(2 * var(--space-lg));
+  grid-column: 1 / span 10;
+  grid-row: 2;
+  padding-block: 0.625rem 1.5rem;
+}
+
+.areas {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
+  line-height: 1.5;
+  list-style: none;
   text-transform: uppercase;
 }
 
+.areas li:not(:last-child)::after {
+  padding-inline: 0.6em;
+  color: var(--color-muted);
+  content: "/";
+}
+
 .note {
-  max-inline-size: 48ch;
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+  line-height: 1.45;
+}
+
+.colophon {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
   color: var(--color-muted);
   font-size: var(--text-meta);
 }
 
-.other {
-  margin-block-start: calc(2 * var(--space-lg));
-  color: var(--color-muted);
-  font-size: var(--text-meta);
+.colophon > span {
+  grid-column: 11 / -1;
+  padding-inline-start: calc(var(--space-md) + 1px);
+}
+
+/*
+ * Below the field breakpoint (as in Experience): the margin cannot hold the
+ * credentials, so each area's annotations follow it in flow, under a short
+ * rule. Lines keep their widths and one shared size.
+ */
+@media (max-width: 60rem) {
+  .block {
+    /* 100 / 11.6: the measure fills the content width. */
+    --k: 8.6;
+  }
+
+  .area {
+    display: block;
+    padding-block-end: calc(1.5 * var(--space-lg));
+  }
+
+  .margin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-lg);
+    margin-block-start: var(--space-md);
+    padding: var(--space-sm) 0 0;
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--color-rule);
+  }
+
+  .credential + .credential {
+    margin-block-start: 0;
+  }
+
+  .gloss {
+    display: block;
+    padding-block: var(--space-md) 0;
+  }
+
+  .note {
+    max-inline-size: 48ch;
+    margin-block-start: var(--space-sm);
+    line-height: 1.45;
+  }
+
+  .colophon {
+    display: block;
+  }
+
+  .colophon > span {
+    padding-inline-start: 0;
+  }
+}
+
+/*
+ * Mobile: each line breaks at its phrase (COMPUTER / SCIENCE, MATHEMATICS /
+ * + PHYSICS, TECHNOLOGY / MANAGEMENT), never mid-word. Each phrase has its own
+ * width so all six share one measure (5.3em, measured), and the pairs stack as
+ * one justified column.
+ */
+@media (max-width: 40rem) {
+  .block {
+    /* 100 / 5.3 */
+    --k: 18.8;
+  }
+
+  .phrase {
+    display: block;
+  }
+
+  .area[data-area="computer-science"] .phrase:first-child {
+    font-stretch: 93.8%;
+  }
+
+  .area[data-area="computer-science"] .phrase:last-child {
+    font-stretch: 119.7%;
+  }
+
+  .area[data-area="mathematics-physics"] .phrase:first-child {
+    font-stretch: 70.8%;
+  }
+
+  .area[data-area="mathematics-physics"] .phrase:last-child {
+    font-stretch: 105.3%;
+  }
+
+  .area[data-area="technology-management"] .phrase:first-child {
+    font-stretch: 75.2%;
+  }
+
+  .area[data-area="technology-management"] .phrase:last-child {
+    font-stretch: 70.3%;
+  }
+
+  .margin {
+    flex-direction: column;
+  }
+
+  /* One area per line: wrapped separators would dangle at line ends. */
+  .areas {
+    flex-direction: column;
+  }
+
+  .areas li:not(:last-child)::after {
+    content: none;
+  }
 }

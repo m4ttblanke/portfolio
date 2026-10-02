@@ -15,6 +15,8 @@ export type Credential = {
 export type EducationLine = {
   readonly id: string;
   readonly title: string;
+  /** Intentional phrase breaks where the line must wrap (never mid-word). */
+  readonly titleLines: readonly [string, string];
   readonly credentials: readonly Credential[];
   /** Visible areas: thematic, a few per line. */
   readonly areas: readonly string[];
@@ -28,6 +30,7 @@ export const education = [
   {
     id: "computer-science",
     title: "Computer Science",
+    titleLines: ["Computer", "Science"],
     credentials: [
       {
         title: "B.S. Computer Science",
@@ -58,6 +61,7 @@ export const education = [
   {
     id: "mathematics-physics",
     title: "Mathematics + Physics",
+    titleLines: ["Mathematics", "+ Physics"],
     credentials: [
       {
         title: "A.S.-T Mathematics",
@@ -73,11 +77,15 @@ export const education = [
     areas: ["Linear algebra", "Discrete mathematics"],
     // Linear algebra and discrete mathematics were taken at West Valley
     // College, 2024–25.
-    note: "Honors modeling: charged particles in crossed electric and magnetic fields; wave–particle duality, modeled and tested with a laser and double slit.",
+    // Cabrillo honors projects: a charged particle in crossed E and B fields
+    // (Fall 2024); wave–particle duality, a Python interference model checked
+    // against a laser and double slit (Spring 2025).
+    note: "Honors projects: crossed electric and magnetic field modeling; wave–particle duality, modeled and tested.",
   },
   {
     id: "technology-management",
     title: "Technology Management",
+    titleLines: ["Technology", "Management"],
     credentials: [
       {
         title: "Technology Management certificate",

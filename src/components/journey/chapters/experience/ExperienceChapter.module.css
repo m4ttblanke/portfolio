@@ -19,6 +19,9 @@
   padding-inline: var(--margin);
   /* The ongoing rule runs to the viewport edge, never past it. */
   overflow-x: clip;
+  /* So display type's 1cqi fallback (no JS, before measuring) is this
+     chapter's content width, as the measured --cq is. */
+  container-type: inline-size;
 }
 
 .field {
