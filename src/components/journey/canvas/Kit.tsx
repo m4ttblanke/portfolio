@@ -430,7 +430,13 @@ export function Kit({
             const across =
               ((rowHeight(board) * 0.82) / extent.height) * toWorld;
             const along = (board.width / extent.width) * toWorld;
-            scratch.rowScale.set(across, along, across * 0.5);
+            // Fly in at the row's height, then stretch along the row.
+            const stretch = smooth(0.55, 1, w);
+            scratch.rowScale.set(
+              across,
+              MathUtils.lerp(across, along, stretch),
+              across * 0.5,
+            );
             scratch.rowPosition.set(
               worldX(board.left + board.width / 2),
               worldY(frameTop + rowCenter(board, row)),
