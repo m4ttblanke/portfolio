@@ -1,0 +1,26 @@
+/*
+ * Static scene render. Positioned over its stage (the stage must be a
+ * positioned element); hidden only once the live canvas has rendered.
+ */
+.fallback {
+  position: absolute;
+  z-index: var(--z-scene);
+  inset: var(--d-inset);
+  pointer-events: none;
+}
+
+.image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+@media (max-width: 40rem) {
+  .fallback {
+    inset: var(--m-inset);
+  }
+}
+
+:root[data-webgl="live"] .fallback {
+  display: none;
+}

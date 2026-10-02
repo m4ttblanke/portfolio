@@ -13,6 +13,11 @@ if (typeof window !== "undefined") {
   // Display type changes the layout once its font arrives; re-measure the
   // trigger ranges then, or they hold positions from the fallback font.
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  // Choreography runways collapse when WebGL is off; re-measure then too.
+  new MutationObserver(() => ScrollTrigger.refresh()).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ["data-webgl"] },
+  );
 }
 
 export { gsap, ScrollTrigger };

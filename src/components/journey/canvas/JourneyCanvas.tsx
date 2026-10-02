@@ -39,13 +39,16 @@ function useWebGLSupport() {
 }
 
 /*
- * `<html data-webgl="live">` means the scene has rendered its first usable
- * frame. Static presentations may hide only while it is set; any failure
- * removes it so they return.
+ * `<html data-webgl>` states:
+ * - absent: pending (or reduced motion, where the canvas never mounts)
+ * - "live": the scene has rendered its first usable frame; static fallbacks
+ *   may hide only now
+ * - "off": WebGL is unavailable or the scene failed; static fallbacks stay
+ *   and choreography-only runways collapse (see the chapter styles)
  */
-function setLive(live: boolean) {
+function setWebGL(state: "live" | "off" | null) {
   const root = document.documentElement;
-  if (live) root.dataset.webgl = "live";
+  if (state) root.dataset.webgl = state;
   else delete root.dataset.webgl;
 }
 
@@ -64,7 +67,7 @@ class CanvasErrorBoundary extends Component<
   }
 
   componentDidCatch() {
-    setLive(false);
+    setWebGL("off");
   }
 
   render() {
@@ -81,18 +84,24 @@ export function JourneyCanvas() {
   const reducedMotion = useReducedMotion();
   const webgl = useWebGLSupport();
   const enabled = webgl && !reducedMotion;
-  const onReady = useCallback(() => setLive(true), []);
+  const onReady = useCallback(() => setWebGL("live"), []);
+
+  // Checked directly (not via the hook) so the hydration render, which
+  // reports no support, never marks WebGL off.
+  useEffect(() => {
+    if (!supportsWebGL()) setWebGL("off");
+  }, []);
 
   useEffect(() => {
     if (!enabled) return;
     // A lost context leaves a blank canvas; fall back to static presentation.
     const onLost = (event: Event) => {
-      if ((event.target as Element).tagName === "CANVAS") setLive(false);
+      if ((event.target as Element).tagName === "CANVAS") setWebGL("off");
     };
     document.addEventListener("webglcontextlost", onLost, true);
     return () => {
       document.removeEventListener("webglcontextlost", onLost, true);
-      setLive(false);
+      setWebGL(null);
     };
   }, [enabled]);
 

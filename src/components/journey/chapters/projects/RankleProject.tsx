@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { rankle } from "@/content/projects";
+import { SceneFallback } from "../../fallback/SceneFallback";
 import { TIERS } from "../../scenes/rankle/ranklePose";
 import { RankleMotion } from "./RankleMotion";
 import styles from "./RankleProject.module.css";
@@ -51,6 +52,7 @@ export function RankleProject({ heading }: { heading: ReactNode }) {
           ))}
           <div className={styles.board} data-rankle-board="you" />
           <div className={styles.board} data-rankle-board="friend" />
+          <SceneFallback scene="rankle" />
         </div>
       </div>
       <RankleMotion />

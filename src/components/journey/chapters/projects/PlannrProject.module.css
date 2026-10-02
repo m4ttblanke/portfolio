@@ -23,6 +23,7 @@
 }
 
 .stage {
+  position: relative;
   display: grid;
   /* Column 7 stays empty: breathing room between calendar and copy. */
   grid-column: 1 / span 6;
@@ -128,6 +129,13 @@
 .step[data-current] {
   color: var(--color-ink);
   font-weight: 600;
+}
+
+/* Static presentation: every step reads at full strength, none "current". */
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    color: var(--color-ink);
+  }
 }
 
 .step[data-current]::before {
@@ -257,7 +265,10 @@
   }
 }
 
-/* Reduced motion: no hold; the scene reads in normal flow. */
+/*
+ * Static presentation (reduced motion, or WebGL off): no hold — the runway
+ * exists only for choreography — so the scene reads in normal flow.
+ */
 @media (prefers-reduced-motion: reduce) {
   .block {
     block-size: auto;
@@ -267,4 +278,13 @@
     position: static;
     min-block-size: 100svh;
   }
+}
+
+:root[data-webgl="off"] .block {
+  block-size: auto;
+}
+
+:root[data-webgl="off"] .frame {
+  position: static;
+  min-block-size: 100svh;
 }

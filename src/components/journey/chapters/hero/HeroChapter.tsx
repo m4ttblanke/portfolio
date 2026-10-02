@@ -1,4 +1,5 @@
 import { profile } from "@/content/profile";
+import { SceneFallback } from "../../fallback/SceneFallback";
 import { HeroMotion } from "./HeroMotion";
 import styles from "./HeroChapter.module.css";
 
@@ -17,7 +18,9 @@ export function HeroChapter() {
         aria-hidden="true"
         className={styles.object}
         data-scene-anchor="hero"
-      />
+      >
+        <SceneFallback scene="hero" priority />
+      </div>
 
       <h1 id="name-heading" className={styles.name}>
         <span className={styles.first} data-name-line="first">

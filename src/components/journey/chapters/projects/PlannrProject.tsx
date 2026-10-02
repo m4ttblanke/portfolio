@@ -1,4 +1,5 @@
 import { plannr } from "@/content/projects";
+import { SceneFallback } from "../../fallback/SceneFallback";
 import { PlannrMotion } from "./PlannrMotion";
 import styles from "./PlannrProject.module.css";
 
@@ -20,6 +21,7 @@ export function PlannrProject() {
           <div className={styles.zone} data-plannr-zone="page-end" />
           <div className={styles.zone} data-plannr-zone="review" />
           <div className={styles.zone} data-plannr-zone="calendar" />
+          <SceneFallback scene="plannr" />
         </div>
         <article className={styles.copy} aria-labelledby="plannr-heading">
           <h3 id="plannr-heading" className={styles.title}>

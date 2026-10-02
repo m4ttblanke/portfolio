@@ -94,6 +94,7 @@
 
 /* Two tier boards: tier letters, your board, a gutter for threads, a friend's. */
 .stage {
+  position: relative;
   display: grid;
   grid-column: 7 / -1;
   grid-row: 1 / -1;
@@ -183,7 +184,10 @@
   }
 }
 
-/* Reduced motion: no hold; the scene reads in normal flow. */
+/*
+ * Static presentation (reduced motion, or WebGL off): no hold — the runway
+ * exists only for choreography — so the scene reads in normal flow.
+ */
 @media (prefers-reduced-motion: reduce) {
   .block {
     block-size: auto;
@@ -193,4 +197,13 @@
     position: static;
     min-block-size: 100svh;
   }
+}
+
+:root[data-webgl="off"] .block {
+  block-size: auto;
+}
+
+:root[data-webgl="off"] .frame {
+  position: static;
+  min-block-size: 100svh;
 }

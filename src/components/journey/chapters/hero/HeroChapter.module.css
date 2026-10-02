@@ -39,6 +39,8 @@
  */
 .object {
   position: absolute;
+  /* In front of the name, like the live relief (static render inside). */
+  z-index: var(--z-scene);
   inset-block-end: 0;
   inset-inline: 0;
   grid-column: 8 / span 4;
