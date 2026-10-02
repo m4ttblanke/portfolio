@@ -1,11 +1,42 @@
 "use client";
 
-import { Component, useCallback, useEffect, type ReactNode } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "@/lib/motion/reduced-motion";
 import styles from "./JourneyCanvas.module.css";
 
 const JourneyScene = dynamic(() => import("./JourneyScene"), { ssr: false });
+
+let webglSupport: boolean | undefined;
+
+/** Whether a WebGL context can be created (checked once, then released). */
+function supportsWebGL() {
+  if (webglSupport === undefined) {
+    try {
+      const gl =
+        document.createElement("canvas").getContext("webgl2") ??
+        document.createElement("canvas").getContext("webgl");
+      webglSupport = !!gl;
+      gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch {
+      webglSupport = false;
+    }
+  }
+  return webglSupport;
+}
+
+const noSubscription = () => () => {};
+
+/** False during server render; the canvas mounts only on capable clients. */
+function useWebGLSupport() {
+  return useSyncExternalStore(noSubscription, supportsWebGL, () => false);
+}
 
 /*
  * `<html data-webgl="live">` means the scene has rendered its first usable
@@ -43,14 +74,17 @@ class CanvasErrorBoundary extends Component<
 
 /**
  * The single persistent, decorative WebGL layer for the journey. Not mounted
- * under reduced motion: those visitors get the static compositions.
+ * under reduced motion (those visitors get the static compositions) or where
+ * WebGL is unavailable — which also skips downloading the 3D runtime.
  */
 export function JourneyCanvas() {
   const reducedMotion = useReducedMotion();
+  const webgl = useWebGLSupport();
+  const enabled = webgl && !reducedMotion;
   const onReady = useCallback(() => setLive(true), []);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (!enabled) return;
     // A lost context leaves a blank canvas; fall back to static presentation.
     const onLost = (event: Event) => {
       if ((event.target as Element).tagName === "CANVAS") setLive(false);
@@ -60,9 +94,9 @@ export function JourneyCanvas() {
       document.removeEventListener("webglcontextlost", onLost, true);
       setLive(false);
     };
-  }, [reducedMotion]);
+  }, [enabled]);
 
-  if (reducedMotion) return null;
+  if (!enabled) return null;
 
   return (
     <div aria-hidden="true" className={styles.layer}>
