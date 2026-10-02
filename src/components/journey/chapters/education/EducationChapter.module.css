@@ -1,0 +1,53 @@
+/* Gate 0: provisional skeleton styling; the typographic block arrives in Gate 2. */
+.chapter {
+  position: relative;
+  z-index: var(--z-content);
+  padding: var(--space-lg) var(--margin) calc(2 * var(--space-lg));
+}
+
+.lines {
+  display: grid;
+  gap: calc(2 * var(--space-lg));
+  max-inline-size: 40rem;
+  margin-block-start: calc(2 * var(--space-lg));
+}
+
+.line {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.title {
+  font-size: var(--text-h2);
+}
+
+.credentials,
+.areas,
+.other {
+  padding: 0;
+  list-style: none;
+}
+
+.credential {
+  font-weight: 600;
+}
+
+.meta {
+  margin-block-start: var(--space-sm);
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.note {
+  max-inline-size: 48ch;
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+}
+
+.other {
+  margin-block-start: calc(2 * var(--space-lg));
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+}

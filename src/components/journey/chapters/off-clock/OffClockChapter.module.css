@@ -1,0 +1,23 @@
+/*
+ * Gate 0: provisional skeleton styling; the still life arrives in Gate 4.
+ * At least one viewport tall so that, landed on directly, this chapter (not
+ * Contact below it) holds the navigator's midline band.
+ */
+.chapter {
+  position: relative;
+  min-block-size: 100svh;
+  z-index: var(--z-content);
+  padding: var(--space-lg) var(--margin) calc(2 * var(--space-lg));
+}
+
+.objects {
+  display: grid;
+  gap: var(--space-lg);
+  margin-block-start: calc(2 * var(--space-lg));
+  padding: 0;
+  list-style: none;
+}
+
+.label {
+  font-size: var(--text-h2);
+}

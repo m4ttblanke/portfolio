@@ -1,0 +1,35 @@
+/*
+ * Gate 0: provisional skeleton styling; the bookend arrives in Gate 3.
+ * Contact is the last chapter: at least one viewport tall so its section
+ * reaches the navigator's midline band when the page is scrolled to the end.
+ */
+.chapter {
+  position: relative;
+  z-index: var(--z-content);
+  min-block-size: 100svh;
+  padding: var(--space-lg) var(--margin);
+}
+
+.links {
+  display: grid;
+  margin-block-start: calc(2 * var(--space-lg));
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-md);
+  min-block-size: 2.75rem;
+  text-underline-offset: 0.3em;
+}
+
+.name {
+  min-inline-size: 6rem;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
