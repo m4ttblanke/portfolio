@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import dynamic from "next/dynamic";
-import { useStaticPresentation } from "@/lib/motion/presentation";
+import { useStaticPresentation } from "@/lib/motion/use-static-presentation";
 import styles from "./JourneyCanvas.module.css";
 
 const JourneyScene = dynamic(() => import("./JourneyScene"), { ssr: false });

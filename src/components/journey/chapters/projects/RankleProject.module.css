@@ -209,30 +209,28 @@
 }
 
 /*
- * Compact viewport (narrow AND short; mirrors COMPACT_VIEWPORT in
+ * Compact viewport (narrow AND short; set on <html> from COMPACT_VIEWPORT in
  * lib/motion/presentation.ts). Static presentation in normal flow: no hold,
  * the title fits the width, and the stage keeps the static render's
  * proportions instead of taking what is left of a short viewport.
  */
-@media (max-width: 40rem) and (max-height: 30rem) {
-  .block {
-    block-size: auto;
-  }
+:root[data-presentation="compact"] .block {
+  block-size: auto;
+}
 
-  .frame {
-    position: static;
-    block-size: auto;
-    min-block-size: 0;
-  }
+:root[data-presentation="compact"] .frame {
+  position: static;
+  block-size: auto;
+  min-block-size: 0;
+}
 
-  .title {
-    font-size: calc(22 * var(--cq, 1cqi));
-  }
+:root[data-presentation="compact"] .title {
+  font-size: calc(22 * var(--cq, 1cqi));
+}
 
-  .stage {
-    inline-size: 100%;
-    max-inline-size: 26rem;
-    block-size: auto;
-    aspect-ratio: 0.7;
-  }
+:root[data-presentation="compact"] .stage {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  block-size: auto;
+  aspect-ratio: 0.7;
 }

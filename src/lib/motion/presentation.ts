@@ -1,9 +1,6 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
-
 /*
- * When the journey is choreographed, and when it is static.
+ * When the journey is choreographed, and when it is static. The single source
+ * of truth for the presentation thresholds.
  *
  * Static presentation replaces the scroll choreography with each scene's
  * captured composition in normal flow. It applies under reduced motion and on
@@ -11,29 +8,30 @@ import { useSyncExternalStore } from "react";
  * a scene and its copy (e.g. desktop browsers at 250%+ page zoom). Width alone
  * never triggers it, so phones keep the animated mobile composition.
  *
- * CSS Modules repeat COMPACT_VIEWPORT literally (custom media cannot be shared);
- * keep them in sync.
+ * Plain module (no React) so the server layout can embed the boot script.
  */
+export const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 export const COMPACT_VIEWPORT = "(max-width: 40rem) and (max-height: 30rem)";
-export const STATIC_PRESENTATION = `(prefers-reduced-motion: reduce), ${COMPACT_VIEWPORT}`;
-/** The complement of STATIC_PRESENTATION, for gsap.matchMedia. */
-export const ANIMATED_PRESENTATION =
-  "(prefers-reduced-motion: no-preference) and (min-width: 40.0625rem), (prefers-reduced-motion: no-preference) and (min-height: 30.0625rem)";
-
-function subscribe(onChange: () => void) {
-  const media = window.matchMedia(STATIC_PRESENTATION);
-  media.addEventListener("change", onChange);
-  return () => media.removeEventListener("change", onChange);
-}
+export const STATIC_PRESENTATION = `${REDUCED_MOTION}, ${COMPACT_VIEWPORT}`;
 
 /**
- * Live static-presentation state. Reports `true` during server render so
- * nothing motion-dependent mounts until the client knows.
+ * Runs before first paint (in the layout's boot script) and on every change:
+ * mirrors the compact viewport onto `<html data-presentation="compact">`,
+ * which scene CSS responds to instead of repeating the media query.
  */
-export function useStaticPresentation() {
-  return useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(STATIC_PRESENTATION).matches,
-    () => true,
-  );
+export const presentationScript = `(()=>{const r=document.documentElement,m=matchMedia(${JSON.stringify(COMPACT_VIEWPORT)}),s=()=>{if(m.matches)r.dataset.presentation="compact";else delete r.dataset.presentation};s();m.addEventListener("change",s)})();`;
+
+/**
+ * `gsap.matchMedia` conditions. GSAP runs a conditions callback only while at
+ * least one condition matches, so `motion` (not `reduce`) is listed: the
+ * callback runs whenever motion is allowed, and `isStatic` then rules out a
+ * compact viewport.
+ */
+export const PRESENTATION_CONDITIONS = {
+  motion: "(prefers-reduced-motion: no-preference)",
+  compact: COMPACT_VIEWPORT,
+};
+
+export function isStatic(conditions?: Record<string, boolean>) {
+  return !conditions?.motion || !!conditions.compact;
 }

@@ -2,7 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/motion/gsap";
-import { ANIMATED_PRESENTATION } from "@/lib/motion/presentation";
+import { isStatic, PRESENTATION_CONDITIONS } from "@/lib/motion/presentation";
 import { setScene } from "@/lib/motion/scene-progress";
 import { plannrStep } from "../../scenes/plannr/plannrPose";
 
@@ -29,7 +29,8 @@ export function PlannrMotion() {
     };
 
     const mm = gsap.matchMedia();
-    mm.add(ANIMATED_PRESENTATION, () => {
+    mm.add(PRESENTATION_CONDITIONS, ({ conditions }) => {
+      if (isStatic(conditions)) return;
       const handoff = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {

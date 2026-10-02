@@ -2,7 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/motion/gsap";
-import { ANIMATED_PRESENTATION } from "@/lib/motion/presentation";
+import { isStatic, PRESENTATION_CONDITIONS } from "@/lib/motion/presentation";
 import { setScene } from "@/lib/motion/scene-progress";
 
 /**
@@ -21,11 +21,11 @@ export function HeroMotion() {
     mm.add(
       {
         wide: "(min-width: 40.0625rem)",
-        motion: ANIMATED_PRESENTATION,
+        ...PRESENTATION_CONDITIONS,
       },
       (context) => {
-        const { wide, motion } = context.conditions ?? {};
-        if (!motion) return;
+        if (isStatic(context.conditions)) return;
+        const { wide } = context.conditions ?? {};
 
         const timeline = gsap.timeline({
           defaults: { ease: "none" },

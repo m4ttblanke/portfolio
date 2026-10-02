@@ -254,6 +254,7 @@ components/journey/
   fallback/               SceneFallback (<picture> static render per scene)
   units/                  MeasuredUnits (zoom-safe --cq/--svh for display type)
 lib/motion/               gsap.ts, scene-progress.ts, presentation.ts
+                          (thresholds + boot script), use-static-presentation.ts
 lib/assets/               fallbacks.ts (static render registry)
 public/fallbacks/         six WebP scene renders
 ```
@@ -691,9 +692,9 @@ P1 uses two tiers: full WebGL, and a static render.
   - absent: pending, or reduced motion. Fallbacks show.
   - `live`: set by the scene's first rendered frame. Fallbacks hide.
   - `off`: WebGL unsupported, a scene error, or context loss. Fallbacks show, the canvas layer is hidden for the rest of the visit, and the sticky runways collapse to one viewport each.
-- **Static presentation** (`lib/motion/presentation.ts`) has two triggers: `prefers-reduced-motion: reduce`, or a **compact viewport**, `(max-width: 40rem) and (max-height: 30rem)`, which is narrow and short together (for example a desktop browser at 250%+ page zoom). Under it the canvas never mounts, the 3D chunk is never downloaded, no timeline is created (`ANIMATED_PRESENTATION` gates `gsap.matchMedia`), and the runways collapse the same way.
+- **Static presentation** (`lib/motion/presentation.ts`) has two triggers: `prefers-reduced-motion: reduce`, or a **compact viewport**, `(max-width: 40rem) and (max-height: 30rem)`, which is narrow and short together (for example a desktop browser at 250%+ page zoom). Under it the canvas never mounts, the 3D chunk is never downloaded, no timeline is created (`gsap.matchMedia` with `PRESENTATION_CONDITIONS` and `isStatic`), and the runways collapse the same way.
 - Width alone never triggers it, so phones such as 390×844 keep the animated mobile composition.
-- On a compact viewport each scene also drops its 100svh frame and its svh type caps, flowing at its natural height with the stage at the static render's proportions. CSS Modules repeat the compact query literally; keep them in sync with `COMPACT_VIEWPORT`.
+- On a compact viewport each scene also drops its 100svh frame and its svh type caps, flowing at its natural height with the stage at the static render's proportions. The threshold lives only in `COMPACT_VIEWPORT`; the layout's pre-paint boot script mirrors it onto `<html data-presentation="compact">`, and scene CSS responds to that attribute.
 - ScrollTrigger re-measures when `data-webgl` changes.
 
 There is no "simplified WebGL" tier yet. Mobile gets a different composition from CSS, not a different renderer.
