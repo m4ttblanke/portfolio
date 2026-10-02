@@ -157,8 +157,9 @@
 }
 
 /*
- * Mobile: copy first, then the stage — page and review side by side, the
- * calendar below. Steps run in one row.
+ * Mobile: the stage first, then the copy — the reverse of Rankle, so pieces
+ * arriving from Rankle's boards land on the page without crossing any copy.
+ * Page and review side by side, the calendar below; steps in two columns.
  */
 @media (max-width: 40rem) {
   .block {
@@ -167,13 +168,13 @@
 
   .frame {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
     align-items: start;
   }
 
   .copy {
     grid-column: 1 / -1;
-    grid-row: 1;
+    grid-row: 2;
     margin-block-start: var(--space-md);
   }
 
@@ -213,7 +214,7 @@
 
   .stage {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 1;
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr);
     grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
     grid-template-areas:
@@ -222,7 +223,7 @@
     row-gap: var(--space-md);
     align-self: stretch;
     block-size: auto;
-    margin-block: var(--space-md) 0;
+    margin-block: var(--space-lg) 0;
   }
 
   .zone[data-plannr-zone="calendar"] {
