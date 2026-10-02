@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   Color,
@@ -12,6 +12,7 @@ import {
   type Mesh,
 } from "three";
 import { scene } from "@/lib/motion/scene-progress";
+import { rankleFrameTop, type Anchors } from "./anchors";
 import {
   CANONICAL_TURN,
   createPlates,
@@ -24,94 +25,43 @@ import {
   MB_WIDTH,
   PLATE_THICKNESS,
 } from "../scenes/hero/heroPose";
-import { RANKLE_TURN, rankleArrival } from "../scenes/rankle/ranklePose";
+import {
+  ITEM_COLORS,
+  PLATE_ROW,
+  RANKLE_KEYS,
+  RANKLE_TURN,
+  rankleArrival,
+  rowCenter,
+  rowHeight,
+} from "../scenes/rankle/ranklePose";
 
 /*
  * The kit: one set of machined plates that every P1 scene arranges.
  * At rest the plates assemble into the MB identity relief inside the hero's
  * reserved DOM stage; as the hero exits they turn over and land in the Rankle
- * stage. Every pose is a pure function of scroll-derived progress.
- *
- * The back-face colors are exploratory art direction, not Rankle branding.
+ * stage, where the long plates become your board's tier rows. Every pose is a
+ * pure function of scroll position and scroll-derived progress.
  */
 
-const BACK_COLORS = [
-  "#e5402b",
-  "#f2c12e",
-  "#2d5bc4",
-  "#f4f2ee",
-  "#151513",
-  "#e5402b",
-  "#2d5bc4",
-];
+/** Back faces: Rankle's item colors (exploratory scene palette). */
+const BACK_COLORS = [0, 1, 2, 3, 4, 0, 2].map((i) => ITEM_COLORS[i]);
 
 /** Projected MB width as a fraction of the hero stage width. */
-const STAGE_FILL = 1.2;
-const STAGE_FILL_NARROW = 1;
-/** How much of the page scroll the relief follows as it comes apart. */
+const STAGE_FILL = 1.1;
+const STAGE_FILL_NARROW = 0.95;
+/** Lift above the stage's bottom edge, as a fraction of MB height. */
+const STAGE_LIFT = 0.12;
+/**
+ * How much of the page scroll the relief follows as it comes apart. Narrow
+ * screens follow more closely so it stays above the copy rising beneath it.
+ */
 const SCROLL_FOLLOW = 0.4;
+const SCROLL_FOLLOW_NARROW = 0.85;
 /** Pointer tilt, radians. */
 const TILT_YAW = MathUtils.degToRad(5);
 const TILT_PITCH = MathUtils.degToRad(3.5);
-
-type Anchors = {
-  /** Hero stage, document coordinates (px). */
-  hero: { x: number; bottom: number; width: number };
-  /** Rankle stage while its sticky frame is held, viewport coordinates (px). */
-  rankle: { x: number; y: number; width: number; height: number } | null;
-};
-
-function useAnchors() {
-  const anchors = useRef<Anchors | null>(null);
-  const invalidate = useThree((state) => state.invalidate);
-
-  useLayoutEffect(() => {
-    const hero = document.querySelector<HTMLElement>(
-      '[data-scene-anchor="hero"]',
-    );
-    const rankle = document.querySelector<HTMLElement>(
-      '[data-scene-anchor="rankle"]',
-    );
-    const sticky = rankle?.closest<HTMLElement>("[data-sticky]");
-    if (!hero) return;
-    const measure = () => {
-      const h = hero.getBoundingClientRect();
-      let held: Anchors["rankle"] = null;
-      if (rankle && sticky) {
-        const r = rankle.getBoundingClientRect();
-        const offsetTop = r.top - sticky.getBoundingClientRect().top;
-        held = {
-          x: r.left + r.width / 2,
-          y: offsetTop + r.height / 2,
-          width: r.width,
-          height: r.height,
-        };
-      }
-      anchors.current = {
-        hero: {
-          x: h.left + h.width / 2,
-          bottom: h.bottom + window.scrollY,
-          width: h.width,
-        },
-        rankle: held,
-      };
-      invalidate();
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(hero);
-    if (rankle) observer.observe(rankle);
-    // The relief follows the page scroll until it peels away.
-    const onScroll = () => invalidate();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [invalidate]);
-
-  return anchors;
-}
+/** Below this width, plates travel through a corridor clear of the copy. */
+const NARROW = 640;
 
 function usePointer() {
   const invalidate = useThree((state) => state.invalidate);
@@ -155,11 +105,16 @@ function catmull(
 const quat = (pitch: number, yaw: number, roll = 0) =>
   new Quaternion().setFromEuler(new Euler(pitch, yaw, roll));
 
-export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
+export function Kit({
+  anchors,
+  onFirstFrame,
+}: {
+  anchors: RefObject<Anchors | null>;
+  onFirstFrame: () => void;
+}) {
   const plates = useMemo(() => createPlates(), []);
   const meshes = useRef<(Mesh | null)[]>([]);
   const group = useRef<Group>(null);
-  const anchors = useAnchors();
   const tilt = useRef({ yaw: 0, pitch: 0 });
   const firstFrame = useRef(false);
   usePointer();
@@ -192,6 +147,19 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
         return geometry;
       }),
     [plates],
+  );
+
+  // Each plate's extent once laid horizontal (letter units), for tier rows.
+  const laidExtents = useMemo(
+    () =>
+      plates.map((plate, i) => {
+        const laid = geometries[i].clone().rotateZ(-plate.axis);
+        laid.computeBoundingBox();
+        const box = laid.boundingBox!;
+        laid.dispose();
+        return { width: box.max.x - box.min.x, height: box.max.y - box.min.y };
+      }),
+    [plates, geometries],
   );
 
   const materials = useMemo(() => {
@@ -230,39 +198,35 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
     [geometries, materials],
   );
 
-  // Constant rotations and per-plate scratch, allocated once.
+  // Constant rotations, allocated once.
   const fixed = useMemo(() => {
     const turn = quat(CANONICAL_TURN.pitch, CANONICAL_TURN.yaw);
     const dissolve = quat(DISSOLVE_TURN.pitch, DISSOLVE_TURN.yaw);
     const settledTurn = quat(RANKLE_TURN.pitch, RANKLE_TURN.yaw);
-    const flipped = new Quaternion().setFromAxisAngle(
-      new Vector3(0, 1, 0),
-      Math.PI,
-    );
-    const halfFlipped = new Quaternion().setFromAxisAngle(
-      new Vector3(0, 1, 0),
-      Math.PI * 0.55,
-    );
-    const roll = new Vector3(0, 0, 1);
+    const flip = (angle: number) =>
+      new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), angle);
+    const roll = (angle: number) =>
+      new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), angle);
     return {
       turn,
       dissolveGroup: dissolve,
       dissolve: dissolve.clone().multiply(turn),
       perPlate: plates.map((plate, i) => {
         const arrival = rankleArrival(i, plates.length);
-        // Lay each plate's long axis horizontal, then turn it over.
-        const lie = new Quaternion().setFromAxisAngle(
-          roll,
-          -plate.axis + arrival.tilt,
-        );
-        const halfLie = new Quaternion().setFromAxisAngle(
-          roll,
-          (-plate.axis + arrival.tilt) / 2,
-        );
+        const lie = -plate.axis + arrival.tilt;
         return {
           arrival,
-          exploded: settledTurn.clone().multiply(halfFlipped).multiply(halfLie),
-          settled: settledTurn.clone().multiply(flipped).multiply(lie),
+          // Lay the long axis horizontal and turn the plate over (color up).
+          exploded: settledTurn
+            .clone()
+            .multiply(flip(Math.PI * 0.55))
+            .multiply(roll(lie / 2)),
+          pooled: settledTurn
+            .clone()
+            .multiply(flip(Math.PI))
+            .multiply(roll(lie)),
+          // As a tier row: turned back over, exactly horizontal.
+          row: settledTurn.clone().multiply(roll(-plate.axis)),
         };
       }),
     };
@@ -273,7 +237,7 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
       tilt: new Quaternion(),
       euler: new Euler(),
       heroCenter: new Vector3(),
-      rankleCenter: new Vector3(),
+      poolCenter: new Vector3(),
       local: new Vector3(),
       keys: [new Vector3(), new Vector3(), new Vector3(), new Vector3()],
       rotations: [
@@ -284,6 +248,10 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
       ],
       scales: [0, 0, 0, 0],
       position: new Vector3(),
+      rowPosition: new Vector3(),
+      rowScale: new Vector3(),
+      scale: new Vector3(),
+      rotation: new Quaternion(),
     }),
     [],
   );
@@ -294,6 +262,7 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
     const { size, viewport, camera, invalidate } = state;
     const camZ = camera.position.z;
     const p = scene.hero;
+    const narrow = size.width <= NARROW;
     const toWorld = viewport.width / size.width;
     const worldX = (px: number) => (px - size.width / 2) * toWorld;
     const worldY = (py: number) => (size.height / 2 - py) * toWorld;
@@ -315,44 +284,51 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
     }
     scratch.tilt.setFromEuler(scratch.euler.set(t.pitch, t.yaw, 0));
 
-    // Hero relief: sits on its stage's bottom edge; lags the page scroll so it
-    // lingers (and reads as deeper) while the name scrolls away.
-    const fill = size.width <= 640 ? STAGE_FILL_NARROW : STAGE_FILL;
+    // Hero relief: sits just above its stage's bottom edge; lags the page
+    // scroll so it lingers (and reads as deeper) while the name scrolls away.
+    const fill = narrow ? STAGE_FILL_NARROW : STAGE_FILL;
     const foreX = Math.cos(CANONICAL_TURN.yaw);
     const foreY = Math.cos(CANONICAL_TURN.pitch);
     const s = (a.hero.width * toWorld * fill) / (MB_WIDTH * foreX);
     const heroCenter = scratch.heroCenter.set(
       worldX(a.hero.x),
-      worldY(a.hero.bottom - window.scrollY * SCROLL_FOLLOW) +
-        (MB_HEIGHT / 2) * s * foreY,
+      worldY(
+        a.hero.bottom -
+          window.scrollY * (narrow ? SCROLL_FOLLOW_NARROW : SCROLL_FOLLOW),
+      ) +
+        MB_HEIGHT * s * foreY * (0.5 + STAGE_LIFT),
       0,
     );
 
-    // Rankle stage: where the plates land; lifted away as it is released.
+    // Rankle stage, tracked live with its sticky frame (arriving, held,
+    // released): plates always land where the stage actually is.
     const r = a.rankle;
-    const rankleCenter = scratch.rankleCenter;
+    const frameTop = r ? rankleFrameTop(r, window.scrollY) : 0;
+    const poolCenter = scratch.poolCenter;
     let tileScale = s;
-    let columnHeight = 0;
-    let columnWidth = 0;
+    let poolHeight = 0;
+    let poolWidth = 0;
     if (r) {
-      rankleCenter.set(
-        worldX(r.x),
-        worldY(r.y) + scene.rankleRelease * viewport.height,
+      poolCenter.set(
+        worldX(r.stage.left + r.stage.width / 2),
+        worldY(frameTop + r.stage.top + r.stage.height / 2),
         0,
       );
-      columnHeight = r.height * toWorld;
-      columnWidth = r.width * toWorld;
-      const slot = columnHeight / plates.length;
-      tileScale = Math.min((columnWidth * 0.62) / 2.3, slot * 1.05);
+      poolHeight = r.stage.height * toWorld * 0.9;
+      poolWidth = r.stage.width * toWorld;
+      const slot = poolHeight / plates.length;
+      tileScale = Math.min((poolWidth * 0.5) / 2.3, slot * 1.05);
     } else {
-      rankleCenter.copy(heroCenter);
+      poolCenter.copy(heroCenter);
     }
 
     // Path of the kit's center: rides with the hero, then travels to Rankle.
     const centerAt = (out: Vector3, at: number) =>
-      out.lerpVectors(heroCenter, rankleCenter, smooth(0.25, 0.95, at));
+      out.lerpVectors(heroCenter, poolCenter, smooth(0.25, 0.95, at));
 
     const count = plates.length;
+    const span = 1 - EXIT_STAGGER * (count - 1);
+
     plates.forEach((plate, i) => {
       const mesh = meshes.current[i];
       if (!mesh) return;
@@ -372,37 +348,51 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
       rotations[0].multiplyQuaternions(scratch.tilt, fixed.turn);
       scales[0] = s * k;
 
-      // 1 — dissolved: turned off-axis, depth planes pulled apart.
-      centerAt(keys[1], EXIT_KEYS[1]).add(
+      // 1 — dissolved: turned off-axis, depth planes pulled apart. Narrow
+      // screens dissolve smaller while drifting toward the right corridor.
+      centerAt(keys[1], EXIT_KEYS[1]);
+      const dissolveScale = narrow ? 0.75 : 1;
+      if (narrow) keys[1].x = worldX(size.width * 0.72);
+      keys[1].add(
         scratch.local
           .set(localX, localY, dz * DISSOLVE_DEPTH)
+          .multiplyScalar(dissolveScale)
           .applyQuaternion(fixed.dissolveGroup),
       );
       rotations[1].copy(fixed.dissolve);
-      scales[1] = s;
+      scales[1] = s * dissolveScale;
 
-      // 2 — exploded outward and toward the camera, half turned over.
-      centerAt(keys[2], EXIT_KEYS[2]).add(
-        scratch.local.set(
-          localX * EXPLODE_SPREAD,
-          localY * EXPLODE_SPREAD,
-          (0.8 + 0.35 * (i % 3)) * s,
-        ),
-      );
-      rotations[2].copy(per.exploded);
-      scales[2] = (s + tileScale) / 2;
-
-      // 3 — settled in the Rankle column, color side up.
+      // 3 — pooled in the Rankle stage, color side up, unordered.
       keys[3].set(
-        rankleCenter.x + per.arrival.x * columnWidth,
-        rankleCenter.y + per.arrival.y * columnHeight,
+        poolCenter.x + per.arrival.x * poolWidth,
+        poolCenter.y + per.arrival.y * poolHeight,
         0,
       );
-      rotations[3].copy(per.settled);
+      rotations[3].copy(per.pooled);
       scales[3] = tileScale;
 
-      // Staggered local progress, then interpolate within its segment.
-      const span = 1 - EXIT_STAGGER * (count - 1);
+      // 2 — exploded and half turned over. On narrow screens the plates run
+      // down a right-hand corridor at their landing heights, clear of copy.
+      if (narrow) {
+        keys[2].set(
+          worldX(size.width * (0.88 + 0.03 * (i % 3))),
+          keys[3].y,
+          (0.4 + 0.15 * (i % 3)) * s,
+        );
+        scales[2] = tileScale * 0.7;
+      } else {
+        centerAt(keys[2], EXIT_KEYS[2]).add(
+          scratch.local.set(
+            localX * EXPLODE_SPREAD,
+            localY * EXPLODE_SPREAD,
+            (0.8 + 0.35 * (i % 3)) * s,
+          ),
+        );
+        scales[2] = (s + tileScale) / 2;
+      }
+      rotations[2].copy(per.exploded);
+
+      // Staggered local progress through the hero exit.
       const pi = MathUtils.clamp((p - i * EXIT_STAGGER) / span, 0, 1);
       let seg = 0;
       while (seg < 2 && pi > EXIT_KEYS[seg + 1]) seg++;
@@ -415,17 +405,52 @@ export function Kit({ onFirstFrame }: { onFirstFrame: () => void }) {
         keys[Math.min(seg + 2, 3)],
         u,
       );
-      mesh.position.copy(scratch.position);
-      mesh.quaternion.slerpQuaternions(
+      scratch.rotation.slerpQuaternions(
         rotations[seg],
         rotations[seg + 1],
         MathUtils.smootherstep(u, 0, 1),
       );
-      mesh.scale.setScalar(MathUtils.lerp(scales[seg], scales[seg + 1], u));
+      const scale = MathUtils.lerp(scales[seg], scales[seg + 1], u);
+      scratch.scale.setScalar(scale);
+
+      // 4 — Rankle: the straight stems turn back over and stretch into your
+      // board's full-width tier rows; the other plates are set aside.
+      if (r) {
+        const row = PLATE_ROW[i];
+        const [from, to] = RANKLE_KEYS.rows;
+        const stagger = row === null ? 0 : row * 0.025;
+        const w = smooth(from + stagger, to + stagger, scene.rankle);
+        if (w > 0) {
+          if (row === null) {
+            scratch.scale.multiplyScalar(1 - w);
+          } else {
+            // Stems lie with local y along the row and local x across it.
+            const board = r.you;
+            const extent = laidExtents[i];
+            const across =
+              ((rowHeight(board) * 0.82) / extent.height) * toWorld;
+            const along = (board.width / extent.width) * toWorld;
+            scratch.rowScale.set(across, along, across * 0.5);
+            scratch.rowPosition.set(
+              worldX(board.left + board.width / 2),
+              worldY(frameTop + rowCenter(board, row)),
+              -0.2 * across,
+            );
+            scratch.position.lerp(scratch.rowPosition, w);
+            scratch.rotation.slerp(per.row, w);
+            scratch.scale.lerp(scratch.rowScale, w);
+          }
+        }
+      }
+
+      mesh.position.copy(scratch.position);
+      mesh.quaternion.copy(scratch.rotation);
+      mesh.scale.copy(scratch.scale);
+      mesh.visible = scratch.scale.x > 1e-4;
     });
 
     if (group.current) {
-      group.current.visible = scene.rankleRelease < 1;
+      group.current.visible = !r || frameTop > -r.frameHeight;
     }
 
     if (!firstFrame.current) {

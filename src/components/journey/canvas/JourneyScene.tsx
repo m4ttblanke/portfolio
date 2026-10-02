@@ -3,6 +3,8 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { NeutralToneMapping, PMREMGenerator } from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { registerInvalidate } from "@/lib/motion/scene-progress";
+import { RankleScene } from "../scenes/rankle/RankleScene";
+import { useAnchors } from "./anchors";
 import { Kit } from "./Kit";
 
 /** Image-based light generated locally once; no network request. */
@@ -35,6 +37,17 @@ function InvalidateBridge() {
   return null;
 }
 
+/** Scenes share one reading of the DOM stage anchors. */
+function Scenes({ onReady }: { onReady: () => void }) {
+  const anchors = useAnchors();
+  return (
+    <>
+      <Kit anchors={anchors} onFirstFrame={onReady} />
+      <RankleScene anchors={anchors} />
+    </>
+  );
+}
+
 /**
  * The only module that imports three / R3F. Loaded client-side on demand by
  * JourneyCanvas so the 3D runtime stays out of the initial server render.
@@ -57,7 +70,7 @@ export default function JourneyScene({ onReady }: { onReady: () => void }) {
       <InvalidateBridge />
       <Environment />
       <directionalLight position={[-4, 6, 8]} intensity={1.4} />
-      <Kit onFirstFrame={onReady} />
+      <Scenes onReady={onReady} />
     </Canvas>
   );
 }

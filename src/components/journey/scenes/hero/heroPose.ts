@@ -18,7 +18,7 @@ export const MB_WIDTH = LOBE_X + 0.48 + 0.5;
 export const MB_HEIGHT = 2;
 export const PLATE_THICKNESS = 0.26;
 
-export type PlateTone = "light" | "dark";
+export type PlateTone = "dark" | "light";
 
 export type PlateDef = {
   id: string;
@@ -89,7 +89,7 @@ const diagAxis = Math.atan2(2, MID - DIAG_TOP / 2);
  * thickness reads, while plate positions stay on camera rays (pre-foreshortened
  * to match) so the MB still aligns.
  */
-export const CANONICAL_TURN = { pitch: 0.1, yaw: -0.28 };
+export const CANONICAL_TURN = { pitch: 0.08, yaw: -0.22 };
 
 export function createPlates(): PlateDef[] {
   const footL = MID - DIAG_FOOT / 2;
@@ -106,7 +106,7 @@ export function createPlates(): PlateDef[] {
       [0, 0, STROKE, 2],
       0.55,
       Math.PI / 2,
-      "dark",
+      "light",
     ),
     plate(
       "m-diagonal-left",
@@ -119,7 +119,7 @@ export function createPlates(): PlateDef[] {
       [0, 0, footR, 2],
       -0.25,
       -diagAxis,
-      "light",
+      "dark",
     ),
     plate(
       "m-diagonal-right",
@@ -132,7 +132,7 @@ export function createPlates(): PlateDef[] {
       [footL, 0, M_WIDTH, 2],
       0.2,
       diagAxis,
-      "light",
+      "dark",
     ),
     plate(
       "m-stem-right",
@@ -145,7 +145,7 @@ export function createPlates(): PlateDef[] {
       [M_WIDTH - STROKE, 0, M_WIDTH, 2],
       -0.55,
       Math.PI / 2,
-      "dark",
+      "light",
     ),
     plate(
       "b-stem",
@@ -158,7 +158,7 @@ export function createPlates(): PlateDef[] {
       [B_X, 0, B_X + STROKE, 2],
       0.35,
       Math.PI / 2,
-      "dark",
+      "light",
     ),
     plate(
       "b-lobe-upper",
@@ -166,7 +166,7 @@ export function createPlates(): PlateDef[] {
       [LOBE_X, 1.04, LOBE_X + 0.38 + 0.48, 2],
       -0.4,
       0,
-      "light",
+      "dark",
     ),
     plate(
       "b-lobe-lower",
@@ -174,7 +174,7 @@ export function createPlates(): PlateDef[] {
       [LOBE_X, 0, MB_WIDTH, 1],
       0.05,
       0,
-      "light",
+      "dark",
     ),
   ];
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { useLayoutEffect } from "react";
-import { gsap, ScrollTrigger } from "@/lib/motion/gsap";
+import { gsap } from "@/lib/motion/gsap";
 import { setScene } from "@/lib/motion/scene-progress";
 
 /**
- * Rankle arrival: the title rises out of a mask as the scene comes up, and
- * the stage's release (scrolling past the held frame) is reported so the
- * landed plates leave with it.
+ * Rankle choreography: the title rises out of a mask as the scene comes up;
+ * while the frame is held, scroll drives `scene.rankle` for the canvas. The
+ * frame's release needs no trigger — the canvas tracks it from scroll.
  */
 export function RankleMotion() {
   useLayoutEffect(() => {
@@ -33,14 +33,20 @@ export function RankleMotion() {
           0.45,
         );
 
-      ScrollTrigger.create({
-        trigger: block,
-        start: "bottom bottom",
-        end: "bottom top",
-        onUpdate: (self) => setScene("rankleRelease", self.progress),
+      // The scene composes while the frame is held.
+      const scene = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: block,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.6,
+        },
+        onUpdate: () => setScene("rankle", scene.progress()),
       });
+      scene.to({}, { duration: 1 }, 0);
 
-      return () => setScene("rankleRelease", 0);
+      return () => setScene("rankle", 0);
     });
     return () => mm.revert();
   }, []);

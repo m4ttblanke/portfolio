@@ -9,8 +9,8 @@
 export const scene = {
   /** Hero exit, 0 (composed hero) → 1 (pieces arrived at Rankle). */
   hero: 0,
-  /** Rankle stage release, 0 (held) → 1 (scrolled one viewport away). */
-  rankleRelease: 0,
+  /** Rankle scene while its frame is held, 0 (arrived) → 1 (composed). */
+  rankle: 0,
   /** Fine-pointer position, -1…1 on each axis (0 when no mouse). */
   pointerX: 0,
   pointerY: 0,

@@ -7,4 +7,6 @@ export const rankle = {
   title: "Rankle",
   summary: "A daily ranking game built for arguments with friends.",
   stack: ["Next.js", "Supabase"],
+  href: "https://rankle.io",
+  linkLabel: "rankle.io",
 } as const;

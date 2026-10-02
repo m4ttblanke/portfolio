@@ -1,10 +1,11 @@
 /*
- * Rankle: a tall block whose sticky frame holds the scene while the plates
- * land. Copy on the left; the stage (rendered by the canvas) on the right.
+ * Rankle: a tall block whose sticky frame holds the scene while it composes.
+ * Copy on the left; the stage (two tier boards rendered by the canvas) on the
+ * right. The stage grid is the layout the canvas reads.
  */
 
 .block {
-  block-size: 220svh;
+  block-size: 300svh;
 }
 
 .frame {
@@ -27,12 +28,12 @@
 }
 
 .copy {
-  grid-column: 1 / span 6;
+  grid-column: 1 / span 5;
   grid-row: 2;
   align-self: center;
 }
 
-/* Display type sits behind the canvas so landed tiles can overlap it. */
+/* Display type sits behind the canvas layer. */
 .title {
   position: relative;
   z-index: var(--z-type);
@@ -40,7 +41,7 @@
   inline-size: max-content;
   overflow: clip;
   font-family: var(--font-display);
-  font-size: min(12cqi, 22svh);
+  font-size: min(10.5cqi, 20svh);
   font-stretch: var(--display-stretch);
   font-weight: var(--display-weight);
   letter-spacing: var(--display-tracking);
@@ -66,23 +67,84 @@
 }
 
 .meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-lg);
   margin-block-start: var(--space-md);
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.stage {
-  grid-column: 7 / -1;
-  grid-row: 1 / -1;
-  align-self: center;
-  block-size: 78%;
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
-/* Mobile: copy above, stage below, a shorter hold. */
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Two tier boards: tier letters, your board, a gutter for threads, a friend's. */
+.stage {
+  display: grid;
+  grid-column: 7 / -1;
+  grid-row: 1 / -1;
+  grid-template-columns: 1.5rem minmax(0, 1fr) clamp(3rem, 9cqi, 8rem) minmax(
+      0,
+      1fr
+    );
+  grid-template-rows: auto repeat(5, minmax(0, 1fr));
+  align-self: center;
+  block-size: min(78%, 40rem);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.boardLabel {
+  grid-row: 1;
+  padding-block-end: var(--space-sm);
+  color: var(--color-muted);
+}
+
+.boardLabel[data-board="you"] {
+  grid-column: 2;
+}
+
+.boardLabel[data-board="friend"] {
+  grid-column: 4;
+}
+
+.tier {
+  grid-column: 1;
+  align-self: center;
+  font-weight: 600;
+}
+
+.board {
+  grid-row: 2 / -1;
+}
+
+.board[data-rankle-board="you"] {
+  grid-column: 2;
+}
+
+.board[data-rankle-board="friend"] {
+  grid-column: 4;
+}
+
+/* Mobile: copy above, boards below, a shorter hold. */
 @media (max-width: 40rem) {
   .block {
-    block-size: 170svh;
+    block-size: 240svh;
   }
 
   .frame {
@@ -108,10 +170,16 @@
     margin-block-start: var(--space-md);
   }
 
+  .meta {
+    margin-block-start: var(--space-sm);
+  }
+
   .stage {
     grid-column: 1 / -1;
     grid-row: 3;
+    grid-template-columns: 1.25rem minmax(0, 1fr) 2.75rem minmax(0, 1fr);
     block-size: 92%;
+    margin-block-start: var(--space-md);
   }
 }
 
