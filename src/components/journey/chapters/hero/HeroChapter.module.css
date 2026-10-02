@@ -1,0 +1,28 @@
+.hero {
+  position: relative;
+  min-block-size: 100svh;
+  padding: var(--space-lg) var(--margin);
+}
+
+.descriptor {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-meta);
+}
+
+.object {
+  display: none;
+}
+
+.name {
+  position: relative;
+  z-index: var(--z-type);
+  font-family: var(--font-display);
+}
+
+.first,
+.last {
+  display: block;
+}

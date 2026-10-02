@@ -14,20 +14,10 @@
   transform: none;
 }
 
-.main {
+/* Provisional P0 structure: real chapter compositions arrive later. */
+.chapter {
   position: relative;
   z-index: var(--z-content);
-}
-
-/* Provisional P0 structure: real chapter compositions arrive in P1+. */
-.chapter {
   min-block-size: 100svh;
-  padding: var(--space-lg);
-}
-
-@media (min-width: 48rem) {
-  /* Reserve the corner occupied by the fixed chapter navigator. */
-  .chapter {
-    padding-inline-end: 14rem;
-  }
+  padding: var(--space-lg) var(--margin);
 }
