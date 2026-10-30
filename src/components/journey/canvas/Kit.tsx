@@ -12,7 +12,7 @@ import {
   type Mesh,
 } from "three";
 import { scene } from "@/lib/motion/scene-progress";
-import { frameTop as heldFrameTop, type Anchors } from "./anchors";
+import { frameTop as heldFrameTop, sceneInView, type Anchors } from "./anchors";
 import {
   CANONICAL_TURN,
   createPlates,
@@ -73,18 +73,20 @@ const TILT_PITCH = MathUtils.degToRad(3.5);
 /** Below this width, plates travel through a corridor clear of the copy. */
 const NARROW = 640;
 
-function usePointer() {
+function usePointer(anchors: RefObject<Anchors | null>) {
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       scene.pointerX = (event.clientX / window.innerWidth) * 2 - 1;
       scene.pointerY = (event.clientY / window.innerHeight) * 2 - 1;
-      invalidate();
+      // Past the P1 scenes the tilt has nothing to draw; the position is
+      // still kept, so the relief is current on the way back.
+      if (sceneInView(anchors.current, window.scrollY)) invalidate();
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, [invalidate]);
+  }, [anchors, invalidate]);
 }
 
 const smooth = (edge0: number, edge1: number, x: number) =>
@@ -127,7 +129,7 @@ export function Kit({
   const group = useRef<Group>(null);
   const tilt = useRef({ yaw: 0, pitch: 0 });
   const firstFrame = useRef(false);
-  usePointer();
+  usePointer(anchors);
 
   const geometries = useMemo(
     () =>

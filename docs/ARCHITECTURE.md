@@ -699,6 +699,17 @@ P1 uses two tiers: full WebGL, and a static render.
 
 There is no "simplified WebGL" tier yet. Mobile gets a different composition from CSS, not a different renderer.
 
+## P2 Integration (Gate 5)
+
+WebGL is scoped to P1. Chapters 03–06 (Experience, Education, Off the Clock, Contact) are DOM and CSS only; Off the Clock's still life is raster images with a small GSAP drift, not canvas.
+
+The persistent canvas stays mounted for the whole visit (no teardown), but past the P1 scenes it does no work. Every scene group hides once Plannr's frame has scrolled out above the viewport — Kit, RankleScene and PlannrScene all test `frameTop(plannr) > -frameHeight`, which holds exactly while `scrollY < plannr.blockBottom`. `sceneInView()` in `canvas/anchors.ts` states that condition once, and both input-driven wake-ups use it:
+
+- **Scroll** (`useAnchors`): invalidates while a scene is in view, plus one frame on the way out so the last pose is cleared; then nothing until scrolling back above `blockBottom`.
+- **Pointer tilt** (`Kit`): keeps recording the pointer but only invalidates while a scene is in view, so the relief is current on return.
+
+Scroll timelines still wake the loop through `setScene` while their scrubbed values settle (at most ~0.6 s after leaving Plannr); they are idle in P2. Layout changes (`ResizeObserver`) always draw one frame, which also gives a direct load of a later chapter its first frame. Unknown layout (no Plannr anchors) counts as in view.
+
 ---
 
 # Quality Tiers

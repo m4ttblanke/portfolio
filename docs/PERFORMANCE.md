@@ -484,6 +484,8 @@ Potential strategies:
 
 R3F's render behavior should be configured based on actual scene needs.
 
+Implemented: `frameloop="demand"` for the whole canvas, and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, P2 Integration). Scrolling Experience → Contact draws and clears nothing.
+
 ---
 
 # Visibility
@@ -867,6 +869,18 @@ Measured on the production build (`pnpm build && pnpm start`) in headless Chrome
 - These only show that nothing blocks the first paint and nothing shifts. Field numbers need a deployed, throttled or real-device measurement.
 
 Budgets for later chapters should be set against this baseline: keep the initial (non-3D) JS near 180 KB, add no per-scene 3D downloads without a measured reason, and keep peak draw calls in the tens.
+
+## P2 integration (Gate 5, 2026-10-29)
+
+Production build on localhost, Chromium with GPU rendering; transferred (compressed) bytes.
+
+- **JS:** 427 KB in total: ~182 KB initial, plus the lazy 3D chunk (245 KB). P2 added no JavaScript beyond the small Experience and Off the Clock drift components.
+- **P1 fallbacks:** 78 KB desktop, 48 KB mobile (unchanged).
+- **Off the Clock images:** 115 KB at 1440@2×, 22 KB at 1280@1×, 69 KB at 390@3×, 54 KB at 360@2×. Lazy: nothing is requested at the top of the page.
+- **Rendering:** peak 61 draw calls / 6.9k triangles per frame (Rankle hold, unchanged).
+- **P2 WebGL work:** scrolling Experience → end of Contact: 0 draws, 0 clears (before the guard: 52 empty clears per pass, plus one per mouse move). Idle: 0.
+- **P1 scroll frame timing:** p95 16.8 ms, no frame over 33 ms (vsync-bound, headless on a fast GPU; not a mid-range phone figure).
+- **CLS:** 0 over a full scroll at every tested viewport.
 
 ---
 

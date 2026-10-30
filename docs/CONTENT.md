@@ -347,6 +347,8 @@ Likely:
 - Physics Learning Center
 - selected relevant software/project experience only if needed
 
+Implemented (P2): Trader Joe's (work), Physics Learning Center, Cabrillo College (teaching), and SpaceComputer × UCSB — a sponsored senior project, not employment (team lead, 4Orbit, Fall 2026 – Present; no link while the repository is private). Source: `src/content/experience.ts`.
+
 ## Content Pattern
 
 Each experience should ideally contain:
@@ -488,6 +490,8 @@ Potentially:
 - vinyl/music
 - games
 - travel
+
+Implemented (P2): three subjects — Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3). Source: `src/content/personal.ts`.
 
 ## Sports
 
