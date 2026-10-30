@@ -1,12 +1,18 @@
 /*
- * Experience content. Dates, titles and duties come from the résumé/CV
- * evidence audited for the previous portfolio (M7/M8, 2026-09-24); Courses
- * Search is verified against the public repository and Matthew's merged PRs
- * (#23, #28, #38, #39); its Agile team practice is confirmed by Matthew. No
- * metrics are shown (the sales figure is omitted).
+ * Experience content. Trader Joe’s and the Physics Learning Center come from
+ * the résumé/CV evidence audited for the previous portfolio (M7/M8,
+ * 2026-09-24). No metrics are shown (the sales figure is omitted).
+ *
+ * SpaceComputer × UCSB is a sponsored senior project, not employment. Its
+ * signal is verified against the 4Orbit repository (main, 2026-10-29): the
+ * Cedar-gated Orbitport KMS flow with audit logging is Matthew's commit
+ * 5e5c382, verified live against SpaceComputer KMS on 2026-10-07. The repo is
+ * private, so the entry carries no link. "Team lead" is confirmed by Matthew.
+ * Courses Search (Fall 2025) was replaced by this entry; it lives in git
+ * history.
  */
 
-export type ExperienceKind = "work" | "teaching" | "team-codebase";
+export type ExperienceKind = "work" | "teaching" | "sponsored-project";
 
 /** ISO year-month (for `<time>` and the time field), plus the visible label. */
 type DatePoint = {
@@ -20,18 +26,19 @@ export type ExperienceEntry = {
   /** Visible kind label: entries are different kinds of experience. */
   readonly kindLabel: string;
   readonly organization: string;
+  /** A second organization the work is shared with, shown as "A × B". */
+  readonly partner?: string;
   /** Where the organization sits, set apart from its name. */
   readonly place?: string;
   readonly role: string;
   readonly start: DatePoint;
   /** A date, or "present" while ongoing. */
   readonly end: DatePoint | "present";
-  /** Visible label for an entry that spans one academic term. */
-  readonly term?: string;
   readonly signal: string;
   readonly link?: { readonly href: string; readonly label: string };
 };
 
+/** Rendered by chapter 03, in this order. */
 export const experience = [
   {
     id: "trader-joes",
@@ -55,20 +62,17 @@ export const experience = [
     signal: "Tutored mathematics, mechanics and introductory physics.",
   },
   {
-    id: "courses-search",
-    kind: "team-codebase",
-    kindLabel: "Collaborative software · Course project",
-    organization: "UCSB Courses Search",
-    role: "Student developer, CMPSC 156 team",
-    // UCSB's fall quarter: late September to mid December.
-    start: { iso: "2025-09", label: "September 2025" },
-    end: { iso: "2025-12", label: "December 2025" },
-    term: "Fall 2025",
+    id: "spacecomputer-ucsb",
+    kind: "sponsored-project",
+    kindLabel: "Sponsored senior project",
+    organization: "SpaceComputer",
+    partner: "UCSB",
+    role: "Team lead, 4Orbit",
+    // Only the quarter is verified. UCSB's fall quarter starts in late
+    // September; the label stays at that precision.
+    start: { iso: "2026-09", label: "Fall 2026" },
+    end: "present",
     signal:
-      "Worked in an Agile team on an inherited codebase, shipping merged changes through code review and mutation-tested CI.",
-    link: {
-      href: "https://github.com/ucsb-cs156-f25/proj-courses-f25-02/pulls?q=is%3Apr+author%3Am4ttblanke+is%3Amerged",
-      label: "Merged pull requests",
-    },
+      "Built an end-to-end flow where Cedar policy decides whether an agent’s request reaches SpaceComputer KMS through Orbitport, auditing every allow and deny.",
   },
 ] as const satisfies readonly ExperienceEntry[];

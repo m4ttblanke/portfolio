@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { experience, type ExperienceEntry } from "@/content/experience";
 import { ChapterLabel } from "../ChapterLabel";
 import { ExperienceMotion } from "./ExperienceMotion";
@@ -83,7 +83,17 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
 
       <div className={styles.text}>
         <h3 className={styles.organization}>
-          {entry.organization}
+          <Name text={entry.organization} />
+          {entry.partner && (
+            <>
+              {" "}
+              <span aria-hidden="true">×</span>
+              <span className="visually-hidden">and</span>
+              {/* Keeps "× UCSB" together when the name wraps. */}
+              {" "}
+              {entry.partner}
+            </>
+          )}
           {entry.place && (
             <span className={styles.place}>
               <span className="visually-hidden">, </span>
@@ -109,8 +119,7 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
 }
 
 function Period({ entry }: { entry: ExperienceEntry }) {
-  const { start, end, term } = entry;
-  if (term) return <time dateTime={start.iso}>{term}</time>;
+  const { start, end } = entry;
   return (
     <>
       <time dateTime={start.iso}>{start.label}</time> –{" "}
@@ -121,4 +130,18 @@ function Period({ entry }: { entry: ExperienceEntry }) {
       )}
     </>
   );
+}
+
+/*
+ * A camel-cased name ("SpaceComputer") may break at its inner capital, with
+ * no hyphen, only where the column is narrower than the whole word. The text
+ * itself, and so its accessible name, is unchanged.
+ */
+function Name({ text }: { text: string }) {
+  return text.split(/(?<=[a-z])(?=[A-Z])/).map((part, i) => (
+    <Fragment key={i}>
+      {i > 0 && <wbr />}
+      {part}
+    </Fragment>
+  ));
 }
