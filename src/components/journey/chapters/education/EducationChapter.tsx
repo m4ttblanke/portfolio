@@ -58,6 +58,9 @@ export function EducationChapter() {
                   <li key={area}>{area}</li>
                 ))}
               </ul>
+              {"areasSource" in line && (
+                <p className={styles.areasSource}>{line.areasSource}</p>
+              )}
             </div>
           </div>
         ))}

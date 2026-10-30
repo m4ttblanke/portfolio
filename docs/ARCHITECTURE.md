@@ -261,6 +261,23 @@ public/fallbacks/         six WebP scene renders
 
 Chapters render on the server; only the navigator, the per-chapter `*Motion` timelines and the canvas are client components.
 
+## Structure Added in P2
+
+```text
+content/                  experience.ts, education.ts, personal.ts, contact.ts
+components/journey/chapters/
+  ChapterLabel            shared chapter h2 (number + name, from navigation.ts)
+  experience/             ExperienceChapter (server) + ExperienceMotion (client)
+                          time-field.ts (Jan 2022 → build month, as fractions)
+  education/              EducationChapter (server, no motion)
+  off-clock/              OffClockChapter (server) + OffClockMotion (client)
+  contact/                ContactChapter (server, no motion)
+lib/assets/               still-life.ts (Off the Clock image registry, srcset)
+public/off-clock/         AVIF + WebP still-life images, five widths each
+```
+
+P2 adds two client components, both DOM motion. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
+
 ---
 
 # Server vs. Client Architecture
@@ -434,6 +451,8 @@ Contact     0 → 1
 ```
 
 Avoid one giant global GSAP timeline.
+
+Implemented: only Hero, Rankle and Plannr write scene progress. Experience and Off the Clock own DOM-only ScrollTriggers, and Education and Contact have none.
 
 Preferred model:
 
@@ -699,7 +718,9 @@ P1 uses two tiers: full WebGL, and a static render.
 
 There is no "simplified WebGL" tier yet. Mobile gets a different composition from CSS, not a different renderer.
 
-## P2 Integration (Gate 5)
+## WebGL Scope After Projects (P2)
+
+Decided in `decisions/003-webgl-scope-ends-after-projects.md`.
 
 WebGL is scoped to P1. Chapters 03–06 (Experience, Education, Off the Clock, Contact) are DOM and CSS only; Off the Clock's still life is raster images with a small GSAP drift, not canvas.
 

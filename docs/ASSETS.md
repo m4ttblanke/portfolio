@@ -143,7 +143,6 @@ Use when:
 
 Examples:
 
-- education nodes
 - simple particles if ever justified
 - connecting geometry
 - abstract structural forms
@@ -482,7 +481,7 @@ Create a distinctive identity object for Matthew that can function as:
 - hero focal point
 - motion anchor
 - transition object
-- possible Contact callback
+- Contact callback (P2: its static render, at rest at the end of the closing line)
 
 ## Desired Qualities
 
@@ -643,16 +642,7 @@ Pieces may:
 
 # Education Assets
 
-Prefer procedural geometry before generated models.
-
-Potential:
-
-- nodes
-- labels
-- simple connectors
-- subtle depth
-
-The education scene should remain readable.
+Implemented (P2): none. Education is purely typographic (`DESIGN.md`), with no nodes, connectors or 3D.
 
 Do not create elaborate 3D objects unless they add meaningful value.
 
@@ -1133,7 +1123,13 @@ P1 outcome: Batch 1 was realized without generated model files.
 - **3D payload:** none beyond the three.js runtime.
 - **Rendered assets:** the six static fallback renders above.
 
-Generated 3D assets remain an option for later chapters, subject to this gate.
+P2 outcome: no 3D assets. Live WebGL ends after Projects (`decisions/003`).
+
+- **Off the Clock:** three generated raster images (above).
+- **Contact:** reuses the hero fallback render.
+- **Experience and Education:** no assets.
+
+Generated 3D assets remain possible only through a new decision that supersedes `003`.
 
 ---
 
@@ -1147,14 +1143,18 @@ Settled in P1:
 - Plannr document style: a matte paper page, gold highlights, a navy calendar
 - fallback strategy: a captured static render per scene (above)
 
+Settled in P2:
+
+- Education needs no 3D and no assets
+- Off the Clock object set: glove with ball, vinyl record, game controller, as generated raster images (not 3D)
+- Contact reuses the hero fallback render rather than a new asset
+
 Still open:
 
 - whether KTX2 is needed
 - compression method (P1 loads no models or textures)
 - exact triangle budgets (the P1 peak is about 6.9k triangles per frame)
 - exact texture budgets
-- whether education needs 3D
-- exact Off the Clock object set
 - whether some scenes use rendered loops instead of real-time 3D
 
 ---

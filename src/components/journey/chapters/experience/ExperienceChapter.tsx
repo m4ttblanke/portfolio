@@ -107,12 +107,6 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
           <Period entry={entry} />
         </p>
         <p className={styles.signal}>{entry.signal}</p>
-        {entry.link && (
-          <a className={styles.link} href={entry.link.href}>
-            {entry.link.label}
-            <span aria-hidden="true"> ↗</span>
-          </a>
-        )}
       </div>
     </li>
   );

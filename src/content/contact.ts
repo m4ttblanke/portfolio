@@ -1,7 +1,6 @@
 /*
  * Canonical contact points (verified in the previous portfolio's
- * lib/site.ts). The résumé link stays absent until a corrected PDF exists;
- * the closing line is not yet chosen.
+ * lib/site.ts). The résumé link stays absent until a corrected PDF exists.
  */
 
 export type ContactLink = {

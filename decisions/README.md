@@ -43,3 +43,4 @@ When a decision changes, add a new ADR that supersedes the old one, and update t
 
 - [001 — GSAP and ScrollTrigger on native scrolling](001-gsap-scrolltrigger-native-scroll.md) (Accepted)
 - [002 — Scroll-derived scene state, one shared object system, static fallbacks](002-scroll-derived-scene-state-and-static-fallbacks.md) (Accepted)
+- [003 — WebGL scope ends after Projects](003-webgl-scope-ends-after-projects.md) (Accepted)

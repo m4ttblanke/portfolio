@@ -964,12 +964,13 @@ The scene should feel calmer and more structured than Rankle.
 
 # Experience Scene Design System
 
-Potential design elements:
+Implemented (P2): a shared time field.
 
-- giant year numerals
-- compact labels
-- strong alignment
-- large empty fields
+- **Scale.** Light display year numerals with hairlines (2022 → "Present") across the content width.
+- **Rules.** Each entry's ink duration rule steps down in a tight band beneath the scale, so the long ongoing rule visibly runs over the shorter ones. Ongoing rules run off the viewport edge.
+- **Entry text.** It hangs from the start of its rule in a narrow column: organization in display caps (place beneath, in small caps), then kind (muted), role (semibold), dates, and one signal line.
+- **Names.** All share one display size. Duration is encoded only by the rules.
+- **Below 60rem.** Entries stack, each with its own full-width gauge (track, year ticks, "2022" and "Present" at its ends) on the same scale.
 
 Avoid:
 
@@ -981,17 +982,16 @@ Avoid:
 
 # Education Scene Design System
 
-Potential visual elements:
+Implemented (P2): one typographic block, no nodes, clusters or connecting geometry.
 
-- nodes
-- clusters
-- labels
-- subtle connecting geometry
-- spatial grouping
+- **Lines.** Three monumental lines share one size and cap height. Each line's Archivo width (`wdth`) is tuned so the three fill one measure across ten of the twelve columns: Computer Science at 112.7%, Mathematics + Physics at 94.1%, Technology Management at 80%. The rows are equal, so every line starts the same distance below the last.
+- **Margin.** A ruled margin in the last two columns carries each line's credentials (degree semibold, place and date muted). Credentials from one institution on one date share a place line. The honors note sits there too, muted, under a small caps label.
+- **Areas.** They are glossed beneath each line in small caps, separated by slashes. Where the areas were taken somewhere other than the credentials beside them, a muted small caps line names the source (Mathematics + Physics: WEST VALLEY COLLEGE).
+- **Liberal Arts.** A.A. Liberal Arts is a muted "Also …" line in the margin column under the block.
+- **Below 60rem.** The margin moves into flow under a short rule.
+- **Below 40rem.** Each line breaks at its phrase. Each of the six phrases has its own width, so they stack as one justified column.
 
 Keep it visually legible.
-
-Do not let the section look like a network-analysis dashboard.
 
 ---
 
@@ -1027,14 +1027,17 @@ This is the strongest candidate for controlled Campione influence.
 
 Return to simplicity.
 
-Potential:
+Implemented (P2): the hero's grammar, settled.
 
-- enormous closing phrase
-- a few links
-- hero object callback
-- substantial whitespace
+- **Links.** Three label/value links (Email, GitHub, LinkedIn) sit where the hero's descriptor sits.
+- **Closing line.** YOUR MOVE. is anchored to the bottom at the hero name's scale, fitted to the width and never pushed below the fold. Its indent is mirrored: the first line steps in two columns.
+- **MB.** The MB relief, as the hero's static render, stands at the end of YOUR at cap height like a final glyph.
+- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page.
+- **Height.** The chapter is at least one viewport tall.
+- **Mobile.** Flush left, with labels over values.
+- **Compact viewport.** The chapter takes its natural height.
 
-No giant footer system.
+No giant footer system. P2 has no footer or colophon.
 
 No dense legal or sitemap area unless needed.
 
@@ -1196,12 +1199,15 @@ Settled in P1 (above):
 - the Rankle and Plannr compositions
 - the mobile hero composition
 
+Settled in P2 (in each scene section above):
+
+- the compositions for Experience, Education, Off the Clock and Contact
+- the contact closing phrase: YOUR MOVE.
+- no later scene uses dark mode; the second half stays on the bone page
+
 Still open:
 
 - exact button style
-- whether any later scene uses dark mode
-- exact contact closing phrase
-- compositions for Experience, Education, Off the Clock and Contact
 
 Do not lock these through documentation alone.
 

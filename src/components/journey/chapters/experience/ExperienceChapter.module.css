@@ -1,7 +1,8 @@
 /*
  * Experience: one shared time field (January 2022 → present). Each entry
  * hangs from its duration rule; the rules step down in a tight band under the
- * year scale, so the long ongoing rule visibly runs over the shorter ones. Names share one display size: duration is encoded only by the rules.
+ * year scale, so the long ongoing rule visibly runs over the shorter ones.
+ * Names share one display size: duration is encoded only by the rules.
  *
  * Below the field breakpoint (60rem, where hanging columns would get too
  * narrow) each entry carries its own full-width gauge on the same scale.
@@ -168,18 +169,6 @@
 .signal {
   margin-block-start: var(--space-md);
   line-height: 1.45;
-}
-
-.link {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: 2.75rem;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-}
-
-.link:hover {
-  text-decoration-thickness: 2px;
 }
 
 /*

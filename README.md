@@ -476,7 +476,7 @@ CLAUDE.md
 
 ## Current Status
 
-The project has completed **P1 — Creative Prototype** (branch `prototype/p1-opening`, pending final review).
+The project has completed **P1 — Creative Prototype** (merged to `main`).
 
 P1 delivers the opening journey:
 
@@ -489,12 +489,21 @@ P1 delivers the opening journey:
 - separate mobile compositions
 - static compositions for reduced motion, no WebGL and scene failure
 
-Experience, Education, Off the Clock and Contact are still P0 placeholders.
+**P2 — Second Half** (branch `prototype/p2-second-half`, pending final review and user verification) completes the journey:
+
+- Experience: a shared time field of duration rules (Trader Joe's, Physics Learning Center, SpaceComputer × UCSB)
+- Education: one typographic block of three lines, with credentials in a ruled margin
+- Off the Clock: a typeset still life of three subjects with generated object images
+- Contact: a still bookend to the hero, with the links and the closing line YOUR MOVE.
+
+Live WebGL ends after Projects. The second half is DOM, CSS and images, and the persistent canvas does no work there (`decisions/003`).
 
 Where to read more:
 
 - P1 decisions: `decisions/001`, `decisions/002`
 - P1 outcomes: the "Established in P1" and "P1 …" sections of `docs/DESIGN.md`, `docs/MOTION.md`, `docs/ARCHITECTURE.md`, `docs/ASSETS.md`, `docs/CONTENT.md`, `docs/ACCESSIBILITY.md` and `docs/PERFORMANCE.md`
+- P2 decision: `decisions/003`
+- P2 outcomes: the "Implemented (P2)" notes and the "Established in P2" and "P2 …" sections of the same docs and `docs/UX.md`
 
 The previous portfolio is not the implementation baseline for this project.
 

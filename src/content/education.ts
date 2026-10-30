@@ -20,8 +20,8 @@ export type EducationLine = {
   readonly credentials: readonly Credential[];
   /** Visible areas: thematic, a few per line. */
   readonly areas: readonly string[];
-  /** Representative courses behind the areas; not necessarily rendered. */
-  readonly courses?: readonly string[];
+  /** Where the areas were taken, when not at the line's institutions. */
+  readonly areasSource?: string;
   /** One compressed margin annotation, where the evidence supports it. */
   readonly honors?: {
     readonly label: string;
@@ -52,14 +52,9 @@ export const education = [
       "Machine learning & computer vision",
       "Software engineering",
     ],
-    courses: [
-      "Optimization foundations",
-      "Automata and formal languages",
-      "Computer networks",
-      "Machine learning",
-      "Computer vision",
-      "Advanced applications programming",
-    ],
+    // Representative courses behind these areas: optimization foundations,
+    // automata and formal languages, computer networks, machine learning,
+    // computer vision, advanced applications programming.
   },
   {
     id: "mathematics-physics",
@@ -78,8 +73,9 @@ export const education = [
       },
     ],
     areas: ["Linear algebra", "Discrete mathematics"],
-    // Linear algebra and discrete mathematics were taken at West Valley
-    // College, 2024–25.
+    // Taken at West Valley College, 2024–25, not Cabrillo: named beneath the
+    // areas so the credential beside them does not claim them.
+    areasSource: "West Valley College",
     // Cabrillo honors projects: a charged particle in crossed E and B fields
     // (Fall 2024); wave–particle duality, a Python interference model checked
     // against a laser and double slit (Spring 2025).

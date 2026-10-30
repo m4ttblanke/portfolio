@@ -120,6 +120,15 @@
   content: "/";
 }
 
+/* Where the areas were taken, when it differs from the credentials. */
+.areasSource {
+  color: var(--color-muted);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
 /* Subordinate to the credentials: muted, under a small uppercase label. */
 .honors {
   display: grid;

@@ -35,7 +35,6 @@ export type ExperienceEntry = {
   /** A date, or "present" while ongoing. */
   readonly end: DatePoint | "present";
   readonly signal: string;
-  readonly link?: { readonly href: string; readonly label: string };
 };
 
 /** Rendered by chapter 03, in this order. */
