@@ -629,6 +629,14 @@ This section can use the most expressive pointer behavior.
 
 Still avoid turning it into a toy.
 
+Implemented (Gate 4): desktop-only scroll drift, no pointer behavior. As the
+chapter crosses the viewport each object drifts upward through its settled
+position (reached mid-pass): the glove 7% of its own height, the record 5%,
+the controller 3%, so they read at different depths. Scrubbed, so scrolling
+back reverses it. No pin, rotation, scaling or loop; the words never move.
+Phones, reduced motion, compact presentation and no-JS show the settled
+composition.
+
 ---
 
 # Off the Clock → Contact

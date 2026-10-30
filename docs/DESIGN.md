@@ -1008,6 +1008,17 @@ Potentially:
 
 Still avoid clutter.
 
+Implemented (Gate 4): a typeset still life. A display echo of the chapter
+title (decorative; the chapter label is the heading), then three subjects as
+large display words ("01 — BASEBALL" with its fact beneath), each facing its
+object in the space the word leaves. Desktop is a Z — glove upper right
+beside the title, record middle left, controller lower right — at roughly
+real relative scale, on one stage measured in content widths. Objects never
+cross a word or fact, and never overlap each other. Below 60rem the subjects
+stack, word above object, alternating edges: glove left, record bleeding
+about 10% past the right edge (clipped by the chapter), controller beside its
+word. No pointer interaction; the images are not focusable.
+
 This is the strongest candidate for controlled Campione influence.
 
 ---
