@@ -13,11 +13,3 @@
 .skipLink:focus {
   transform: none;
 }
-
-/* Provisional P0 structure: real chapter compositions arrive later. */
-.chapter {
-  position: relative;
-  z-index: var(--z-content);
-  min-block-size: 100svh;
-  padding: var(--space-lg) var(--margin);
-}

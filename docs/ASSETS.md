@@ -143,7 +143,6 @@ Use when:
 
 Examples:
 
-- education nodes
 - simple particles if ever justified
 - connecting geometry
 - abstract structural forms
@@ -482,7 +481,7 @@ Create a distinctive identity object for Matthew that can function as:
 - hero focal point
 - motion anchor
 - transition object
-- possible Contact callback
+- Contact callback (P2: its static render, at rest at the end of the closing line)
 
 ## Desired Qualities
 
@@ -643,16 +642,7 @@ Pieces may:
 
 # Education Assets
 
-Prefer procedural geometry before generated models.
-
-Potential:
-
-- nodes
-- labels
-- simple connectors
-- subtle depth
-
-The education scene should remain readable.
+Implemented (P2): none. Education is purely typographic (`DESIGN.md`), with no nodes, connectors or 3D.
 
 Do not create elaborate 3D objects unless they add meaningful value.
 
@@ -683,6 +673,47 @@ The objects should share:
 - compatible camera assumptions
 
 They should feel like one still-life, not assets from unrelated libraries.
+
+## Implemented (Gate 4)
+
+Three generated reference images, one per approved subject: a baseball glove
+with ball (Baseball), a vinyl record (Vinyl), a game controller (Games). They
+are generated still lifes, **not photographs of Matthew's own objects**; they
+are decorative (`alt=""`) beside the words that name them, and no copy claims
+ownership. All three share an overhead camera, soft top light and a soft
+shadow falling down and slightly right, so they are never rotated or
+mirrored, and never overlap one another.
+
+Source masters (2752×1536 JPEG) are kept outside the repository. The
+processing recipe, run once per source:
+
+1. **Flatten the backdrop.** Fit a per-channel 4th-order 2D polynomial to the
+   backdrop pixels (excluding the object, dilated by 10% of its size, and the
+   shadow zone below/right of it; four rounds rejecting samples darker than
+   the fit), then divide the image by that surface. The backdrop becomes 1.0
+   and the source vignette disappears.
+2. **Crop** to the object plus 7% of its size (more below and right, for the
+   shadow).
+3. **Keep only real darkening.** Weight the darkening (1 − value) by a smooth
+   falloff around the object (dilated 3.5% of its size, extended toward the
+   shadow, Gaussian 3.5%), after a 0.6% noise floor. Residual backdrop becomes
+   pure white; the object and its original soft shadow are untouched.
+4. **Feather** the crop boundary to pure white over 8% of the short side.
+5. **Encode** at 360, 540, 720, 960 and 1200 px wide: AVIF (quality 46 for the
+   glove's texture, 50 otherwise; 4:2:0) and WebP (quality 72) fallback, into
+   `public/off-clock/{baseball,vinyl,games}-{width}.{avif,webp}`.
+
+On the page each image is multiplied (`mix-blend-mode: multiply`) onto the
+chapter's own bone background, so white disappears and the shadow darkens the
+bone as it did the original backdrop.
+
+A clean extraction with a transparent background was compared for each
+source (object matte by threshold, then by GrabCut, with color-to-alpha
+against white for the shadow). For all three it lost: the mattes took in part
+of the shadow, leaving light fringes under the glove and the controller and a
+too-white patch in the glove's web, while multiply left no halo and kept the
+real shadow. Metadata (master size, widths) lives in
+`src/lib/assets/still-life.ts`.
 
 ---
 
@@ -1092,7 +1123,13 @@ P1 outcome: Batch 1 was realized without generated model files.
 - **3D payload:** none beyond the three.js runtime.
 - **Rendered assets:** the six static fallback renders above.
 
-Generated 3D assets remain an option for later chapters, subject to this gate.
+P2 outcome: no 3D assets. Live WebGL ends after Projects (`decisions/003`).
+
+- **Off the Clock:** three generated raster images (above).
+- **Contact:** reuses the hero fallback render.
+- **Experience and Education:** no assets.
+
+Generated 3D assets remain possible only through a new decision that supersedes `003`.
 
 ---
 
@@ -1106,14 +1143,18 @@ Settled in P1:
 - Plannr document style: a matte paper page, gold highlights, a navy calendar
 - fallback strategy: a captured static render per scene (above)
 
+Settled in P2:
+
+- Education needs no 3D and no assets
+- Off the Clock object set: glove with ball, vinyl record, game controller, as generated raster images (not 3D)
+- Contact reuses the hero fallback render rather than a new asset
+
 Still open:
 
 - whether KTX2 is needed
 - compression method (P1 loads no models or textures)
 - exact triangle budgets (the P1 peak is about 6.9k triangles per frame)
 - exact texture budgets
-- whether education needs 3D
-- exact Off the Clock object set
 - whether some scenes use rendered loops instead of real-time 3D
 
 ---

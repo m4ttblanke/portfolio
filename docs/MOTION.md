@@ -169,13 +169,6 @@ syllabus
 → resolves into calendar tiles
 ```
 
-Education:
-
-```text
-isolated subject labels
-→ gather into clusters
-```
-
 ## Guidance
 
 Use when an object truly changes meaning or role.
@@ -502,7 +495,6 @@ Potential:
 
 - project objects recede
 - color returns toward neutral
-- large year typography enters
 - visual environment becomes simpler
 
 The visitor should feel a change from:
@@ -517,6 +509,8 @@ to:
 WHERE I'VE BEEN
 ```
 
+Implemented (P2): no transition choreography. The live scenes end with Plannr (`decisions/003`), and Experience begins as type on the bone page. The drop in intensity is the change.
+
 ---
 
 # Experience Motion Language
@@ -527,11 +521,13 @@ WHERE I'VE BEEN
 - chronological
 - deliberate
 
-### Potential Behaviors
+### Implemented (P2)
 
-- years move through the viewport
-- role information changes as a year becomes active
-- typography shifts in scale
+Each duration rule extends from its start toward its end (`scaleX` 0 → 1, transform origin at the rule's start). It starts when the rule enters the viewport and is complete when the rule reaches 60% of the viewport height.
+
+- Linear, scrubbed (`scrub: 0.6`). Scrolling back retracts it; a fast scroll or direct load lands fully drawn.
+- The years, names and text never move.
+- Static presentation creates nothing: the rules are drawn.
 
 Avoid:
 
@@ -539,27 +535,11 @@ Avoid:
 - animated resume cards
 - progress-line timelines
 
-The years themselves should carry the motion.
-
 ---
 
 # Experience → Education
 
-Potential concept:
-
-```text
-timeline
-→ fragments into conceptual clusters
-```
-
-or:
-
-```text
-year numerals
-→ reduce into academic nodes
-```
-
-This should feel less chronological and more spatial.
+Implemented (P2): none. Education follows in normal flow.
 
 ---
 
@@ -571,20 +551,9 @@ This should feel less chronological and more spatial.
 - exploratory
 - calm
 
-### Potential Behaviors
+### Implemented (P2)
 
-- subject clusters assemble
-- secondary course labels orbit or settle near category anchors
-- pointer proximity creates small movement
-- scroll adjusts cluster relationships
-
-Avoid:
-
-- chaotic force-directed graph
-- physics simulation where labels constantly move
-- unreadable node clouds
-
-All labels must remain understandable.
+None. Education is the stillest chapter, the low point of the energy curve. It has no timeline, no pointer behavior and no reveal.
 
 ---
 
@@ -592,20 +561,7 @@ All labels must remain understandable.
 
 The visual system may loosen.
 
-Potential:
-
-```text
-structured academic cluster
-→ disperses
-→ becomes still-life objects
-```
-
-The transition should signal:
-
-```text
-WORK / STUDY
-→ PERSONAL
-```
+Implemented (P2): no transition choreography. The loosening is compositional. Off the Clock moves from Education's rigid block to a Z of objects and words.
 
 ---
 
@@ -617,17 +573,13 @@ WORK / STUDY
 - tactile
 - slightly less rigid
 
-### Potential Behaviors
-
-- objects separate
-- labels appear
-- selected item subtly comes forward
-- small rotations
-- gentle depth changes
-
-This section can use the most expressive pointer behavior.
-
-Still avoid turning it into a toy.
+Implemented (Gate 4): desktop-only scroll drift, no pointer behavior. As the
+chapter crosses the viewport each object drifts upward through its settled
+position (reached mid-pass): the glove 7% of its own height, the record 5%,
+the controller 3%, so they read at different depths. Scrubbed, so scrolling
+back reverses it. No pin, rotation, scaling or loop; the words never move.
+Phones, reduced motion, compact presentation and no-JS show the settled
+composition.
 
 ---
 
@@ -635,14 +587,7 @@ Still avoid turning it into a toy.
 
 Motion should resolve rather than escalate.
 
-Potential:
-
-- objects recede
-- scene simplifies
-- hero object reappears
-- typography becomes dominant again
-
-The site should visually return to its identity system.
+Implemented (P2): no transition choreography. Off the Clock's drift settles as it leaves, and Contact arrives still.
 
 ---
 
@@ -654,13 +599,7 @@ The site should visually return to its identity system.
 - conclusive
 - minimal
 
-Potential:
-
-- hero object settles into a final pose
-- links reveal simply
-- final typography resolves
-
-No elaborate interaction is needed.
+Implemented (P2): no motion. The MB returns at rest as the hero's static render (`decisions/003`). Links behave as ordinary links.
 
 ---
 
@@ -674,7 +613,6 @@ Good examples:
 - document transformation
 - project transition
 - large typography movement
-- cluster assembly
 
 Poor examples:
 
@@ -698,7 +636,6 @@ Examples:
 
 - Plannr transformation
 - hero transition
-- education cluster formation
 
 Do not pin a section merely to make it feel interactive.
 
@@ -883,20 +820,20 @@ Each scene should define:
 
 ## Experience
 
-- roles and years shown in normal flow
+- duration rules drawn in full; roles and dates as text
 
 ## Education
 
-- clusters preassembled or converted to grouped layout
+- unchanged (no motion)
 
 ## Off the Clock
 
-- objects composed statically
-- labels directly available
+- objects at their settled positions
+- labels and facts always visible
 
 ## Contact
 
-- final composition shown directly
+- unchanged (no motion)
 
 ---
 
@@ -1222,6 +1159,21 @@ The same static presentation applies on a compact viewport, `(max-width: 40rem) 
 - All four Plannr steps are shown at full ink, so no meaning depends on motion.
 - Chapter links jump instantly.
 
+# Motion Established in P2
+
+The second half is DOM motion only. The canvas does nothing past Plannr (`decisions/003`).
+
+| Chapter | Motion | Presentation without it |
+|---|---|---|
+| Experience | `ExperienceMotion`: each duration rule draws from its start, scrubbed, from entering the viewport to 60% height | rules drawn |
+| Education | none | — |
+| Off the Clock | `OffClockMotion`, desktop only: objects drift upward through their settled position at 7% / 5% / 3% of their own height | settled |
+| Contact | none | — |
+
+- Both timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`.
+- No pinning, sticky holds, pointer behavior or loops.
+- Reduced motion, compact viewports and no-JS create no timelines and show the composed state. No-WebGL and scene failure leave P2 motion unchanged, because it does not depend on the canvas.
+
 # Open Motion Decisions
 
 Settled in P1:
@@ -1234,13 +1186,17 @@ Settled in P1:
 - the Rankle → Plannr transition
 - the Plannr runway
 
+Settled in P2:
+
+- pointer response stays in the hero; no P2 chapter responds to the pointer
+- later chapters reuse `scrub: 0.6` and linear scrubbing; no separate timing tokens were needed
+- no chapter after Projects uses live WebGL (`decisions/003`)
+
 Still open:
 
 - whether magnetic links are used
-- whether pointer response appears outside the hero
 - whether custom shaders are needed
 - exact low-power fallback threshold (P1: full WebGL or static only)
-- motion timing tokens for later chapters
 
 These should be learned through prototype quality and performance testing.
 

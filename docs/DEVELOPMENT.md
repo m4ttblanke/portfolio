@@ -726,6 +726,8 @@ Choose a browser-testing tool only when enough behavior exists to justify it.
 
 Do not install Playwright on day one unless the project immediately needs it.
 
+Status after P2: there is still no browser-test suite in the repository. P1 and P2 behavior was verified against the production build with ad hoc Playwright scripts kept outside the repository. Those scripts covered semantics, keyboard order, navigator state, hashes, Back/Forward, no-JS, reduced motion, no-WebGL, chunk failure, context loss, overflow across viewports and zoom, WebGL draw counts and transfer sizes. Results are recorded in `ACCESSIBILITY.md` and `PERFORMANCE.md`. Promoting a stable subset (hash navigation, reduced motion, no-JS content, no overflow) into the repository is the natural next step if regressions appear.
+
 ---
 
 # Accessibility Testing
@@ -1074,6 +1076,18 @@ Review:
 If it does not, redesign now.
 
 ---
+
+## P2 — Second Half
+
+Built after P1 approval, gate by gate on `prototype/p2-second-half`:
+
+- Gate 0: content and semantic skeleton for chapters 03–06
+- Gate 1: Experience
+- Gate 2: Education
+- Gate 3: Contact
+- Gate 4: Off the Clock
+- Gate 5: full-site pacing, and the end of WebGL rendering after Projects (`decisions/003`)
+- Final: verification, docs and cleanup
 
 ## Later Phases
 

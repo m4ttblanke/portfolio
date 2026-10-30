@@ -1,0 +1,181 @@
+/*
+ * Off the Clock: a typeset still life. Desktop places every word and object
+ * on one stage measured in content widths (--u), so the composition scales as
+ * a whole: the glove upper right, the record middle left, the controller lower
+ * right, each facing its display word. Objects never cross a word or a fact,
+ * with clearance for their scroll drift.
+ *
+ * The images are flattened onto white and multiplied onto the page bone, so
+ * the chapter carries its own bone background for them to blend with.
+ *
+ * Below 60rem (phones, and 200% zoom on laptops) the subjects stack, each word
+ * above its object, alternating edges; nothing moves.
+ */
+
+.chapter {
+  --u: 1cqi;
+  --word-size: calc(6.4 * var(--cq, 1cqi));
+
+  position: relative;
+  z-index: var(--z-content);
+  padding-block: calc(2 * var(--space-lg)) calc(3 * var(--space-lg));
+  padding-inline: var(--margin);
+  background: var(--color-bg);
+  /* The mobile record bleeds past the edge; clip it here, not globally. */
+  overflow-x: clip;
+  container-type: inline-size;
+}
+
+.title,
+.word {
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 0.84;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-block-start: var(--space-lg);
+  font-size: calc(7.2 * var(--cq, 1cqi));
+  white-space: nowrap;
+}
+
+.stillLife {
+  position: relative;
+  block-size: calc(66 * var(--u));
+  margin-block-start: calc(2.5 * var(--u));
+  padding: 0;
+  list-style: none;
+}
+
+.caption,
+.object {
+  position: absolute;
+}
+
+.word {
+  font-size: var(--word-size);
+}
+
+.index {
+  display: block;
+  margin-block-end: var(--space-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-stretch: 100%;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+}
+
+.fact {
+  margin-block-start: var(--space-md);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.object {
+  display: block;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.object img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+/*
+ * The Z, at roughly real relative scale: the record's disc is 32u across,
+ * the glove about as long, the controller about half the disc.
+ */
+.subject[data-subject="baseball"] .object {
+  inset-block-start: calc(-13 * var(--u));
+  inset-inline-start: calc(65 * var(--u));
+  inline-size: calc(28.5 * var(--u));
+}
+
+.subject[data-subject="baseball"] .caption {
+  inset-block-start: calc(2 * var(--u));
+  inset-inline-start: 0;
+}
+
+.subject[data-subject="vinyl"] .object {
+  inset-block-start: calc(17 * var(--u));
+  inset-inline-start: calc(-1.5 * var(--u));
+  inline-size: calc(37.3 * var(--u));
+}
+
+.subject[data-subject="vinyl"] .caption {
+  inset-block-start: calc(30 * var(--u));
+  inset-inline-start: calc(44 * var(--u));
+}
+
+.subject[data-subject="games"] .object {
+  inset-block-start: calc(47 * var(--u));
+  inset-inline-start: calc(73 * var(--u));
+  inline-size: calc(18.7 * var(--u));
+}
+
+.subject[data-subject="games"] .caption {
+  inset-block-start: calc(51 * var(--u));
+  inset-inline-start: calc(44 * var(--u));
+}
+
+@media (max-width: 60rem) {
+  .chapter {
+    --word-size: min(calc(13 * var(--cq, 1cqi)), 4.5rem);
+  }
+
+  .title {
+    font-size: min(calc(15 * var(--cq, 1cqi)), 6rem);
+    white-space: normal;
+  }
+
+  .stillLife {
+    display: grid;
+    gap: calc(2 * var(--space-lg));
+    block-size: auto;
+    margin-block-start: calc(2 * var(--space-lg));
+  }
+
+  .caption,
+  .object {
+    position: static;
+  }
+
+  .subject {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  /* Alternating edges: glove left, record bleeding off the right edge,
+     the controller beside its word. */
+  .subject[data-subject="baseball"] .object {
+    inline-size: 64%;
+    margin-inline-start: -2%;
+  }
+
+  .subject[data-subject="vinyl"] .object {
+    inline-size: calc(100% + var(--margin));
+    margin-inline-end: calc(-1 * var(--margin));
+    /* The disc sits 8% in from its image's right edge; this carries about
+       10% of the disc past the viewport edge, clipped by the chapter. */
+    translate: 17% 0;
+  }
+
+  .subject[data-subject="games"] {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-md);
+  }
+
+  .subject[data-subject="games"] .object {
+    inline-size: 100%;
+  }
+}

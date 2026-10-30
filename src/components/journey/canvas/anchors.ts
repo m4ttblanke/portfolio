@@ -32,6 +32,19 @@ export function frameTop(held: Held, scrollY: number) {
   );
 }
 
+/**
+ * Whether any P1 scene can be on screen. Every scene group hides once
+ * Plannr's frame has scrolled out above the viewport (Kit, RankleScene and
+ * PlannrScene all test `frameTop(plannr) > -frameHeight`, which holds exactly
+ * while `scrollY < blockBottom`). Past that point (Experience to Contact) a
+ * frame would only clear an empty canvas, so scroll and pointer input stop
+ * invalidating there. Unknown layout counts as in view.
+ */
+export function sceneInView(anchors: Anchors | null, scrollY: number) {
+  const plannr = anchors?.plannr;
+  return !plannr || scrollY < plannr.blockBottom;
+}
+
 function relative(element: Element, frame: DOMRect): Rect {
   const r = element.getBoundingClientRect();
   return {
@@ -120,8 +133,16 @@ export function useAnchors() {
     for (const element of observed) {
       if (element) observer.observe(element);
     }
-    // Scene poses depend on raw scroll position as well as progress.
-    const onScroll = () => invalidate();
+    // Scene poses depend on raw scroll position as well as progress. Past
+    // the P1 scenes nothing can draw: invalidate once more on the way out
+    // (that frame hides the last pose), then not at all until scrolling
+    // back. Wherever the page loads, `measure` has drawn one frame.
+    let wasInView = sceneInView(anchors.current, window.scrollY);
+    const onScroll = () => {
+      const inView = sceneInView(anchors.current, window.scrollY);
+      if (inView || wasInView) invalidate();
+      wasInView = inView;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       observer.disconnect();

@@ -374,21 +374,20 @@ Anchor navigation should be immediate or nearly immediate.
 
 ## Experience
 
-- years and roles remain readable in sequence
-- no large sliding timeline needed
+- duration rules are drawn in full; every date is also text, so no meaning depends on rule length
 
 ## Education
 
-- clusters appear already organized or as grouped DOM sections
+- unchanged: the chapter has no motion
 
 ## Off the Clock
 
-- objects remain static
-- labels are directly accessible
+- objects remain static at their settled positions
+- labels and facts are always visible text
 
 ## Contact
 
-- final composition appears directly
+- unchanged: the chapter has no motion
 
 ---
 
@@ -1049,7 +1048,49 @@ Verified on the production build. Desktop checks used headless Chrome; mobile ch
 
 **Not yet verified**
 
-- Safari, real mobile devices and screen-reader passes: these are manual tests.
+- Safari, real mobile devices and screen-reader passes: these are manual tests. (P2 status below.)
+
+## P2 Results
+
+Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ran in Playwright Chromium and WebKit. Mobile checks used Chromium mobile emulation.
+
+**Structure (automated)**
+
+- The heading outline is one `h1`, then `h2` 02–06. Each section is labelled by its `h2`.
+- `h3`s: each Experience organization, each Education line, and each Off the Clock subject.
+- Experience: the "×" in SpaceComputer × UCSB is `aria-hidden`, with a visually hidden "and". The place is announced after a visually hidden comma. Dates use `<time>`.
+- Education: each line's heading, then its credentials, honors and areas (a list). Mathematics + Physics adds "West Valley College" after its areas. A.A. Liberal Arts follows the block.
+- Off the Clock: the display echo of the title and each "01 —" index are `aria-hidden`. The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, Games / Elden Ring ×3.
+- The still-life images and the Contact MB have `alt=""` and are never focusable.
+- Contact: three named links (Email, GitHub, LinkedIn). The closing line is one link, named "Your move. Email mattheweblanke@gmail.com".
+
+**Keyboard and navigation (automated)**
+
+- Tab order: skip link, navigator toggle, chapters 01–06, rankle.io, tryplannr.app, the three Contact links, the closing link. Every stop has a visible focus style, and no decorative element is a tab stop.
+- The closing link's focus ring stays inside the viewport at 1440, 1280, 390 and 360 widths.
+- `aria-current` follows the midline through all six chapters, down and up, at 1440, 390 and 360.
+- Direct loads of every hash land with the section at the top. Back and Forward restore sections.
+
+**Modes (automated)**
+
+- No JavaScript: all P2 copy, the drawn rules, the settled still life, the chapter list and anchors work.
+- Reduced motion: no timelines. Rules are drawn and objects settled.
+- No WebGL, a failed 3D chunk and context loss: P2 is unaffected (no errors), with Contact reachable and four links.
+
+**Zoom and widths (automated, emulated)**
+
+- No horizontal overflow and no clipped P2 or hero text in Chromium and WebKit, with normal and reduced motion, at:
+  - 1440×900, 1280×800, 1440×680
+  - 200% (720×450), 250% (576×360) and 300% (480×300)
+  - 390×844, 360×740 and 320×568
+- 250% and up switch to the compact static presentation, as in P1.
+- Page zoom was emulated as a smaller viewport at a higher DPR. That matches Chrome. Real Safari page zoom behaves differently (see the WebKit note above) and is checked by hand.
+
+**Pending manual verification**
+
+- Real Safari page zoom at 100, 200, 250 and 300%.
+- One full P2 pass on a real phone.
+- A VoiceOver pass. The automated accessibility-tree checks above are not a screen-reader test.
 
 ---
 

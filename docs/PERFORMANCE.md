@@ -484,6 +484,8 @@ Potential strategies:
 
 R3F's render behavior should be configured based on actual scene needs.
 
+Implemented: `frameloop="demand"` for the whole canvas, and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, WebGL Scope After Projects, and `decisions/003`). Scrolling Experience → Contact draws and clears nothing.
+
 ---
 
 # Visibility
@@ -641,6 +643,8 @@ Experience may need little or no heavy asset loading.
 Education and Off the Clock should load later.
 
 Do not preload personal still-life assets on first paint.
+
+Implemented (P2): Experience, Education and Contact load no assets of their own. The Contact MB reuses the hero fallback, lazy. The Off the Clock images are `loading="lazy"`, AVIF with WebP fallback, with phone-specific sources capped at 960 px. Nothing from P2 is requested at the top of the page.
 
 ---
 
@@ -867,6 +871,47 @@ Measured on the production build (`pnpm build && pnpm start`) in headless Chrome
 - These only show that nothing blocks the first paint and nothing shifts. Field numbers need a deployed, throttled or real-device measurement.
 
 Budgets for later chapters should be set against this baseline: keep the initial (non-3D) JS near 180 KB, add no per-scene 3D downloads without a measured reason, and keep peak draw calls in the tens.
+
+## Final P2 Baseline (2026-10-29)
+
+Production build (`pnpm build && pnpm start`) on localhost, measured in Playwright Chromium with GPU rendering, unthrottled. Bytes are transferred (compressed) over a full scroll of the page.
+
+**Transfer by viewport**
+
+| Viewport | JS | Fonts | HTML + CSS | P1 fallbacks | Off the Clock |
+|---|---|---|---|---|---|
+| 1440×900 @2× | 427 KB (182 KB initial + 245 KB lazy 3D chunk) | 88 KB | 17 KB | 78 KB | 115 KB |
+| 1280×800 @1× | 427 KB | 88 KB | 17 KB | 78 KB | 22 KB |
+| 390×844 @3× | 427 KB | 88 KB | 17 KB | 48 KB | 69 KB |
+| 360×740 @2× | 427 KB | 88 KB | 17 KB | 48 KB | 54 KB |
+
+- P2 added no 3D, models or textures. Its JavaScript is two small DOM motion components inside the initial bundle, which stays at about 182 KB (P1: 183 KB).
+- The Off the Clock images are lazy: nothing is requested at the top of the page.
+
+**Rendering**
+
+- Peak: 61 draw calls / 6.9k triangles per frame (Rankle hold, unchanged from P1).
+- Idle at the top: 0 draws, 0 clears.
+- P1 scroll frame timing, hero to the end of Plannr: p50 16.7 ms, p95 16.7–16.8 ms, no frame over 33 ms at any viewport. This is vsync-bound on a fast GPU, not a mid-range phone figure.
+
+**P2 WebGL work (`decisions/003`)**
+
+| P2 activity | WebGL draws | WebGL clears |
+|---|---|---|
+| Scrolling Experience → end of Contact | **0** | **0** |
+| 40 pointer moves over P2 | 0 | 0 |
+| Idle in P2 (2 s) | 0 | 0 |
+| Direct load of `/#contact`, scrolling within P2 | 0 | 0 |
+
+- Before the Gate 5 guard, every P2 pass cleared the empty canvas 52 times, plus once per mouse move.
+- Scrolling back into Plannr resumes drawing immediately.
+- An instant jump from Plannr to Contact issues settling clears (19 in the test run) and no draws, and leaves the canvas empty.
+
+**Layout stability**
+
+- CLS 0 over a full scroll at 1440, 1280, 390 and 360.
+
+All figures are within the P1 budgets (initial JS near 180 KB, no new per-scene 3D downloads, peak draws in the tens). No further optimization was needed.
 
 ---
 

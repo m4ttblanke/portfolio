@@ -605,6 +605,8 @@ The visitor should feel:
 
 > I understand what he builds. Now show me where he has been.
 
+Implemented (P2): there is no bridge animation. The live scenes end with Plannr, and Experience opens as plain type on the page (`decisions/003`). The drop in energy is the transition.
+
 ---
 
 # Chapter 03 — Experience
@@ -625,81 +627,17 @@ Matthew has substantial real-world work experience, academic support experience,
 
 ---
 
-## Visible Content
+## Implemented (P2)
 
-Potential experiences:
+**Content.** Three entries in chronological order: Trader Joe's, the Physics Learning Center (Cabrillo College), and SpaceComputer × UCSB. Each has its organization, kind, role, dates as text, and one signal line (exact copy in `CONTENT.md`). Full details stay in the résumé. There is no résumé link until a corrected PDF exists.
 
-- Trader Joe's
-- Physics Learning Center
-- UCSB / project work where appropriate
+**Visual model.** One shared time field runs from January 2022 to the present. Year numerals and hairlines mark the scale. Each entry hangs from a duration rule on that field. Rule length is the only encoding of time, and all names share one display size. An ongoing rule runs through "Present" to the viewport edge.
 
-Each experience should use very little copy.
+**Interaction.** Reading only. Each rule extends from its start as it scrolls into view (scrubbed; see `MOTION.md`). There is no dragging, no sticky year and no replaced role information.
 
----
+**Mobile.** Below 60rem (phones, and laptops at about 200% zoom), entries stack. Each entry carries its own full-width 2022 → Present gauge on the same scale, so overlaps still read down the column.
 
-## Visual Model
-
-Avoid standard timeline UI.
-
-Potential approach:
-
-Large years become visual architecture.
-
-Example:
-
-```text
-2020
-
-TRADER JOE'S
-```
-
-then:
-
-```text
-2024
-
-PHYSICS LEARNING CENTER
-```
-
-then:
-
-```text
-2025
-
-UCSB
-```
-
-The exact years and sequencing must be verified in `CONTENT.md`.
-
----
-
-## Interaction
-
-Scroll may:
-
-- move large year typography
-- replace role information
-- shift the composition through time
-
-No manual timeline dragging should be required.
-
----
-
-## Detail Strategy
-
-The homepage only communicates the important signal.
-
-Full details live in the résumé.
-
-Provide a clear résumé path without reproducing the document.
-
----
-
-## Mobile
-
-Mobile may display experiences sequentially.
-
-Large year typography can remain, but should not make role details unreadable.
+Replaced: the earlier concept of large year numerals as scrolling architecture was not built.
 
 ---
 
@@ -725,56 +663,23 @@ The interaction should make these relationships understandable quickly.
 
 ---
 
-## Visual Model
+## Implemented (P2)
 
-Potentially a spatial cluster system.
+**Visual model.** One typographic block. COMPUTER SCIENCE, MATHEMATICS + PHYSICS and TECHNOLOGY MANAGEMENT are three monumental lines at one size. Each line's Archivo width is tuned so the three fill the same measure.
 
-Primary clusters:
+- Credentials, and the one honors note, sit in a ruled margin beside their line.
+- A few representative areas are glossed beneath each line. They are not a course list.
+- A.A. Liberal Arts stays subordinate, as an "Also …" line under the block.
 
-```text
-COMPUTER SCIENCE
-MATHEMATICS + PHYSICS
-TECHNOLOGY MANAGEMENT
-```
+**Interaction.** None. The chapter is static: no motion, no pointer behavior.
 
-Supporting course nodes may gather around each cluster.
+**Mobile.** Below 60rem, the credentials follow each line in flow under a short rule. Below 40rem each line breaks at its phrase (COMPUTER / SCIENCE), never mid-word. Each phrase has its own width, so all six phrases share one measure.
 
----
-
-## Interaction
-
-Potential behavior:
-
-- clusters assemble with scroll
-- nearby nodes subtly respond to pointer
-- relationships become visually apparent
-
-Avoid making the visitor decode a complicated graph.
-
-This is an art-directed academic map, not a data visualization product.
-
----
+Replaced: the planned cluster and node map, and any graph-like structure, was not built.
 
 ## Content Density
 
-Show representative coursework, not every course.
-
-Selection criteria:
-
-- academically meaningful
-- relevant to target audience
-- demonstrates breadth
-- demonstrates progression
-
-Complete academic details do not need to appear on the homepage.
-
----
-
-## Mobile
-
-Clusters may become sequential grouped sections.
-
-Do not force a complex graph onto a narrow screen.
+Show representative areas, not every course. Complete academic details stay in the résumé.
 
 ---
 
@@ -796,59 +701,22 @@ Matthew has clear interests and personality beyond technical work.
 
 ---
 
-## Potential Topics
+## Implemented (P2)
 
-A small selection from:
+**Content.** Three subjects, each a word and a fact: Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3).
 
-- sports
-- vinyl/music
-- games
-- travel
+**Visual model.** A typeset still life in the DOM.
 
-The final selection will be defined in `CONTENT.md`.
+- A display echo of the chapter title comes first.
+- Each subject is a large display word with its fact beneath. It faces a generated reference image of its object: a glove, a record, a controller.
+- The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
+- Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
----
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. On desktop the objects drift slightly, at different rates, as the chapter scrolls. The words never move.
 
-## Visual Model
+**Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
-Potential generated still-life.
-
-Example objects:
-
-- vinyl record
-- basketball
-- baseball
-- controller
-- travel object
-
-The objects should feel like one art-directed composition.
-
----
-
-## Interaction
-
-Potential behavior:
-
-- objects separate slightly
-- labels appear
-- hover/focus identifies individual items
-- scroll changes composition
-
-Avoid:
-
-- hobby cards
-- icon grids
-- long descriptions
-
----
-
-## Mobile
-
-Touch users need a clear way to reveal any hidden labels.
-
-Do not depend on hover.
-
-The composition may simplify significantly.
+Replaced: the planned 3D still life and hover-revealed labels were not built (`decisions/003`).
 
 ---
 
@@ -860,30 +728,27 @@ Give the journey a clear ending and make contact frictionless.
 
 ---
 
-## Primary Content
+## Implemented (P2)
 
-- email
-- GitHub
-- LinkedIn
-- résumé
+**Content.**
 
-Potential closing line:
+- Email: mattheweblanke@gmail.com
+- GitHub: @m4ttblanke
+- LinkedIn: in/m4ttblanke
+- The closing line, YOUR MOVE., which is itself the email link.
 
-```text
-SAY HI.
-```
+There is no résumé link until a corrected PDF exists.
 
-or another concise treatment.
+**Visual model.** A still bookend to the hero.
 
-Exact language remains open.
+- The links sit where the hero's descriptor sits.
+- The closing line is anchored to the bottom at the hero name's scale, with the hero's indent mirrored.
+- The MB returns at rest at the end of YOUR. It is the hero's own static render, not a live canvas (`decisions/003`).
+- The rule under MOVE. is the last mark on the page.
 
----
+**Mobile.** Stacked and flush left. Labels sit above values, and the MB is a small signature on the first line.
 
-## Visual Model
-
-The hero object may return or resolve here.
-
-This creates a visual callback and gives the experience closure.
+Replaced: the live return of the hero object.
 
 ---
 
@@ -906,13 +771,7 @@ Do not add:
 
 The user should feel the journey is complete.
 
-The ending may include a very small footer for:
-
-- copyright
-- build credit
-- minimal utility information
-
-Do not let the footer visually overpower Contact.
+Implemented (P2): Contact is one viewport tall, so the journey ends on the closing line. There is no footer and no colophon.
 
 ---
 
@@ -1090,19 +949,19 @@ Project objects statically composed.
 
 ## Experience
 
-Years and roles visible without animated transitions.
+Duration rules drawn in full; every date is also text.
 
 ## Education
 
-Clusters already assembled or presented sequentially.
+Unchanged: the chapter has no motion.
 
 ## Off the Clock
 
-Objects already arranged and labeled.
+Objects at their settled positions; every label and fact visible.
 
 ## Contact
 
-Final resolved composition.
+Unchanged: the chapter has no motion.
 
 Chapter navigation should move immediately or with minimal motion.
 
@@ -1236,6 +1095,8 @@ playful
 Contact
 quiet
 ```
+
+Approved (P2) energy curve: Name and Projects high; Experience medium-low; Education lowest; Off the Clock a brief rise; Contact a still resolution.
 
 Do not make every chapter equally animated.
 

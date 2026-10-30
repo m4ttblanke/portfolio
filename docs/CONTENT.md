@@ -347,6 +347,8 @@ Likely:
 - Physics Learning Center
 - selected relevant software/project experience only if needed
 
+Implemented (P2): Trader Joe's (work), Physics Learning Center, Cabrillo College (teaching), and SpaceComputer × UCSB — a sponsored senior project, not employment (team lead, 4Orbit, Fall 2026 – Present; no link while the repository is private). Exact copy: "Content Established in P2" below. Source: `src/content/experience.ts`.
+
 ## Content Pattern
 
 Each experience should ideally contain:
@@ -472,6 +474,8 @@ Keep these concise.
 
 A résumé or dedicated résumé route may contain fuller academic detail.
 
+Implemented (P2): the three domains, each with its credentials and a few representative areas. The Mathematics + Physics line adds one honors note. A.A. Liberal Arts stays subordinate. Exact copy: "Content Established in P2" below. Source: `src/content/education.ts`.
+
 ---
 
 # Chapter 05 — Off the Clock
@@ -488,6 +492,8 @@ Potentially:
 - vinyl/music
 - games
 - travel
+
+Implemented (P2): three subjects — Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3). Source: `src/content/personal.ts`.
 
 ## Sports
 
@@ -571,21 +577,15 @@ Keep this extremely simple.
 - LinkedIn
 - Résumé
 
-## Potential Closing Copy
+## Closing Copy
 
-A simple line may be used.
-
-Examples:
+Implemented (P2):
 
 ```text
-SAY HI.
+YOUR MOVE.
 ```
 
-or:
-
-```text
-LET'S TALK.
-```
+It is the email link. Email, GitHub and LinkedIn are live; the résumé link waits for a corrected PDF.
 
 Do not over-write the ending.
 
@@ -814,7 +814,7 @@ Short role lines.
 
 ## Education
 
-Mostly labels and clusters.
+Mostly labels: three lines, credentials and areas.
 
 ## Off the Clock
 
@@ -1003,22 +1003,71 @@ Live copy is in `src/content/` (`profile.ts`, `projects.ts`, `navigation.ts`).
 - No metrics, roles or dates are shown for either project.
 - Each scene stays well under the 40–60 word budget.
 
+# Content Established in P2
+
+Live copy is in `src/content/` (`experience.ts`, `education.ts`, `personal.ts`, `contact.ts`).
+
+**Experience**
+
+- TRADER JOE'S. Work. Crew member, grocery section lead. June 2022 – Present. "Led grocery ordering, inventory planning and merchandising."
+- PHYSICS LEARNING CENTER, Cabrillo College. Teaching. Math and physics tutor. August 2024 – May 2025. "Tutored mathematics, mechanics and introductory physics."
+- SPACECOMPUTER × UCSB. Sponsored senior project. Team lead, 4Orbit. Fall 2026 – Present. "Built an end-to-end flow where Cedar policy decides whether an agent's request reaches SpaceComputer KMS through Orbitport, auditing every allow and deny."
+
+**Education**
+
+- COMPUTER SCIENCE
+  - B.S. Computer Science, UC Santa Barbara, Expected June 2027
+  - A.S. Computer Science, Cabrillo College, May 2025
+  - Areas: Algorithms & theory / Computer networks / Machine learning & computer vision / Software engineering
+- MATHEMATICS + PHYSICS
+  - A.S.-T Mathematics and A.S.-T Physics, Cabrillo College, May 2025
+  - Honors modeling: Crossed E and B fields; Wave–particle duality
+  - Areas: Linear algebra / Discrete mathematics, attributed beneath to West Valley College (where they were taken, not Cabrillo)
+- TECHNOLOGY MANAGEMENT
+  - Technology Management certificate, UC Santa Barbara, In progress
+  - Areas: Entrepreneurship / Business strategy / Marketing
+- Subordinate: "Also A.A. Liberal Arts, Cabrillo College, May 2025"
+
+**Off the Clock**
+
+- BASEBALL: Former pitcher
+- VINYL: 100+ records
+- GAMES: Elden Ring ×3
+
+The images beside them are generated representations of each interest, not Matthew's own objects. They are decorative, and no copy claims ownership.
+
+**Contact**
+
+- Email: mattheweblanke@gmail.com
+- GitHub: @m4ttblanke
+- LinkedIn: in/m4ttblanke
+- Closing line: YOUR MOVE. (the email link)
+
+**Sources and limits**
+
+- Experience and Education facts come from the résumé/CV evidence audited for the previous portfolio.
+- SpaceComputer × UCSB is verified against the private 4Orbit repository and confirmed by Matthew. It has no link while the repository is private.
+- No metrics, GPA, grades or honors lists are shown.
+- There is no résumé link until a corrected PDF exists, and no footer or colophon.
+
 # Open Content Questions
+
+Resolved in P2:
+
+- experience chronology shown publicly: the three entries above
+- coursework: representative areas only
+- Off the Clock topics: baseball, vinyl, games (no travel or favorite teams)
+- Trader Joe's measurable result: not shown
+- Contact closing line: YOUR MOVE.
 
 These should be resolved later, not prematurely.
 
 - whether location appears in hero
 - whether GPA appears anywhere outside résumé
-- exact experience chronology shown publicly
-- whether Trader Joe's includes a measurable growth result
 - which secondary projects appear
-- which coursework gets selected
-- exact Off the Clock topics
-- whether favorite teams appear
-- whether travel appears
 - whether project deep details are expandable
 - whether project source links are visible by default
-- exact Contact closing line
+- the corrected résumé PDF and its link
 
 These decisions should be made in context of the actual compositions.
 
