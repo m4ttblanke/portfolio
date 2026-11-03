@@ -25,7 +25,8 @@ const sizes: Record<StillLifeId, { mobile: string; desktop: string }> = {
  * middle left, controller lower right) at roughly real relative scale. The
  * images are generated references, decorative beside the words that name
  * them. On desktop the objects drift at different rates as the chapter
- * scrolls (OffClockMotion); the words never move.
+ * scrolls, the record turning slightly, and the display title lags behind
+ * them (OffClockMotion); the subject words never move.
  */
 export function OffClockChapter() {
   return (
@@ -36,7 +37,7 @@ export function OffClockChapter() {
     >
       <ChapterLabel id="off-clock" />
       {/* Display echo of the chapter label, which is the heading. */}
-      <p aria-hidden="true" className={styles.title}>
+      <p aria-hidden="true" className={styles.title} data-off-clock-title>
         Off the Clock
       </p>
 

@@ -484,7 +484,7 @@ Potential strategies:
 
 R3F's render behavior should be configured based on actual scene needs.
 
-Implemented: `frameloop="demand"` for the whole canvas, and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, WebGL Scope After Projects, and `decisions/003`). Scrolling Experience → Contact draws and clears nothing.
+Implemented: `frameloop="demand"` for the whole canvas, and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, WebGL Scope After Projects, and `decisions/003`). Scrolling Experience → Contact draws and clears nothing, and layout changes there (lazy images) no longer wake it either.
 
 ---
 
@@ -912,6 +912,50 @@ Production build (`pnpm build && pnpm start`) on localhost, measured in Playwrig
 - CLS 0 over a full scroll at 1440, 1280, 390 and 360.
 
 All figures are within the P1 budgets (initial JS near 180 KB, no new per-scene 3D downloads, peak draws in the tens). No further optimization was needed.
+
+## P2.5 Motion Baseline (2026-11-02)
+
+Production build on localhost, Playwright Chromium (GPU) unless noted, with automated WebKit for the cross-engine rows. Frame costs are main-thread rendering (style + layout + paint) per frame, traced at 4× CPU throttling.
+
+**Transfer.** Unchanged in shape: 427 KB of JS at 1440 and 390 (the 249 KB compressed 3D chunk plus the app); `EducationMotion` adds about 0.4 KB compressed to the app chunk, and no new chunk. One 88 KB font file. P1 fallbacks 78 KB (1440 @1×) / 48 KB (390 @1×). Off the Clock images 31 KB (1440 @1×) / 22 KB (390 @1×), lazy.
+
+**Education (`wdth` interpolation)**
+
+| Viewport | p50 | p95 | Max | Long tasks | Frames > 34 ms |
+|---|---|---|---|---|---|
+| 1440×900 | 0.75 ms | 2.48 ms | 3.54 ms | 0 | 0 |
+| 1280×800 | 0.77 ms | 2.51 ms | 3.16 ms | 0 | 0 |
+| 390×844 | 0.56 ms | 2.11 ms | 2.91 ms | 0 | 0 |
+| 360×740 | 0.57 ms | 2.08 ms | 2.77 ms | 0 | 0 |
+
+- The cost is text shaping and layout of three (phones: six) large text runs; raster tasks stay under 3 ms each. Interpolation is continuous apart from the browsers' own 0.25% `font-stretch` steps; no extra quantization was needed.
+
+**Off the Clock (1440 / 1280)**
+
+- Raster: 102 / 90 tasks, 28 / 27 ms in total over the pass, largest task 1.4 ms (Gate A, drift only: 168 tasks, 31 ms). Main-thread p95 1.4 / 1.3 ms.
+- The record's turn runs on its own compositor layer (`will-change: transform`, desktop with motion only). Without it, the rotated disc re-rasterized every frame (largest task 11.4 ms).
+- The display title's lag is snapped to whole pixels. Unsnapped, the large type repainted every frame (about 1,440 raster tasks); on its own layer instead it would be resampled at subpixel offsets (up to 41% softer edges at 1× in Chromium). Snapped, it repaints only when the offset changes and stays exactly as sharp as at rest.
+
+**Contact.** The hover and focus rule is one transformed pseudo-element: about 0.05 ms of paint per frame while it moves, two sub-millisecond layouts per hover, no layout shift.
+
+**Rendering.** Peak 61 draw calls / 6.9k triangles per frame (Rankle hold, unchanged). Idle at the top: 0 frames.
+
+**P2 WebGL work** (full scroll from the top; Chromium and WebKit at 1440, 1280, 390, 360 and 720×450)
+
+| Activity | Draws | Clears |
+|---|---|---|
+| Scrolling P2 (after the scenes have settled) | 0 | 0 |
+| Pointer movement over P2 | 0 | 0 |
+| Idle in P2 (4 s) | 0 | 0 |
+| Leaving Plannr (one-time settle, ≤ 0.3 s) | 0 | 1–9 |
+| Window resize while in P2 | 0 | 1 (the renderer's resized canvas) |
+
+- Scrolling back into Plannr renders the scene identically to a fresh load at the same position.
+- Before the P2.5 fix, lazy Off the Clock images settling below the scenes woke the loop for one empty clear each (WebKit: 3 per visit at phone sizes and 720×450; see ARCHITECTURE.md).
+
+**Layout stability.** CLS 0.014 over a full scroll at 1440 (0.0001–0.0008 per frame) and 0 at 390. The desktop shifts are Education's interpolation: as the first phrase of a line widens, the second phrase on the same line moves along it. Phones stack the phrases, so nothing shifts. No other P2.5 motion shifts layout (transforms only).
+
+**Console.** No hydration warnings and no new messages; the THREE.Clock deprecation and GPU driver notices are from P1.
 
 ---
 

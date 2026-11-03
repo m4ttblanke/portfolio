@@ -58,6 +58,11 @@
   line-height: 0.8;
 }
 
+/* Transformable, so the glyphs can settle onto a fixed tick. */
+.numeral {
+  display: inline-block;
+}
+
 .present {
   position: absolute;
   inset-block: 0;

@@ -109,6 +109,8 @@
   inset-block-start: calc(17 * var(--u));
   inset-inline-start: calc(-1.5 * var(--u));
   inline-size: calc(37.3 * var(--u));
+  /* The disc's centre in its image (measured), so it turns in place. */
+  transform-origin: 48.83% 47.61%;
 }
 
 .subject[data-subject="vinyl"] .caption {
@@ -125,6 +127,16 @@
 .subject[data-subject="games"] .caption {
   inset-block-start: calc(51 * var(--u));
   inset-inline-start: calc(44 * var(--u));
+}
+
+/*
+ * Where the record turns (OffClockMotion: desktop, motion allowed), it gets
+ * its own compositor layer, so the turn is not re-rasterized every frame.
+ */
+@media (min-width: 60.001rem) and (prefers-reduced-motion: no-preference) {
+  .subject[data-subject="vinyl"] .object {
+    will-change: transform;
+  }
 }
 
 @media (max-width: 60rem) {

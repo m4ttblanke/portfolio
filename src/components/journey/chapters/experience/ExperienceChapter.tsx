@@ -35,7 +35,13 @@ export function ExperienceChapter() {
               className={styles.year}
               style={{ "--at": at } as CSSProperties}
             >
-              {at < LABEL_LIMIT && year}
+              {/* The numeral alone may move (ExperienceMotion); the
+                  span's own border is the tick and never does. */}
+              {at < LABEL_LIMIT && (
+                <span className={styles.numeral} data-experience-year>
+                  {year}
+                </span>
+              )}
             </span>
           ))}
           <span className={styles.present}>Present</span>

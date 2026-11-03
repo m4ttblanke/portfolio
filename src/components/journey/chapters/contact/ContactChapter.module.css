@@ -102,13 +102,58 @@
  * site's rules.
  */
 .line + .line {
+  position: relative;
+  inline-size: fit-content;
   text-decoration: underline;
   text-decoration-thickness: 0.03em;
   text-underline-offset: 0.08em;
 }
 
-.closingLink:hover .line + .line {
-  text-decoration-thickness: 0.05em;
+/*
+ * When the visitor acts (hover, keyboard focus), and only then, the rule runs
+ * on past the word by half an em, rightward: the page's one response. The
+ * extension continues the underline at its measured position (0.834em below
+ * the 0.84 line box's top) and thickness; at rest it has no width, so the
+ * rule is exactly the word's underline. The text and the MB never move.
+ */
+.line + .line::after {
+  position: absolute;
+  inset-block-start: 0.834em;
+  inset-inline-start: 100%;
+  inline-size: 0.5em;
+  block-size: 0.03em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  content: "";
+}
+
+.closingLink:focus-visible .line + .line::after {
+  transform: none;
+}
+
+/* Touch screens get no hover, so no state sticks after a tap. */
+@media (hover: hover) {
+  .closingLink:hover .line + .line::after {
+    transform: none;
+  }
+}
+
+/* Reduced motion: the same states, without the transition. */
+@media (prefers-reduced-motion: no-preference) {
+  .line + .line::after {
+    transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .closingLink:focus-visible .line + .line::after {
+    transition-duration: 320ms;
+  }
+
+  @media (hover: hover) {
+    .closingLink:hover .line + .line::after {
+      transition-duration: 320ms;
+    }
+  }
 }
 
 .closingLink:focus-visible {
