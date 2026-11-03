@@ -538,6 +538,31 @@ On desktop (above 60rem, where the shared scale exists) the year numerals start 
 - PRESENT, names, roles, dates and copy never move. Duration remains the only encoding.
 - Below 60rem the per-entry gauges draw as before; there is no numeral motion.
 
+### Implemented (P2.6 Gate B): time compresses, durations answer
+
+Supersedes the P2.5 calibration above, which was the same idea at about 14 px.
+
+**Compression (desktop, above 60rem).**
+- The whole field starts stretched 1.25× about its 2022 origin and compresses to its true scale. It runs from the field entering the viewport until its top reaches 30% of the height: linear in scroll, `scrub: 0.6`.
+- One custom property, `--f` (1.25 → 1), drives every position: ticks, numerals, PRESENT, rules, projections and the hanging text. Each is offset from its settled place by (`--f` − 1) × its position, so they all sit on one temporary scale. No rule ever reads a false date against its ticks (measured: rule starts within 0.01 px of `start × f × width` at every frame).
+- Offsets are transforms (`100cqi` is the field width), never layout, so the compression causes no layout shift. Offsets of type are whole pixels, and no type is promoted to a layer.
+- Measured travel at 1440: Trader Joe's 28 px, Physics Learning Center 177 px, SpaceComputer 267 px (its rule 321 px; it enters from the right edge), PRESENT from off-screen.
+- The steps start 0.35 of a step wider (`--spread`) and close with it, a 15–30 px diagonal settle that stays subordinate to the horizontal.
+- The rules draw during the same pass, overlapping the compression (`--draw` 0 → 1, staggered).
+
+**Rule draw.** The draw is a CSS custom property folded into the rule's own `scale`, never a GSAP transform. GSAP resets the individual `translate`/`scale`/`rotate` properties whenever it animates a transform, which would strip the compression offsets.
+
+**Gauges (60rem and below).** Each gauge opens from 0.7 to full width about 2022 as its entry rises to mid-screen (entering → top at 50%). Its rule draws as before. The text never moves, and nothing runs off the screen.
+
+**Engagement.** An entry is engaged while its text is pointed at (hover-capable devices) or its name holds focus (arrival from the navigator).
+- The engaged entry's rule doubles in weight (`--weight`, registered, so only the weight eases while `--f` follows the scroll).
+- Projections draw from its start and end up to the year scale.
+- The years it spans, with their ticks (and PRESENT if ongoing), come to full ink. `ExperienceMotion` marks them on pointer and focus events, never per frame.
+- Other entries settle back: rules 1 px and muted, text muted, all fully readable.
+- Timing: engage 420 ms `cubic-bezier(0.22, 1.2, 0.36, 1)`, release 640 ms `cubic-bezier(0.25, 1, 0.5, 1)`.
+- On phones, arrival focus doubles the gauge and mutes the other entries.
+- No bending, no proximity warping: endpoints are always true.
+
 Avoid:
 
 - dots moving along a line
@@ -573,6 +598,22 @@ The three lines enter at one shared Archivo width and resolve to their own calib
 - Layout stability: on desktop, as a line's first phrase widens, its second phrase moves along the line. Over a full scroll this measures CLS 0.014 at 1440 (accepted; well inside 0.1). Phones stack the phrases: CLS 0.
 - The resolving rule sits in `@supports (font-stretch: calc(50% + 1%))`, after plain final declarations: a browser that cannot compute it keeps the exact final widths. Static presentation and no-JS never set `--resolve`, which defaults to 1 (the final widths).
 - The credential margin, the gloss, the West Valley attribution and the A.A. line never move.
+
+### Implemented (P2.6 Gate B): breadth under tension
+
+**Resolution, stronger.**
+- Shared start is now wdth 64 above 40rem (was 76) and 62 on phones (the axis minimum; was 66). The loaded Archivo axis is 62–125. Finals are unchanged.
+- At 60rem and below each line now finishes when its bottom reaches 55% of the height (was 85%), so it resolves while it is being read.
+- Layout stability: the larger range raises desktop CLS to about 0.045 per pass (the second phrase moving along a widening line). It is accepted, well inside 0.1. Phones stay at 0.
+
+**Engagement (desktop with motion).** An area is engaged while pointed at, or while its title holds focus (arrival from the navigator).
+- The engaged line stretches +5 on the real width axis past the shared measure (`--pull`, registered). The other two give 3 (`--yield`) and turn muted.
+- +8 was planned. At desktop sizes a line grows about 0.93–1.0 em at +8, which would push the credentials past the viewport edge. +5 is the most that keeps 10 px between line and rule and the credentials inside the viewport at every desktop width (1440: push 34–39 px, credentials ≥ 32 px from the edge). The engaged/inactive contrast is still 8 units.
+- The credentials are pushed right by the line's growth less its slack and the gutter, rounded to whole pixels: `--push`, from each line's measured `--grow` and `--slack` in ems.
+- The ruled margin bends out around them instead of breaking. The rule is a clip-path polyline (the margin's `::before`): it leaves the rule's line, runs beside the pushed credentials and returns over 1.5 rem. Its diagonals are offset 1.5 px vertically (about 1.3 px square to the line), so they match the vertical's optical weight. At rest it is exactly the straight 1 px rule. The engaged rule comes to ink.
+- Same engage/release timing as Experience. Font axis, never `scaleX`. Nothing reflows vertically, and the chapter clips horizontally as a guard.
+- Phones: no width engagement (the phrases already fill the screen). Arrival focus brings the rule above the credentials to ink and mutes the other lines.
+- Reduced motion: ink and rule states only, with no width change and no push.
 
 ---
 
@@ -852,7 +893,7 @@ Each scene should define:
 
 ## Education
 
-- unchanged (no motion)
+- final widths; engagement changes ink and rule only
 
 ## Off the Clock
 
@@ -1193,13 +1234,13 @@ The second half is DOM motion only. The canvas does nothing past Plannr (`decisi
 
 | Chapter | Motion | Presentation without it |
 |---|---|---|
-| Experience | `ExperienceMotion`: each duration rule draws from its start (entering → 60% height); on desktop the year numerals settle onto their fixed ticks by the time the last rule is drawn | rules drawn, numerals on their ticks |
-| Education | `EducationMotion`: the lines resolve from one shared width (76; phones 66) to their calibrated widths on the real `wdth` axis; desktop together, 60rem and below per line | final widths |
+| Experience | P2.6: the field compresses 1.25 → 1 about 2022 with a diagonal settle while the rules draw (desktop); gauges open 0.7 → 1 (60rem and below); engaged entries thicken, project to the scale and light their years | settled field; engagement as ink and weight only |
+| Education | P2.6: the lines resolve from 64 (phones 62) to their calibrated widths on the real `wdth` axis; an engaged line stretches +5, the others give 3, and its margin rule bends out (desktop) | final widths; engagement as ink only |
 | Off the Clock | `OffClockMotion`, desktop only: objects drift at 7% / 5% / 3% of their height, the record turns ±1.5°, the display title lags ±8 px (whole pixels) | settled still life |
 | Contact | CSS only: the rule under MOVE. extends 0.5 em rightward on hover or keyboard focus | instant state change |
 
 - All timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`. None adds a listener of its own.
-- Intended intensity: Projects highest; Experience about 4/10; Education about 3; Off the Clock about 6, the only later rise; Contact about 1 (interaction only).
+- Intended intensity (P2.5): Projects highest; Experience about 4/10; Education about 3; Off the Clock about 6, the only later rise; Contact about 1 (interaction only). P2.6 raises Experience to about 6 and Education to about 5.
 - No pinning, sticky holds, pointer behavior or loops.
 - Reduced motion, compact viewports and no-JS create no timelines and show the composed state. No-WebGL and scene failure leave P2 motion unchanged, because it does not depend on the canvas.
 

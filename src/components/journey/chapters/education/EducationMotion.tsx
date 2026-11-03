@@ -5,14 +5,15 @@ import { gsap } from "@/lib/motion/gsap";
 import { isStatic, PRESENTATION_CONDITIONS } from "@/lib/motion/presentation";
 
 /**
- * Education: the three lines enter at one shared Archivo width and resolve
- * together to their own calibrated widths, which bring them to one measure.
- * Only the real width axis moves (`--resolve`, read by the CSS), from the
- * block entering the viewport until its top reaches 40% of the height.
+ * Education: the three lines enter at one shared Archivo width (64, near
+ * the axis minimum of 62) and resolve together to their own calibrated
+ * widths, which bring them to one measure. Only the real width axis moves
+ * (`--resolve`, read by the CSS), from the block entering the viewport until
+ * its top reaches 40% of the height.
  * Below the field breakpoint (phones, 200% zoom) the lines stand up to a
  * screen apart, so a shared range would resolve the lower ones out of sight:
- * each line resolves as it enters instead, done before it rises into the
- * reading area.
+ * each line (from 62) resolves as it rises, finishing when its bottom
+ * reaches 55% of the height, so it resolves while it is being read.
  * Scrubbed, so scrolling back unresolves it and a fast scroll or direct load
  * lands resolved. Static presentation, or a browser that cannot interpolate
  * the width, creates nothing: the lines are simply set at their widths.
@@ -51,7 +52,7 @@ export function EducationMotion() {
       ({ conditions }) => {
         if (isStatic(conditions)) return;
         if (conditions?.stacked) {
-          titles.forEach((title) => resolve(title, title, "bottom 85%"));
+          titles.forEach((title) => resolve(title, title, "bottom 55%"));
         } else {
           resolve(titles, block, "top 40%");
         }

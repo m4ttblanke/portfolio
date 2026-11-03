@@ -665,7 +665,7 @@ Matthew has substantial real-world work experience, academic support experience,
 
 **Visual model.** One shared time field runs from January 2022 to the present. Year numerals and hairlines mark the scale. Each entry hangs from a duration rule on that field. Rule length is the only encoding of time, and all names share one display size. An ongoing rule runs through "Present" to the viewport edge.
 
-**Interaction.** Reading only. Each rule extends from its start as it scrolls into view, and on desktop the year numerals settle onto their ticks as the rules draw (scrubbed; see `MOTION.md`). There is no dragging, no sticky year and no replaced role information.
+**Interaction.** On desktop the whole field compresses from a stretched scale into its true one as it scrolls into view, while the rules draw. On phones each gauge opens to full width. Pointing at an entry, or arriving at it from the navigator, engages it: its rule thickens, lines carry its start and end up to the year scale, and the years it spans come to ink, while the other entries settle to muted ink (see `MOTION.md`). There is no dragging, no sticky year and no replaced role information, and every date is also text.
 
 **Mobile.** Below 60rem (phones, and laptops at about 200% zoom), entries stack. Each entry carries its own full-width 2022 → Present gauge on the same scale, so overlaps still read down the column.
 
@@ -703,7 +703,7 @@ The interaction should make these relationships understandable quickly.
 - A few representative areas are glossed beneath each line. They are not a course list.
 - A.A. Liberal Arts stays subordinate, as an "Also …" line under the block.
 
-**Interaction.** None. As the block enters, the lines resolve from one shared width to their calibrated widths on the real width axis (see `MOTION.md`); nothing else moves, and there is no pointer behavior.
+**Interaction.** As the block enters, the lines resolve from one shared width to their calibrated widths on the real width axis. On desktop, pointing at an area, or arriving at it from the navigator, stretches its line past the shared measure: the other lines give, and its credentials are pushed out with the margin rule bending around them. On phones arrival brings the area's rule to ink. Nothing is revealed by interaction; it only responds (see `MOTION.md`).
 
 **Mobile.** Below 60rem, the credentials follow each line in flow under a short rule. Below 40rem each line breaks at its phrase (COMPUTER / SCIENCE), never mid-word. Each phrase has its own width, so all six phrases share one measure.
 
@@ -981,11 +981,11 @@ Project objects statically composed.
 
 ## Experience
 
-Duration rules drawn in full and the numerals on their ticks; every date is also text.
+The settled field: duration rules drawn in full and the numerals on their ticks; every date is also text. Engagement changes ink and rule weight only.
 
 ## Education
 
-The lines at their final, calibrated widths.
+The lines at their final, calibrated widths. Engagement changes ink only.
 
 ## Off the Clock
 

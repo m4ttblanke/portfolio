@@ -1108,6 +1108,7 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
 - The skip link is untouched: native, instant, focuses `<main>`.
 - **Arrival states.** Plain `:focus` on a destination produces that chapter's engaged state, so a mouse-started trip also arrives visibly. `:focus-visible` adds the keyboard cue on top.
 - **Keyboard cue.** Destination headings never get the standard 2px box around display type. A 3px ink bar in the margin, 8px from the type (the navigator's own current-marker), is drawn as the heading's border with an equal negative margin, so the type does not move. Mouse arrival draws no bar.
+- **Experience and Education (P2.6 Gate B).** Hover has a focus equivalent: focus on an entry's name or an area's title, given by navigator arrival, produces the full engaged state. No tab stops were added to trigger it. The years an entry spans are marked by ink, while every date stays text. Reduced motion keeps engagement as ink and rule weight only, with no displacement or width change. Nothing is revealed by hover; engagement only re-weights content that is always present.
 - **Interim engaged states, until Gate C:** an Off the Clock subject's index dash runs on as a 3rem rule, and a Contact row's value underline thickens to 2px, as on hover.
 
 **Touch (automated, 390×844 and 360×740)**

@@ -971,6 +971,7 @@ Implemented (P2): a shared time field.
 - **Entry text.** It hangs from the start of its rule in a narrow column: organization in display caps (place beneath, in small caps), then kind (muted), role (semibold), dates, and one signal line.
 - **Names.** All share one display size. Duration is encoded only by the rules.
 - **Below 60rem.** Entries stack, each with its own full-width gauge (track, year ticks, "2022" and "Present" at its ends) on the same scale.
+- **Engaged (P2.6).** The rule is 4 px, with two 1 px ink projections from its ends to the scale and its years in ink. Other entries are muted with 1 px muted rules. Ink and muted are the only two tones; nothing fades.
 
 Avoid:
 
@@ -990,6 +991,7 @@ Implemented (P2): one typographic block, no nodes, clusters or connecting geomet
 - **Liberal Arts.** A.A. Liberal Arts is a muted "Also …" line in the margin column under the block.
 - **Below 60rem.** The margin moves into flow under a short rule.
 - **Below 40rem.** Each line breaks at its phrase. Each of the six phrases has its own width, so they stack as one justified column.
+- **Engaged (P2.6, desktop).** The line at +5 wdth passes the shared measure. The others at −3 are in muted ink. The pushed credentials keep 10 px from the line, and the margin rule bends around them in ink (its diagonals are drawn to the vertical's optical weight).
 
 Keep it visually legible.
 

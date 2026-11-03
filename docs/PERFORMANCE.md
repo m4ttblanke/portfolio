@@ -973,7 +973,22 @@ Production build on localhost, Playwright Chromium (headless, software WebGL), u
 - The first Hero → Contact after load had longer frames (11 over 20 ms, max 125 ms). The Rankle and Plannr scenes compile on their first appearance, as they do when scrolling by hand.
 - No React state changes per frame. The navigator re-renders only when the current chapter or subsection changes: one change for each chapter crossed during a trip.
 - **WebGL:** a trip through Projects renders the P1 scenes frame by frame, as manual scrolling would (Hero → Contact: about 5,000 draws). The last draw happens at scroll 6,286, inside Plannr's block (bottom 6,300). Past that there are 0 draws. Trips within P2 issue 0 draws and 0 clears (`decisions/003` unchanged).
-- **Interruption:** wheel, touch and keyboard input, and an external scroll, each stop the trip on the next frame. The trip then writes no more positions, and its listeners are removed.
+- **Interruption:** wheel, touch and keyboard input, and an external scroll, each stop the trip on the next frame.
+
+## P2.6 Gate B — Experience and Education (2026-11-02)
+
+Production build, headless Chromium with software raster.
+
+| Measure | Result |
+|---|---|
+| Scroll passes, 4× CPU throttle (1440 / 1280 / 390 / 360) | frame p95 ≈ 25 ms desktop, 9 ms phones; ≤ 1 frame over 34 ms; no long tasks |
+| Main thread, unthrottled, full pass plus hovering all six targets (1440) | style p95 0.37 ms, layout p95 0.54 ms, paint p95 0.11 ms |
+| Raster, same pass | about 756 raster tasks (27 with motion off), p95 about 10 ms each in software raster, off the main thread |
+| CLS | Experience compression ≈ 0 (transforms only); Education ≈ 0.045 per desktop pass and ≈ 0.012 per hover (the real width axis moving the second phrase); phones 0 |
+| WebGL, from the bottom of Plannr's block through both chapters, hovering all six | 0 draws, 0 clears |
+
+- The raster cost is the deliberate trade for sharp type. Moving and re-widthing type is re-rasterized rather than promoted to layers, where it would be resampled. GPU raster numbers are still to be taken on real hardware.
+- A first version moved the Experience field through layout and measured CLS 0.048. It was rebuilt on transforms. The trip then writes no more positions, and its listeners are removed.
 
 ---
 

@@ -2,15 +2,35 @@
  * Education: one typographic block. Three lines (four academic areas) share
  * one size and cap height; each line's Archivo width (wdth) is tuned so the
  * three fill the same measure. Credentials sit in a ruled margin beside their
- * line, areas are glossed in the gap beneath it. The only motion is the
- * width axis resolving (EducationMotion); nothing moves or fades.
+ * line, areas are glossed in the gap beneath it. The lines resolve on the
+ * width axis as the block enters (EducationMotion), and answer the visitor
+ * on it too (Engagement, below); nothing fades.
  */
+
+/*
+ * Engagement amounts, 0 → 1, transitioned. Registered so they interpolate
+ * (an unregistered custom property would jump).
+ */
+@property --pull {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --yield {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
 
 .chapter {
   position: relative;
   z-index: var(--z-content);
   padding-block: calc(3 * var(--space-lg)) calc(4 * var(--space-lg));
   padding-inline: var(--margin);
+  /* A pushed margin stays inside the viewport by construction (see --push);
+     this only guards against rounding. */
+  overflow-x: clip;
   /* So display type's 1cqi fallback (no JS, before measuring) is this
      chapter's content width, as the measured --cq is. */
   container-type: inline-size;
@@ -48,7 +68,7 @@
  */
 .block {
   --k: 7.1;
-  --wdth-from: 76;
+  --wdth-from: 64;
 }
 
 .title {
@@ -78,8 +98,32 @@
   font-stretch: 80%;
 }
 
+/*
+ * Engaged growth, measured: how much wider each line sets at +5 wdth
+ * (--grow) and how far short of its ten columns it ends at rest (--slack),
+ * both in ems of the line. The margin is pushed by the growth less the
+ * slack and the gutter, keeping 10px between the line and the rule. At
+ * every desktop width that push is less than the page margin, so the
+ * credentials never leave the viewport (1440: 34–39 px against 44).
+ */
+.area[data-area="computer-science"] {
+  --grow: 0.598;
+  --slack: 0.115;
+}
+
+.area[data-area="mathematics-physics"] {
+  --grow: 0.579;
+  --slack: 0.104;
+}
+
+.area[data-area="technology-management"] {
+  --grow: 0.628;
+  --slack: 0.094;
+}
+
 /* The margin: credentials beside their line, behind one continuous rule. */
 .margin {
+  position: relative;
   grid-column: 11 / -1;
   grid-row: 1 / span 2;
   display: grid;
@@ -228,8 +272,8 @@
   .block {
     /* 100 / 5.3 */
     --k: 18.8;
-    /* Below the narrowest phrase (70.3). */
-    --wdth-from: 66;
+    /* The axis minimum, below the narrowest phrase (70.3). */
+    --wdth-from: 62;
   }
 
   .phrase {
@@ -295,9 +339,123 @@
     font-stretch: calc(
       (
           var(--wdth-from) + (var(--wdth) - var(--wdth-from)) *
-            var(--resolve, 1)
+            var(--resolve, 1) + var(--pull) * 5 - var(--yield) * 3
         ) *
         1%
     );
+  }
+}
+
+/*
+ * Engagement. A line is engaged while its area is pointed at (desktop), or
+ * while its title holds focus (arrival from the navigator, any size). The
+ * other lines settle to muted ink; the engaged line's rule comes to ink.
+ *
+ * Desktop, with motion: the engaged line stretches +5 on the real width
+ * axis past the shared measure (--pull) while the others give 3 (--yield),
+ * and pushes its credentials right. The ruled margin bends out around them
+ * instead of breaking: a polyline (the margin's ::before) that leaves the
+ * rule's line, runs beside the pushed credentials and returns. At rest it
+ * is exactly the straight 1px rule. Nothing reflows vertically.
+ */
+.area:has(.title:focus) .margin {
+  border-color: var(--color-ink);
+}
+
+.block:has(.title:focus) .area:not(:has(.title:focus)) .title {
+  color: var(--color-muted);
+}
+
+@media (min-width: 60.001rem) {
+  .margin {
+    --push: calc(
+      (var(--grow) - var(--slack)) * var(--k) * var(--cq, 1cqi) -
+        var(--gutter) + 10px
+    );
+    --shift: round(calc(var(--pull) * var(--push)), 1px);
+    --bend: 1.5rem;
+
+    translate: var(--shift) 0;
+    border-inline-start-color: transparent;
+  }
+
+  .margin::before {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(-1 * var(--shift) - 1px);
+    inline-size: calc(var(--shift) + 1px);
+    background: var(--color-rule);
+    /*
+     * The bend's diagonals are offset 1.5px vertically rather than 1px
+     * across, about 1.3px measured square to the line at full push: drawn
+     * at an angle, a true 1px reads lighter than the vertical rule.
+     */
+    clip-path: polygon(
+      0 0,
+      100% var(--bend),
+      100% calc(100% - var(--bend)),
+      0 100%,
+      0 calc(100% - 1.5px),
+      calc(100% - 1px) calc(100% - var(--bend) - 1.5px),
+      calc(100% - 1px) calc(var(--bend) + 1.5px),
+      0 1.5px
+    );
+    content: "";
+  }
+
+  .area:has(.title:focus) .margin {
+    border-color: transparent;
+  }
+
+  .area:has(.title:focus) .margin::before {
+    background: var(--color-ink);
+  }
+
+  @media (hover: hover) {
+    .area:hover .margin::before {
+      background: var(--color-ink);
+    }
+
+    .block:has(.area:hover) .area:not(:hover) .title {
+      color: var(--color-muted);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .area {
+      transition:
+        --pull 640ms cubic-bezier(0.25, 1, 0.5, 1),
+        --yield 640ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .title {
+      transition: color 640ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .margin::before {
+      transition: background-color 640ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .area:has(.title:focus) {
+      --pull: 1;
+      transition-duration: 420ms;
+      transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
+    }
+
+    .block:has(.title:focus) .area:not(:has(.title:focus)) {
+      --yield: 1;
+    }
+
+    @media (hover: hover) {
+      .area:hover {
+        --pull: 1;
+        transition-duration: 420ms;
+        transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
+      }
+
+      .block:has(.area:hover) .area:not(:hover) {
+        --yield: 1;
+      }
+    }
   }
 }
