@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 
 /*
@@ -152,6 +152,15 @@ export function useAnchors() {
       observer.disconnect();
       window.removeEventListener("scroll", wake);
     };
+  }, [invalidate]);
+
+  // The startup frame. The measure above runs in a layout effect, before the
+  // canvas root (an ancestor) has marked itself active, so R3F drops any
+  // invalidate made there. Passive effects run after every layout effect,
+  // so this request is the one that is guaranteed to draw the first frame
+  // for the anchors just measured, wherever the page loaded.
+  useEffect(() => {
+    invalidate();
   }, [invalidate]);
 
   return anchors;

@@ -263,6 +263,38 @@ For normal-motion users, movement may be smoothly choreographed.
 
 For reduced-motion users, navigation should be immediate or minimally animated.
 
+## Implemented (P2.6 Gate A)
+
+**Subsections.** The navigator is a two-level tree. Labels and ids come from the content modules (`content/navigation.ts`):
+
+```text
+01 NAME
+02 PROJECTS        Rankle #rankle · Plannr #plannr
+03 EXPERIENCE      Trader Joe's #trader-joes · Physics Learning Center #physics-learning-center · SpaceComputer × UCSB #spacecomputer-ucsb
+04 EDUCATION       Computer Science #computer-science · Mathematics + Physics #mathematics-physics · Technology Management #technology-management
+05 OFF THE CLOCK   Baseball #baseball · Vinyl #vinyl · Games #games
+06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin
+```
+
+Every destination is an element that already existed (the project blocks, entries, areas, subjects and contact links). None is a spacer.
+
+**Where each destination lands.**
+
+- Chapters land at the section top.
+- Rankle and Plannr land 90% of the way through their holds (`data-nav-hold`), on the composed scene: both boards with their threads; the settled calendar with step 04 current. "Projects" still lands at the start, as the pieces arrive.
+- Experience entries share one field on desktop, so each lands on the whole field with its year scale. On phones each lands on its own entry.
+- Education lines land a quarter of the way down, with the line above still whole.
+- Off the Clock subjects land by their own objects on desktop (`scroll-margin`, negative for the record and the controller). On phones each lands on its own subject.
+- Contact links land on the chapter (the end of the page).
+
+**Desktop (fine pointer, 48rem and wider).** Hovering or focusing a chapter shows its subsections on a rail to the left of the index. A hairline connector joins the chapter row to the rail, and labels align against the rail, mirroring the chapters. Moving to another chapter switches rails after a 100ms dwell. Entering the open rail cancels a pending switch, so the pointer can cross a neighbouring row on its way in. When the index opens, the current chapter's rail is already shown.
+
+**Touch, narrow and compact.** Each chapter with subsections has its own disclosure button, separate from the chapter link. Its glyph is the navigator's hairline, whose end drops when the group is open. One group is open at a time, and the current chapter's group starts open. Long names wrap.
+
+**Travel.** Activating a destination closes the index and travels the real page scroll to it over 0.8–2.4s, depending on distance. Every chapter in between plays as it passes. Focus moves to the destination on arrival. Any wheel, touch, key or pointer input stops the trip where it is. Back and Forward are instant. See `decisions/004` and `MOTION.md`.
+
+**Current subsection.** The current subsection is marked only where subsections stand apart: Projects and Education always, Experience and Off the Clock below 60rem. Contact never has one. It is tracked on a band 30% down the viewport, where destinations land.
+
 ---
 
 # Chapter 01 — Name
@@ -633,7 +665,7 @@ Matthew has substantial real-world work experience, academic support experience,
 
 **Visual model.** One shared time field runs from January 2022 to the present. Year numerals and hairlines mark the scale. Each entry hangs from a duration rule on that field. Rule length is the only encoding of time, and all names share one display size. An ongoing rule runs through "Present" to the viewport edge.
 
-**Interaction.** Reading only. Each rule extends from its start as it scrolls into view, and on desktop the year numerals settle onto their ticks as the rules draw (scrubbed; see `MOTION.md`). There is no dragging, no sticky year and no replaced role information.
+**Interaction.** On desktop the whole field compresses from a stretched scale into its true one as it scrolls into view, while the rules draw. On phones each gauge opens to full width. Pointing at an entry, or arriving at it from the navigator, engages it: its rule thickens, lines carry its start and end up to the year scale, and the years it spans come to ink, while the other entries settle to muted ink (see `MOTION.md`). There is no dragging, no sticky year and no replaced role information, and every date is also text.
 
 **Mobile.** Below 60rem (phones, and laptops at about 200% zoom), entries stack. Each entry carries its own full-width 2022 → Present gauge on the same scale, so overlaps still read down the column.
 
@@ -671,7 +703,7 @@ The interaction should make these relationships understandable quickly.
 - A few representative areas are glossed beneath each line. They are not a course list.
 - A.A. Liberal Arts stays subordinate, as an "Also …" line under the block.
 
-**Interaction.** None. As the block enters, the lines resolve from one shared width to their calibrated widths on the real width axis (see `MOTION.md`); nothing else moves, and there is no pointer behavior.
+**Interaction.** As the block enters, the lines resolve from one shared width to their calibrated widths on the real width axis. On desktop, pointing at an area, or arriving at it from the navigator, stretches its line past the shared measure: the other lines give, and its credentials are pushed out with the margin rule bending around them. On phones arrival brings the area's rule to ink. Nothing is revealed by interaction; it only responds (see `MOTION.md`).
 
 **Mobile.** Below 60rem, the credentials follow each line in flow under a short rule. Below 40rem each line breaks at its phrase (COMPUTER / SCIENCE), never mid-word. Each phrase has its own width, so all six phrases share one measure.
 
@@ -703,7 +735,7 @@ Matthew has clear interests and personality beyond technical work.
 
 ## Implemented (P2)
 
-**Content.** Three subjects, each a word and a fact: Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3).
+**Content.** Three subjects, each a word and a fact: Baseball (Former pitcher), Vinyl (100+ records). Games carries a short record instead (P2.6): Elden Ring 100% ×3, Hollow Knight 100%, Clair Obscur: Expedition 33 100%, Dark Souls III 100%, Sekiro: Shadows Die Twice 100%.
 
 **Visual model.** A typeset still life in the DOM.
 
@@ -712,7 +744,7 @@ Matthew has clear interests and personality beyond technical work.
 - The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
 - Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
-**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. On desktop the objects drift slightly, at different rates, as the chapter scrolls, the record turning a degree or so, and the display title lags a few pixels behind them. The subject words never move.
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer while the display title leans against it. The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink. The depth is meant to be seen at normal scrolling speed.
 
 **Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
@@ -744,7 +776,7 @@ There is no résumé link until a corrected PDF exists.
 - The links sit where the hero's descriptor sits.
 - The closing line is anchored to the bottom at the hero name's scale, with the hero's indent mirrored.
 - The MB returns at rest at the end of YOUR. It is the hero's own static render, not a live canvas (`decisions/003`).
-- The rule under MOVE. is the last mark on the page. Nothing moves on scroll; on hover or keyboard focus the rule runs on half an em to the right, the page's one response to the visitor.
+- The rule under MOVE. is the last mark on the page. Nothing moves on its own. On hover or keyboard focus MOVE. stretches, its rule travels out to the margin, and the MB replies with one step. The rows answer hover, focus, arrival and touch: the value moves out and a tie draws to it from its label. On desktop the chapter also answers the pointer's approach: the nearest row starts to move before it is touched, and the closing line starts to stretch and run as the pointer nears it.
 
 **Mobile.** Stacked and flush left. Labels sit above values, and the MB is a small signature on the first line.
 
@@ -949,11 +981,11 @@ Project objects statically composed.
 
 ## Experience
 
-Duration rules drawn in full and the numerals on their ticks; every date is also text.
+The settled field: duration rules drawn in full and the numerals on their ticks; every date is also text. Engagement changes ink and rule weight only.
 
 ## Education
 
-The lines at their final, calibrated widths.
+The lines at their final, calibrated widths. Engagement changes ink only.
 
 ## Off the Clock
 
@@ -961,9 +993,9 @@ Objects at their settled positions; every label and fact visible.
 
 ## Contact
 
-Nothing moves on scroll. Hover and focus extend the rule instantly, without a transition.
+Nothing moves on scroll. Interaction changes ink, ties and the closing rule and width instantly; values, arrows and the MB never move.
 
-Chapter navigation should move immediately or with minimal motion.
+Navigator destinations jump instantly. Focus still moves to the destination, and every menu state changes without motion.
 
 ---
 

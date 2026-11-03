@@ -45,6 +45,12 @@ function useWebGLSupport() {
  *   may hide only now
  * - "off": WebGL is unavailable or the scene failed; static fallbacks stay
  *   and choreography-only runways collapse (see the chapter styles)
+ *
+ * A lost context is not "off": browsers lose contexts transiently (GPU
+ * process restarts, sleep, memory pressure, too many contexts) and restore
+ * them. While lost the state returns to pending, so the fallbacks show in
+ * place without the layout jumping; when the context is restored the scene
+ * rebuilds and goes live again after its next frame (JourneyScene).
  */
 function setWebGL(state: "live" | "off" | null) {
   const root = document.documentElement;
@@ -86,6 +92,7 @@ export function JourneyCanvas() {
   const webgl = useWebGLSupport();
   const enabled = webgl && !staticPresentation;
   const onReady = useCallback(() => setWebGL("live"), []);
+  const onLost = useCallback(() => setWebGL(null), []);
 
   // Checked directly (not via the hook) so the hydration render, which
   // reports no support, never marks WebGL off.
@@ -93,17 +100,10 @@ export function JourneyCanvas() {
     if (!supportsWebGL()) setWebGL("off");
   }, []);
 
+  // Leaving the enabled state (reduced motion, compact) returns to pending.
   useEffect(() => {
     if (!enabled) return;
-    // A lost context leaves a blank canvas; fall back to static presentation.
-    const onLost = (event: Event) => {
-      if ((event.target as Element).tagName === "CANVAS") setWebGL("off");
-    };
-    document.addEventListener("webglcontextlost", onLost, true);
-    return () => {
-      document.removeEventListener("webglcontextlost", onLost, true);
-      setWebGL(null);
-    };
+    return () => setWebGL(null);
   }, [enabled]);
 
   if (!enabled) return null;
@@ -111,7 +111,7 @@ export function JourneyCanvas() {
   return (
     <div aria-hidden="true" className={styles.layer}>
       <CanvasErrorBoundary>
-        <JourneyScene onReady={onReady} />
+        <JourneyScene onReady={onReady} onLost={onLost} />
       </CanvasErrorBoundary>
     </div>
   );

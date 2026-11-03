@@ -9,7 +9,13 @@
  * the chapter carries its own bone background for them to blend with.
  *
  * Below 60rem (phones, and 200% zoom on laptops) the subjects stack, each word
- * above its object, alternating edges; nothing moves.
+ * above its object, alternating edges.
+ *
+ * Depth (OffClockMotion) is written as custom properties, never as GSAP
+ * transforms: scroll depth on each <picture> (--depth, composed with the
+ * phone record's bleed), pointer depth on its <img> (--px, --py), and the
+ * display title's scroll and pointer offsets summed into one whole-pixel
+ * translate. The subject words and facts never move.
  */
 
 .chapter {
@@ -40,14 +46,40 @@
   margin-block-start: var(--space-lg);
   font-size: calc(7.2 * var(--cq, 1cqi));
   white-space: nowrap;
+  /* A slower back plane: scroll lag plus a small counter-pointer offset,
+     in whole pixels so the type is never resampled. Never promoted. */
+  translate: round(calc(var(--title-px, 0) * 1px), 1px)
+    round(calc((var(--title-sy, 0) + var(--title-py, 0)) * 1px), 1px);
 }
 
 .stillLife {
   position: relative;
   block-size: calc(66 * var(--u));
   margin-block-start: calc(2.5 * var(--u));
+  /* Games' record is fixed-size type below a stage measured in u, so it
+     hangs further past the stage as the stage narrows (36 px at 1440, 117
+     at 961). This keeps it inside the chapter with room to spare; it is
+     zero from about 1700 px up. Phones reset it with the stacked layout. */
+  margin-block-end: max(0px, calc(19rem - 18 * var(--u)));
   padding: 0;
   list-style: none;
+}
+
+/*
+ * Navigator destination. On desktop every subject's box is the top of the
+ * stage, so each lands by its own object: the glove (13u above the stage)
+ * with the title, the record whole, the controller with its word.
+ */
+.subject[data-subject="baseball"] {
+  scroll-margin-block-start: calc(16 * var(--u));
+}
+
+.subject[data-subject="vinyl"] {
+  scroll-margin-block-start: calc(-12 * var(--u));
+}
+
+.subject[data-subject="games"] {
+  scroll-margin-block-start: calc(-30 * var(--u));
 }
 
 .caption,
@@ -71,23 +103,106 @@
   line-height: 1.45;
 }
 
-.fact {
+/*
+ * Engagement: arrival from the navigator gives the subject's word focus.
+ * Its index dash runs on as a rule, its object's pointer depth deepens
+ * (OffClockMotion), and the other two subjects' words and facts settle to
+ * muted ink. Nothing hides; the images stay decorative.
+ */
+.index::after {
+  display: inline-block;
+  inline-size: 3rem;
+  block-size: 2px;
+  margin-inline-start: 0.5rem;
+  vertical-align: middle;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  content: "";
+}
+
+.word:focus .index::after {
+  transform: none;
+}
+
+.stillLife:has(.word:focus) .subject:not(:has(.word:focus)) .caption {
+  color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .index::after {
+    transition: transform 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .caption {
+    transition: color 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .word:focus .index::after {
+    transition: transform 420ms cubic-bezier(0.22, 1.2, 0.36, 1);
+  }
+}
+
+.fact,
+.records {
   margin-block-start: var(--space-md);
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+/*
+ * Games: its facts as a short record, the same meta caps as the other facts,
+ * set as two aligned columns (title, result). Denser than a single fact,
+ * still secondary to the word and the controller. On desktop it never
+ * reaches the controller (the caption is capped short of it); long titles
+ * wrap there instead.
+ */
+.records {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) auto;
+  gap: 0.3rem 1.25rem;
+  line-height: 1.35;
+}
+
+.record {
+  display: contents;
+}
+
+.records dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.subject[data-subject="games"] .caption {
+  max-inline-size: calc(27 * var(--u));
+}
+
 .object {
   display: block;
   mix-blend-mode: multiply;
   pointer-events: none;
+  translate: var(--bleed, 0) calc(var(--depth, 0) * 1px);
 }
 
 .object img {
   display: block;
   inline-size: 100%;
   block-size: auto;
+  translate: calc(var(--px, 0) * 1px) calc(var(--py, 0) * 1px);
+}
+
+/*
+ * Where the objects move (motion allowed, not compact), each image is its
+ * own compositor layer: scroll and pointer then only move layers, and the
+ * photographs are never re-rasterized. Images resample cleanly; type is
+ * never promoted.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-js]:not([data-presentation="compact"]) .object img {
+    will-change: translate;
+  }
 }
 
 /*
@@ -109,8 +224,6 @@
   inset-block-start: calc(17 * var(--u));
   inset-inline-start: calc(-1.5 * var(--u));
   inline-size: calc(37.3 * var(--u));
-  /* The disc's centre in its image (measured), so it turns in place. */
-  transform-origin: 48.83% 47.61%;
 }
 
 .subject[data-subject="vinyl"] .caption {
@@ -129,16 +242,6 @@
   inset-inline-start: calc(44 * var(--u));
 }
 
-/*
- * Where the record turns (OffClockMotion: desktop, motion allowed), it gets
- * its own compositor layer, so the turn is not re-rasterized every frame.
- */
-@media (min-width: 60.001rem) and (prefers-reduced-motion: no-preference) {
-  .subject[data-subject="vinyl"] .object {
-    will-change: transform;
-  }
-}
-
 @media (max-width: 60rem) {
   .chapter {
     --word-size: min(calc(13 * var(--cq, 1cqi)), 4.5rem);
@@ -153,7 +256,7 @@
     display: grid;
     gap: calc(2 * var(--space-lg));
     block-size: auto;
-    margin-block-start: calc(2 * var(--space-lg));
+    margin-block: calc(2 * var(--space-lg)) 0;
   }
 
   .caption,
@@ -161,9 +264,11 @@
     position: static;
   }
 
-  .subject {
+  .subject,
+  .subject[data-subject] {
     display: grid;
     gap: var(--space-md);
+    scroll-margin-block-start: calc(2 * var(--space-lg));
   }
 
   /* Alternating edges: glove left, record bleeding off the right edge,
@@ -178,13 +283,36 @@
     margin-inline-end: calc(-1 * var(--margin));
     /* The disc sits 8% in from its image's right edge; this carries about
        10% of the disc past the viewport edge, clipped by the chapter. */
-    translate: 17% 0;
+    --bleed: 17%;
   }
 
+  /* The controller stays beside its word; the record runs full width
+     beneath them. */
   .subject[data-subject="games"] {
     grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "word object"
+      "records records";
     align-items: center;
     column-gap: var(--space-md);
+  }
+
+  .subject[data-subject="games"] .caption {
+    display: contents;
+    max-inline-size: none;
+  }
+
+  .subject[data-subject="games"] .word {
+    grid-area: word;
+  }
+
+  .subject[data-subject="games"] .object {
+    grid-area: object;
+  }
+
+  .subject[data-subject="games"] .records {
+    grid-area: records;
+    margin-block-start: 0;
   }
 
   .subject[data-subject="games"] .object {

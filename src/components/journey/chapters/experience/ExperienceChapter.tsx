@@ -26,25 +26,24 @@ export function ExperienceChapter() {
     >
       <ChapterLabel id="experience" />
 
-      <div className={styles.field}>
+      <div className={styles.field} data-experience-field>
         {/* The shared scale: year hairlines through the band of rules. */}
         <div aria-hidden="true" className={styles.scale}>
-          {years.map(({ year, at }) => (
+          {years.map(({ year, at }, i) => (
             <span
               key={year}
               className={styles.year}
               style={{ "--at": at } as CSSProperties}
+              data-experience-year
+              data-from={at}
+              data-to={years[i + 1]?.at ?? 1}
             >
-              {/* The numeral alone may move (ExperienceMotion); the
-                  span's own border is the tick and never does. */}
-              {at < LABEL_LIMIT && (
-                <span className={styles.numeral} data-experience-year>
-                  {year}
-                </span>
-              )}
+              {at < LABEL_LIMIT && year}
             </span>
           ))}
-          <span className={styles.present}>Present</span>
+          <span className={styles.present} data-experience-year data-from={1}>
+            Present
+          </span>
         </div>
 
         <ol className={styles.entries}>
@@ -68,7 +67,15 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
   } as CSSProperties;
 
   return (
-    <li className={styles.entry} data-kind={entry.kind} style={style}>
+    <li
+      id={entry.id}
+      className={styles.entry}
+      data-kind={entry.kind}
+      data-experience-entry
+      data-start={start}
+      data-end={end}
+      style={style}
+    >
       {/* Duration rule; on narrow screens a gauge with its own scale. */}
       <div aria-hidden="true" className={styles.rule}>
         {years.slice(1).map(({ year, at }) => (
@@ -87,8 +94,8 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
         <span className={styles.gaugeEnd}>Present</span>
       </div>
 
-      <div className={styles.text}>
-        <h3 className={styles.organization}>
+      <div className={styles.text} data-experience-text>
+        <h3 className={styles.organization} data-experience-org>
           <Name text={entry.organization} />
           {entry.partner && (
             <>

@@ -67,9 +67,13 @@ const STAGE_LIFT = 0.12;
  */
 const SCROLL_FOLLOW = 0.4;
 const SCROLL_FOLLOW_NARROW = 0.85;
-/** Pointer tilt, radians. */
-const TILT_YAW = MathUtils.degToRad(5);
-const TILT_PITCH = MathUtils.degToRad(3.5);
+/**
+ * Pointer tilt, radians at the viewport's edges (P2.6: 5° / 3.5° before,
+ * too slight to notice). Damped, and faded out as the relief comes apart, so
+ * the rest pose and the hand-off to Rankle are unchanged.
+ */
+const TILT_YAW = MathUtils.degToRad(9);
+const TILT_PITCH = MathUtils.degToRad(6);
 /** Below this width, plates travel through a corridor clear of the copy. */
 const NARROW = 640;
 

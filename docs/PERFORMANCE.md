@@ -957,6 +957,79 @@ Production build on localhost, Playwright Chromium (GPU) unless noted, with auto
 
 **Console.** No hydration warnings and no new messages; the THREE.Clock deprecation and GPU driver notices are from P1.
 
+## P2.6 Gate A — Navigation Travel (2026-11-02)
+
+Production build on localhost, Playwright Chromium (headless, software WebGL), unthrottled. Times run from activation to the last frame that moved the scroll.
+
+| Trip (1440×900) | Distance | Time | Frames > 20 ms | Nav DOM mutations |
+|---|---|---|---|---|
+| Hero → Contact (warm) | 10.5 vh | 2.19 s | 1 (max 25 ms) | 46 |
+| Contact → Projects | 9.5 vh | 2.11 s | 2 | 39 |
+| Projects → Experience | 6.0 vh | 1.79 s | 0 | 17 |
+| Experience → Computer Science | 1.1 vh | 1.10 s | 2 | 19 |
+| Computer Science → Mathematics + Physics | 0.17 vh | 0.8 s | 0 | 9 |
+
+- 1280×800 matches within 50 ms (Hero → Contact 2.23 s, Rankle → Plannr 1.42 s, Games → Vinyl 0.8 s). The phone sizes do too (390×844 Hero → Contact 2.22 s, 0 frames over 20 ms).
+- The first Hero → Contact after load had longer frames (11 over 20 ms, max 125 ms). The Rankle and Plannr scenes compile on their first appearance, as they do when scrolling by hand.
+- No React state changes per frame. The navigator re-renders only when the current chapter or subsection changes: one change for each chapter crossed during a trip.
+- **WebGL:** a trip through Projects renders the P1 scenes frame by frame, as manual scrolling would (Hero → Contact: about 5,000 draws). The last draw happens at scroll 6,286, inside Plannr's block (bottom 6,300). Past that there are 0 draws. Trips within P2 issue 0 draws and 0 clears (`decisions/003` unchanged).
+- **Interruption:** wheel, touch and keyboard input, and an external scroll, each stop the trip on the next frame.
+
+## P2.6 Gate B — Experience and Education (2026-11-02)
+
+Production build, headless Chromium with software raster.
+
+| Measure | Result |
+|---|---|
+| Scroll passes, 4× CPU throttle (1440 / 1280 / 390 / 360) | frame p95 ≈ 25 ms desktop, 9 ms phones; ≤ 1 frame over 34 ms; no long tasks |
+| Main thread, unthrottled, full pass plus hovering all six targets (1440) | style p95 0.37 ms, layout p95 0.54 ms, paint p95 0.11 ms |
+| Raster, same pass | about 756 raster tasks (27 with motion off), p95 about 10 ms each in software raster, off the main thread |
+| CLS | Experience compression ≈ 0 (transforms only); Education ≈ 0.045 per desktop pass and ≈ 0.012 per hover (the real width axis moving the second phrase); phones 0 |
+| WebGL, from the bottom of Plannr's block through both chapters, hovering all six | 0 draws, 0 clears |
+
+- The raster cost is the deliberate trade for sharp type. Moving and re-widthing type is re-rasterized rather than promoted to layers, where it would be resampled. GPU raster numbers are still to be taken on real hardware.
+- A first version moved the Experience field through layout and measured CLS 0.048. It was rebuilt on transforms.
+
+## P2.6 Gate C — Off the Clock and Contact (2026-11-02)
+
+Production build, headless Chromium with software raster, 4× CPU throttle unless noted.
+
+| Pass | Frame p95 | Notes |
+|---|---|---|
+| Off the Clock pointer sweep, 1440 | 10 ms | no layout, no paint, ~0 raster: compositor only (images on their own layers); style p95 0.4–0.6 ms |
+| Off the Clock scroll, 1440 | 23 ms | 3 frames over 34 ms (max 59 ms) as the lazy images first enter; no long tasks |
+| Scroll and pointer together, 1440 | 25 ms | 3 frames over 34 ms; no long tasks |
+| Off the Clock scroll, 390 | 9.8 ms | 0 frames over 34 ms |
+| Contact rows and YOUR MOVE., 1440 | 10 ms | layout p95 0.8 ms, paint p95 0.4 ms, negligible raster, CLS 0 |
+
+WebGL: 0 draws and 0 clears in every Off the Clock and Contact pass.
+
+## P2.6 Final Baseline — Gate D (2026-11-03)
+
+Production build on localhost. Headless Chromium with software raster, 4× CPU throttle for the frame columns, unless noted. Real-hardware Chrome was not measured: the automation tab was hidden, so frame callbacks were suspended.
+
+**Payload** (transferred, full scroll): JS 430 KB including the lazy 3D chunk (P2.5: 427 KB, so P2.6 adds about 3 KB in total); CSS 10 KB; fonts 88 KB; P1 fallbacks 62 KB (1440) / 35 KB (390); Off the Clock images 31 KB (1440) / 22 KB (390), still lazy. No new chunk.
+
+| Pass | Frame p95 | Worst | Notes |
+|---|---|---|---|
+| Nav Hero → Contact (1440) | 2.19 s trip | 25 ms | 1 frame over 20 ms when warm; Experience compression, Education resolve and Off the Clock depth all run during the trip |
+| Experience scroll | ≈ 25 ms | — | CLS ≈ 0 |
+| Education scroll | ≈ 25 ms | — | CLS ≈ 0.045 per pass (accepted) |
+| Off the Clock pointer | 9.9 ms | 10.4 ms | no layout, no paint, ~0 raster (compositor only) |
+| Off the Clock scroll + pointer | 25.6 ms | 35 ms | 3 frames over 34 ms, no long tasks |
+| Contact pointer sweep (approach) | 9.9 ms | 10.4 ms | script p95 0.02 ms, layout p95 1.0 ms |
+
+- **Peak draw calls:** 61 per frame (P1, unchanged). Idle at the top: 0 frames; the stronger hero tilt settles within about 1.5 s of the last pointer move.
+- **P2 WebGL:** 0 draws and 0 clears for manual scroll, pointer and idle, in Chromium and WebKit.
+- **Full-journey CLS** (session window): 0.049 at 1440 and 0.042 at 1280, all from Education; 0 at 390 and 360. Experience, Off the Clock and Contact contribute 0.
+- **P1 load stress (after the context-loss fix):**
+  - 30 of 30 root loads (fresh tabs and reloads) animated.
+  - Direct `#rankle`, `#plannr` and `#experience` loads: 6 of 6 each.
+  - Dev server: 8 of 8.
+  - 4 of 4 sessions recovered after a context loss and restore. Before the fix, every loss left P1 static until a reload.
+  - Idle stays 0 frames, and no render loop was added.
+- **First entry into Off the Clock:** the slow frames are not image decode. Decode tasks are at most 1.4 ms. They are also not network: a warm repeat visit with the images HTTP-cached shows the same two slow frames, max 59 ms (cold: 66 ms). A second pass on the same page drops to one 34 ms frame. No main-thread task exceeds 30 ms in any of these. The cost is the first raster and upload of the three newly promoted image layers, off the main thread. Pre-decoding when Education is reached would save only about 1 ms of decode while adding early requests, so loading is unchanged. The trip then writes no more positions, and its listeners are removed.
+
 ---
 
 # Performance Decision Gate

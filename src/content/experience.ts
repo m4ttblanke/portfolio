@@ -1,7 +1,9 @@
 /*
  * Experience content. Trader Joe’s and the Physics Learning Center come from
  * the résumé/CV evidence audited for the previous portfolio (M7/M8,
- * 2026-09-24). No metrics are shown (the sales figure is omitted).
+ * 2026-09-24). Trader Joe's carries one metric, approved by Matthew on
+ * 2026-11-02: 10% year-over-year grocery sales growth, stated as a
+ * contribution (not sole credit, and grocery sales only, not the store's).
  *
  * SpaceComputer × UCSB is a sponsored senior project, not employment. Its
  * signal is verified against the 4Orbit repository (main, 2026-10-29): the
@@ -47,7 +49,8 @@ export const experience = [
     role: "Crew member, grocery section lead",
     start: { iso: "2022-06", label: "June 2022" },
     end: "present",
-    signal: "Led grocery ordering, inventory planning and merchandising.",
+    signal:
+      "Led grocery ordering, inventory planning and merchandising, contributing to 10% year-over-year grocery sales growth.",
   },
   {
     id: "physics-learning-center",

@@ -25,7 +25,12 @@ export function EducationChapter() {
       <ChapterLabel id="education" />
       <div className={styles.block} data-education-block>
         {education.map((line) => (
-          <div key={line.id} className={styles.area} data-area={line.id}>
+          <div
+            key={line.id}
+            id={line.id}
+            className={styles.area}
+            data-area={line.id}
+          >
             <h3 className={styles.title} data-education-title>
               <span className={styles.phrase}>{line.titleLines[0]}</span>{" "}
               <span className={styles.phrase}>{line.titleLines[1]}</span>

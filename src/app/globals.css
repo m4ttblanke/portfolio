@@ -102,6 +102,28 @@ a {
   box-shadow: 0 0 0 2px var(--color-bg);
 }
 
+/*
+ * Navigator destinations: headings that take focus only programmatically
+ * (tabindex="-1", given on arrival; see lib/motion/travel.ts). Arriving by
+ * mouse draws nothing here; the chapter's engaged state answers instead.
+ * Arriving by keyboard marks the heading with a 3px ink bar in the margin,
+ * the navigator's own current-marker, rather than a box drawn around
+ * display type. The bar is the heading's own border, 8px out; an equal
+ * negative margin keeps the type exactly where it was, and a heading's
+ * own overflow never clips its border.
+ */
+:is(h1, h2, h3)[tabindex="-1"]:focus {
+  outline: none;
+}
+
+:is(h1, h2, h3)[tabindex="-1"]:focus-visible {
+  margin-inline-start: -11px;
+  padding-inline-start: 8px;
+  border-inline-start: 3px solid var(--color-ink);
+  outline: none;
+  box-shadow: none;
+}
+
 .visually-hidden {
   position: absolute;
   inline-size: 1px;

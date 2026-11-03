@@ -971,6 +971,7 @@ Implemented (P2): a shared time field.
 - **Entry text.** It hangs from the start of its rule in a narrow column: organization in display caps (place beneath, in small caps), then kind (muted), role (semibold), dates, and one signal line.
 - **Names.** All share one display size. Duration is encoded only by the rules.
 - **Below 60rem.** Entries stack, each with its own full-width gauge (track, year ticks, "2022" and "Present" at its ends) on the same scale.
+- **Engaged (P2.6).** The rule is 4 px, with two 1 px ink projections from its ends to the scale and its years in ink. Other entries are muted with 1 px muted rules. Ink and muted are the only two tones; nothing fades.
 
 Avoid:
 
@@ -990,6 +991,7 @@ Implemented (P2): one typographic block, no nodes, clusters or connecting geomet
 - **Liberal Arts.** A.A. Liberal Arts is a muted "Also …" line in the margin column under the block.
 - **Below 60rem.** The margin moves into flow under a short rule.
 - **Below 40rem.** Each line breaks at its phrase. Each of the six phrases has its own width, so they stack as one justified column.
+- **Engaged (P2.6, desktop).** The line at +5 wdth passes the shared measure. The others at −3 are in muted ink. The margin rule bends around the pushed credentials in ink (its diagonals are drawn to the vertical's optical weight). It leaves its line above the row, never beside the title, and keeps at least 10 px from the line's last glyph.
 
 Keep it visually legible.
 
@@ -1017,7 +1019,11 @@ real relative scale, on one stage measured in content widths. Objects never
 cross a word or fact, and never overlap each other. Below 60rem the subjects
 stack, word above object, alternating edges: glove left, record bleeding
 about 10% past the right edge (clipped by the chapter), controller beside its
-word. No pointer interaction; the images are not focusable.
+word. The images are not focusable.
+
+P2.6: Games' fact is a short record, five games set as two aligned columns (title, result) in the same meta caps as the other facts. On desktop it is capped short of the controller and long titles wrap there. On phones the controller stays beside the word and the record runs full width beneath.
+
+The objects sit on separate depth planes (scroll, and pointer on desktop). The title is a back plane, and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
 
 This is the strongest candidate for controlled Campione influence.
 
@@ -1032,7 +1038,8 @@ Implemented (P2): the hero's grammar, settled.
 - **Links.** Three label/value links (Email, GitHub, LinkedIn) sit where the hero's descriptor sits.
 - **Closing line.** YOUR MOVE. is anchored to the bottom at the hero name's scale, fitted to the width and never pushed below the fold. Its indent is mirrored: the first line steps in two columns.
 - **MB.** The MB relief, as the hero's static render, stands at the end of YOUR at cap height like a final glyph.
-- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. On hover or keyboard focus it runs on 0.5 em to the right (P2.5); the text and the MB never move.
+- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. Engaged (P2.6), MOVE. stretches to 118% and the rule runs to the content edge; the MB steps 0.1 em toward the word. YOUR never moves.
+- **Engaged rows (P2.6).** The value moves 20 px right. A 1 px tie runs from just after the label's text to the value, the arrow leans up and out, and the other rows are muted. Values always share one column.
 - **Height.** The chapter is at least one viewport tall.
 - **Mobile.** Flush left, with labels over values.
 - **Compact viewport.** The chapter takes its natural height.

@@ -493,7 +493,7 @@ Potentially:
 - games
 - travel
 
-Implemented (P2): three subjects — Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3). Source: `src/content/personal.ts`.
+Implemented (P2): three subjects — Baseball (Former pitcher), Vinyl (100+ records), Games. Source: `src/content/personal.ts`. Since P2.6 (approved by Matthew, 2026-11-03), Games carries a short record instead of one fact: Elden Ring 100% ×3; Hollow Knight 100%; Clair Obscur: Expedition 33 100%; Dark Souls III 100%; Sekiro: Shadows Die Twice 100%.
 
 ## Sports
 
@@ -1009,7 +1009,7 @@ Live copy is in `src/content/` (`experience.ts`, `education.ts`, `personal.ts`, 
 
 **Experience**
 
-- TRADER JOE'S. Work. Crew member, grocery section lead. June 2022 – Present. "Led grocery ordering, inventory planning and merchandising."
+- TRADER JOE'S. Work. Crew member, grocery section lead. June 2022 – Present. "Led grocery ordering, inventory planning and merchandising, contributing to 10% year-over-year grocery sales growth." (The metric was approved by Matthew on 2026-11-02; it is stated as a contribution to grocery sales, not sole credit or store-wide growth.)
 - PHYSICS LEARNING CENTER, Cabrillo College. Teaching. Math and physics tutor. August 2024 – May 2025. "Tutored mathematics, mechanics and introductory physics."
 - SPACECOMPUTER × UCSB. Sponsored senior project. Team lead, 4Orbit. Fall 2026 – Present. "Built an end-to-end flow where Cedar policy decides whether an agent's request reaches SpaceComputer KMS through Orbitport, auditing every allow and deny."
 
@@ -1032,7 +1032,7 @@ Live copy is in `src/content/` (`experience.ts`, `education.ts`, `personal.ts`, 
 
 - BASEBALL: Former pitcher
 - VINYL: 100+ records
-- GAMES: Elden Ring ×3
+- GAMES: Elden Ring 100% ×3 / Hollow Knight 100% / Clair Obscur: Expedition 33 100% / Dark Souls III 100% / Sekiro: Shadows Die Twice 100% (P2.6)
 
 The images beside them are generated representations of each interest, not Matthew's own objects. They are decorative, and no copy claims ownership.
 
@@ -1057,7 +1057,7 @@ Resolved in P2:
 - experience chronology shown publicly: the three entries above
 - coursework: representative areas only
 - Off the Clock topics: baseball, vinyl, games (no travel or favorite teams)
-- Trader Joe's measurable result: not shown
+- Trader Joe's measurable result: shown since P2.6 (10% year-over-year grocery sales growth, as a contribution)
 - Contact closing line: YOUR MOVE.
 
 These should be resolved later, not prematurely.

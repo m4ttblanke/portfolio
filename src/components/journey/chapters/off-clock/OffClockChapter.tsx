@@ -24,9 +24,10 @@ const sizes: Record<StillLifeId, { mobile: string; desktop: string }> = {
  * its object in the space the word leaves, in a Z (glove upper right, record
  * middle left, controller lower right) at roughly real relative scale. The
  * images are generated references, decorative beside the words that name
- * them. On desktop the objects drift at different rates as the chapter
- * scrolls, the record turning slightly, and the display title lags behind
- * them (OffClockMotion); the subject words never move.
+ * them. The objects move on separate depth planes as the chapter scrolls
+ * (phones too), lean with a fine pointer on desktop, and the display title
+ * lags behind them as a back plane (OffClockMotion); the subject words and
+ * facts never move.
  */
 export function OffClockChapter() {
   return (
@@ -47,6 +48,7 @@ export function OffClockChapter() {
           return (
             <li
               key={subject.id}
+              id={subject.id}
               className={styles.subject}
               data-subject={subject.id}
             >
@@ -57,7 +59,18 @@ export function OffClockChapter() {
                   </span>{" "}
                   {subject.label}
                 </h3>
-                <p className={styles.fact}>{subject.fact}</p>
+                {"records" in subject ? (
+                  <dl className={styles.records}>
+                    {subject.records.map((record) => (
+                      <div key={record.title} className={styles.record}>
+                        <dt>{record.title}</dt>
+                        <dd>{record.result}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className={styles.fact}>{subject.fact}</p>
+                )}
               </div>
               <picture className={styles.object} data-off-clock-object>
                 <source
