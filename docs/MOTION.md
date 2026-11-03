@@ -642,6 +642,17 @@ Implemented (Gate 4, extended in P2.5): desktop-only, scroll-scrubbed, no pointe
 
 Linear, `scrub: 0.6`; scrolling back reverses it. No pin, scaling, pointer response or loop. The glove and title never come closer than about 54 px (1280) / 60 px (1440); no object crosses a word or fact at any point of the pass. Phones, reduced motion, compact presentation and no-JS show the settled composition.
 
+### Implemented (P2.6 Gate C): physical depth
+
+Supersedes the P2.5 drift and turn above.
+
+- **Scroll depth.** Each object travels over its own pass across the viewport (its top entering at the bottom → its bottom leaving at the top), linear, `scrub: 0.6`, so the planes separate while each is on screen. Travel is in content-width units: glove 6.7u, record 4.5u, controller 2.8u. That is 90 / 60 / 38 px at 1440 and 80 / 54 / 34 at 1280. The title is a slower back plane, moving the opposite way, 3.7u (50 px at 1440) over its own pass. Phones: 46 / 36 / 22 px, objects only.
+- **No turn.** Translation only. The baked sheen and shadow argued against rotation, and translation carries depth better.
+- **Pointer depth** (desktop, fine pointer). Pointer position relative to the still life's centre, clamped to ±1, leans each object with it: glove ±16 / ±10 px, record ±11 / ±7, controller ±6 / ±4 (x / y). The title leans against it: ∓6 / ∓4. GSAP `quickTo`, 0.9 s, `power3.out`: damped, no overshoot, eased back to zero on leave. Listeners are on the chapter only, attached only while it is in view.
+- **Architecture.** Scroll depth is `--depth` on each `<picture>` (composed with the phone record's `--bleed`); pointer depth is `--px` / `--py` on its `<img>`. The title's scroll and pointer parts are summed into one whole-pixel `translate`. GSAP tweens only custom properties, so the CSS `translate` is never reset and the two systems never write the same transform. Each image is its own compositor layer (`will-change: translate`, with JS and motion, not compact); the title is never promoted.
+- **Engagement.** Arrival from the navigator focuses a subject's word. Its index dash runs on as a 3 rem rule, its object leans 1.35× further, and the other two subjects' words and facts settle to muted ink.
+- **Static.** Reduced motion, compact and no-JS: the settled still life.
+
 ---
 
 # Off the Clock → Contact
@@ -669,6 +680,26 @@ Implemented (P2, P2.5): nothing moves on scroll. The page has stopped; only the 
 - Known: in Chromium at phone sizes the extension can sit 1 CSS px below the word's underline (Chromium snaps the underline there). It is visible only on keyboard focus, since phones have no hover.
 
 Links above behave as ordinary links.
+
+### Implemented (P2.6 Gate C): the visitor moves it
+
+Supersedes the P2.5 behavior above. Contact still never moves on its own; every response is to the visitor.
+
+**Rows.** `--row` (registered, 0 → 1) is a row's engagement: hover (hover-capable devices), keyboard focus, arrival from the navigator (`[data-arrived]`), or a press on touch (`:active`).
+- The value moves 20 px right (phones 0.75 rem).
+- A 1 px tie draws from just after the label's own text, through the rest of the label column and the gap, to the moving value. It is a flex filler whose negative end margin reaches the value. On phones, where the label sits above the value, a hairline runs in from the row's edge instead.
+- The outbound arrow leans 0.12 em up and out, the underline thickens to 2 px, and the other rows settle to muted ink.
+- Engage 420 ms with overshoot, release 640 ms; a press engages in 160 ms.
+- A tap's own focus never engages, so nothing sticks after a tap.
+- Reduced motion: ink, tie and underline change; nothing moves.
+
+**YOUR MOVE.** Desktop hover or keyboard focus (and a touch press):
+- MOVE. stretches 112 → 118 on the real width axis. It uses the elastic engage curve over 520 ms.
+- Its rule runs from the moving end of the word to the content edge (`100cqi`). It travels on an even ease-in-out over 540 ms (`cubic-bezier(0.65, 0, 0.35, 1)`), so the run can be watched. At 1440 it reaches the MB at 277 ms, passes its centre at 327 ms and arrives at 536 ms.
+- The MB then replies: one 0.1 em step toward the word (21 px at 1440). It starts at 380 ms (`--mb-delay`, just after the rule passes its centre), lands in 280 ms without overshoot, and holds while engaged.
+- Release: 640 ms.
+- Touch: the rule and width run in 180 ms and never delay the mail action. The MB stays put.
+- Reduced motion: the final state appears instantly; the MB never moves.
 
 ---
 
@@ -1236,8 +1267,8 @@ The second half is DOM motion only. The canvas does nothing past Plannr (`decisi
 |---|---|---|
 | Experience | P2.6: the field compresses 1.25 → 1 about 2022 with a diagonal settle while the rules draw (desktop); gauges open 0.7 → 1 (60rem and below); engaged entries thicken, project to the scale and light their years | settled field; engagement as ink and weight only |
 | Education | P2.6: the lines resolve from 64 (phones 62) to their calibrated widths on the real `wdth` axis; an engaged line stretches +5, the others give 3, and its margin rule bends out (desktop) | final widths; engagement as ink only |
-| Off the Clock | `OffClockMotion`, desktop only: objects drift at 7% / 5% / 3% of their height, the record turns ±1.5°, the display title lags ±8 px (whole pixels) | settled still life |
-| Contact | CSS only: the rule under MOVE. extends 0.5 em rightward on hover or keyboard focus | instant state change |
+| Off the Clock | P2.6: per-object scroll depth (desktop 90 / 60 / 38 px at 1440, phones 46 / 36 / 22), the title a counter-moving back plane, damped pointer depth on desktop | settled still life |
+| Contact | P2.6: rows engage (value shift, tie, arrow, muted siblings); MOVE. stretches, its rule travels to the edge, the MB replies; CSS only | instant ink/rule/width states, no movement |
 
 - All timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`. None adds a listener of its own.
 - Intended intensity (P2.5): Projects highest; Experience about 4/10; Education about 3; Off the Clock about 6, the only later rise; Contact about 1 (interaction only). P2.6 raises Experience to about 6 and Education to about 5.

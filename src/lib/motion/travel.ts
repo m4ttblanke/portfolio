@@ -90,7 +90,10 @@ export function destinationOf(element: HTMLElement) {
  * Focus a destination without scrolling: itself if focusable (a contact
  * link), else the heading it names (`aria-labelledby` or `data-nav-focus`),
  * else its first heading. Headings get `tabindex="-1"` on first use so they
- * take programmatic focus without entering the tab order.
+ * take programmatic focus without entering the tab order. The target is
+ * marked `data-arrived` until it loses focus, so a chapter can engage on
+ * arrival without also engaging on an ordinary click or tap (a contact
+ * link focused by a tap must not stay engaged).
  */
 export function focusDestination(element: HTMLElement) {
   const named =
@@ -103,6 +106,10 @@ export function focusDestination(element: HTMLElement) {
   if (!target.matches("a[href], button, [tabindex]")) {
     target.setAttribute("tabindex", "-1");
   }
+  target.dataset.arrived = "";
+  target.addEventListener("blur", () => delete target.dataset.arrived, {
+    once: true,
+  });
   target.focus({ preventScroll: true });
 }
 

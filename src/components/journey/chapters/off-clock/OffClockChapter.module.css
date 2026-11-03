@@ -9,7 +9,13 @@
  * the chapter carries its own bone background for them to blend with.
  *
  * Below 60rem (phones, and 200% zoom on laptops) the subjects stack, each word
- * above its object, alternating edges; nothing moves.
+ * above its object, alternating edges.
+ *
+ * Depth (OffClockMotion) is written as custom properties, never as GSAP
+ * transforms: scroll depth on each <picture> (--depth, composed with the
+ * phone record's bleed), pointer depth on its <img> (--px, --py), and the
+ * display title's scroll and pointer offsets summed into one whole-pixel
+ * translate. The subject words and facts never move.
  */
 
 .chapter {
@@ -40,6 +46,10 @@
   margin-block-start: var(--space-lg);
   font-size: calc(7.2 * var(--cq, 1cqi));
   white-space: nowrap;
+  /* A slower back plane: scroll lag plus a small counter-pointer offset,
+     in whole pixels so the type is never resampled. Never promoted. */
+  translate: round(calc(var(--title-px, 0) * 1px), 1px)
+    round(calc((var(--title-sy, 0) + var(--title-py, 0)) * 1px), 1px);
 }
 
 .stillLife {
@@ -89,8 +99,10 @@
 }
 
 /*
- * Arrival from the navigator (the word takes focus): the index's dash runs
- * on as a rule toward the word, the subject engaged. Gate C will extend this.
+ * Engagement: arrival from the navigator gives the subject's word focus.
+ * Its index dash runs on as a rule, its object's pointer depth deepens
+ * (OffClockMotion), and the other two subjects' words and facts settle to
+ * muted ink. Nothing hides; the images stay decorative.
  */
 .index::after {
   display: inline-block;
@@ -108,9 +120,17 @@
   transform: none;
 }
 
+.stillLife:has(.word:focus) .subject:not(:has(.word:focus)) .caption {
+  color: var(--color-muted);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .index::after {
     transition: transform 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .caption {
+    transition: color 640ms cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .word:focus .index::after {
@@ -129,12 +149,26 @@
   display: block;
   mix-blend-mode: multiply;
   pointer-events: none;
+  translate: var(--bleed, 0) calc(var(--depth, 0) * 1px);
 }
 
 .object img {
   display: block;
   inline-size: 100%;
   block-size: auto;
+  translate: calc(var(--px, 0) * 1px) calc(var(--py, 0) * 1px);
+}
+
+/*
+ * Where the objects move (motion allowed, not compact), each image is its
+ * own compositor layer: scroll and pointer then only move layers, and the
+ * photographs are never re-rasterized. Images resample cleanly; type is
+ * never promoted.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-js]:not([data-presentation="compact"]) .object img {
+    will-change: translate;
+  }
 }
 
 /*
@@ -156,8 +190,6 @@
   inset-block-start: calc(17 * var(--u));
   inset-inline-start: calc(-1.5 * var(--u));
   inline-size: calc(37.3 * var(--u));
-  /* The disc's centre in its image (measured), so it turns in place. */
-  transform-origin: 48.83% 47.61%;
 }
 
 .subject[data-subject="vinyl"] .caption {
@@ -174,16 +206,6 @@
 .subject[data-subject="games"] .caption {
   inset-block-start: calc(51 * var(--u));
   inset-inline-start: calc(44 * var(--u));
-}
-
-/*
- * Where the record turns (OffClockMotion: desktop, motion allowed), it gets
- * its own compositor layer, so the turn is not re-rasterized every frame.
- */
-@media (min-width: 60.001rem) and (prefers-reduced-motion: no-preference) {
-  .subject[data-subject="vinyl"] .object {
-    will-change: transform;
-  }
 }
 
 @media (max-width: 60rem) {
@@ -227,7 +249,7 @@
     margin-inline-end: calc(-1 * var(--margin));
     /* The disc sits 8% in from its image's right edge; this carries about
        10% of the disc past the viewport edge, clipped by the chapter. */
-    translate: 17% 0;
+    --bleed: 17%;
   }
 
   .subject[data-subject="games"] {

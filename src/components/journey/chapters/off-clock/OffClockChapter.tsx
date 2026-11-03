@@ -24,9 +24,10 @@ const sizes: Record<StillLifeId, { mobile: string; desktop: string }> = {
  * its object in the space the word leaves, in a Z (glove upper right, record
  * middle left, controller lower right) at roughly real relative scale. The
  * images are generated references, decorative beside the words that name
- * them. On desktop the objects drift at different rates as the chapter
- * scrolls, the record turning slightly, and the display title lags behind
- * them (OffClockMotion); the subject words never move.
+ * them. The objects move on separate depth planes as the chapter scrolls
+ * (phones too), lean with a fine pointer on desktop, and the display title
+ * lags behind them as a back plane (OffClockMotion); the subject words and
+ * facts never move.
  */
 export function OffClockChapter() {
   return (

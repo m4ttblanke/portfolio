@@ -12,7 +12,8 @@ const { desktop, mobile } = fallbacks.hero;
  * returns at rest, standing on the closing line like its last glyph (the
  * hero's own static render, so it costs nothing to load). The closing line is
  * the email link, and its rule is the last mark on the page. Nothing moves
- * on scroll; only the rule answers hover or focus, running on rightward (CSS
+ * on its own: the visitor moves it. Rows answer hover and focus; the closing
+ * line stretches, its rule runs out to the margin and the MB replies (CSS
  * only). No canvas.
  */
 export function ContactChapter() {
@@ -32,10 +33,21 @@ export function ContactChapter() {
                 className={styles.link}
                 href={link.href}
               >
-                <span className={styles.name}>{link.label}</span>{" "}
+                <span className={styles.name}>
+                  <span>{link.label}</span>
+                  {/* The engaged row's tie, from the label to its value. */}
+                  <span aria-hidden="true" className={styles.tie} />
+                </span>{" "}
                 <span className={styles.value}>
                   {link.value}
-                  {link.id !== "email" && <span aria-hidden="true"> ↗</span>}
+                  {link.id !== "email" && (
+                    <>
+                      {" "}
+                      <span aria-hidden="true" className={styles.arrow}>
+                        ↗
+                      </span>
+                    </>
+                  )}
                 </span>
               </a>
             </li>

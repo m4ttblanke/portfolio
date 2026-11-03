@@ -744,7 +744,7 @@ Matthew has clear interests and personality beyond technical work.
 - The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
 - Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
-**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. On desktop the objects drift slightly, at different rates, as the chapter scrolls, the record turning a degree or so, and the display title lags a few pixels behind them. The subject words never move.
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer while the display title leans against it. The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink.
 
 **Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
@@ -776,7 +776,7 @@ There is no résumé link until a corrected PDF exists.
 - The links sit where the hero's descriptor sits.
 - The closing line is anchored to the bottom at the hero name's scale, with the hero's indent mirrored.
 - The MB returns at rest at the end of YOUR. It is the hero's own static render, not a live canvas (`decisions/003`).
-- The rule under MOVE. is the last mark on the page. Nothing moves on scroll; on hover or keyboard focus the rule runs on half an em to the right, the page's one response to the visitor.
+- The rule under MOVE. is the last mark on the page. Nothing moves on its own. On hover or keyboard focus MOVE. stretches, its rule travels out to the margin, and the MB replies with one step. The rows answer hover, focus, arrival and touch: the value moves out and a tie draws to it from its label.
 
 **Mobile.** Stacked and flush left. Labels sit above values, and the MB is a small signature on the first line.
 
@@ -993,7 +993,7 @@ Objects at their settled positions; every label and fact visible.
 
 ## Contact
 
-Nothing moves on scroll. Hover and focus extend the rule instantly, without a transition.
+Nothing moves on scroll. Interaction changes ink, ties and the closing rule and width instantly; values, arrows and the MB never move.
 
 Navigator destinations jump instantly. Focus still moves to the destination, and every menu state changes without motion.
 

@@ -31,6 +31,27 @@
   list-style: none;
 }
 
+/*
+ * Rows answer the visitor (P2.6). --row (0 → 1, registered so it eases) is
+ * a row's engagement: hover (pointing devices), keyboard focus, arrival
+ * from the navigator ([data-arrived], so a mouse arrival engages without a
+ * keyboard ring), or a press on touch. A tap's own focus never engages, so
+ * nothing sticks after a tap. The value moves right,
+ * a hairline draws from the label across the opened gap to meet it, the
+ * outbound arrow leans up and out, and the other rows settle to muted ink.
+ * Nothing fades; the rows never move on their own.
+ */
+@property --row {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.links {
+  --row-shift: 20px;
+  --row-gap: var(--space-md);
+}
+
 .link {
   display: inline-flex;
   flex-wrap: wrap;
@@ -41,7 +62,10 @@
   text-decoration: none;
 }
 
+/* The label column: a fixed width, so every value starts on one line. */
 .name {
+  display: inline-flex;
+  align-items: center;
   min-inline-size: 6.5rem;
   font-size: var(--text-meta);
   font-weight: 600;
@@ -50,20 +74,127 @@
 }
 
 .value {
+  position: relative;
   font-size: 1.25rem;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.25em;
+  translate: calc(var(--row) * var(--row-shift)) 0;
 }
 
-/* Pointed at, or arrived at from the navigator (plain focus). */
-.link:hover .value,
-.link:focus .value {
+/*
+ * The tie: from just after the label's own text, through the rest of the
+ * label column and the gap, to the moving value (its negative end margin
+ * reaches the value however far it has moved). It draws from the label
+ * toward the value as the row engages, and arrives as the value lands.
+ */
+.tie {
+  flex: 1;
+  block-size: 1px;
+  margin-inline: 0.4em
+    calc(-1 * (var(--row-gap) + var(--row) * var(--row-shift)));
+  background: currentColor;
+  transform: scaleX(var(--row));
+  transform-origin: left;
+}
+
+/* Phones (label above value): the tie runs in from the row's edge instead. */
+.value::before {
+  display: none;
+  position: absolute;
+  inset-block-start: 0.62em;
+  inset-inline-start: calc(
+    -1 * (var(--row-gap) + var(--row) * var(--row-shift))
+  );
+  inline-size: calc(var(--row) * (var(--row-gap) + var(--row-shift)));
+  block-size: 1px;
+  background: currentColor;
+  content: "";
+}
+
+/* Moves with the value, a little further up and out; keeps its underline. */
+.arrow {
+  display: inline-block;
+  text-decoration: inherit;
+  text-decoration-thickness: inherit;
+  text-underline-offset: inherit;
+  translate: calc(var(--row) * 0.12em) calc(var(--row) * -0.12em);
+}
+
+.link:is(:focus-visible, [data-arrived]) {
+  --row: 1;
+}
+
+.link:is(:focus-visible, [data-arrived]) .value {
   text-decoration-thickness: 2px;
+}
+
+.links:has(.link:is(:focus-visible, [data-arrived]))
+  .link:not(:focus-visible, [data-arrived]) {
+  color: var(--color-muted);
+}
+
+@media (hover: hover) {
+  .link:hover {
+    --row: 1;
+  }
+
+  .link:hover .value {
+    text-decoration-thickness: 2px;
+  }
+
+  .links:has(.link:hover) .link:not(:hover) {
+    color: var(--color-muted);
+  }
+}
+
+/* Reduced motion: the ink and the hairline change, nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  /* Beats the phone shift below. */
+  :root .links {
+    --row-shift: 0px;
+  }
+
+  .arrow {
+    translate: none;
+  }
+}
+
+/* Touch: a press engages the row while the finger is down. */
+.link:active {
+  --row: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .link {
+    transition:
+      --row 640ms cubic-bezier(0.25, 1, 0.5, 1),
+      color 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .link:is(:focus-visible, [data-arrived]) {
+    transition-duration: 420ms;
+    transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
+  }
+
+  @media (hover: hover) {
+    .link:hover {
+      transition-duration: 420ms;
+      transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
+    }
+  }
+
+  .link:active {
+    transition-duration: 160ms;
+  }
 }
 
 /* The closing line: monumental, bottom-anchored, and the email link. */
 .closing {
+  /* When the traveling rule has passed under the MB (measured; see the
+     closing-line notes below). */
+  --mb-delay: 380ms;
+
   grid-row: 3;
   font-family: var(--font-display);
   /* As the hero name: fit the width, never push the last line below the
@@ -112,17 +243,22 @@
 }
 
 /*
- * When the visitor acts (hover, keyboard focus), and only then, the rule runs
- * on past the word by half an em, rightward: the page's one response. The
- * extension continues the underline at its measured position (0.834em below
- * the 0.84 line box's top) and thickness; at rest it has no width, so the
- * rule is exactly the word's underline. The text and the MB never move.
+ * YOUR MOVE. answers the visitor, and only the visitor (hover, keyboard
+ * focus, a press on touch). MOVE. stretches +6 on the real width axis while
+ * its rule runs on from the end of the word, through the open space, to the
+ * content edge, staying joined to the moving end of the word. Then the MB
+ * replies: one small step toward the word, held while engaged. YOUR never
+ * moves. At rest the rule has no length, so it is exactly the word's
+ * underline (continued at its measured position, 0.834em below the 0.84
+ * line box's top, at its thickness).
  */
 .line + .line::after {
   position: absolute;
   inset-block-start: 0.834em;
   inset-inline-start: 100%;
-  inline-size: 0.5em;
+  /* To the content edge: the chapter's width (100cqi), less the word, plus
+     the line's optical inset. */
+  inline-size: calc(100cqi - 100% + 0.04em);
   block-size: 0.03em;
   background: currentColor;
   transform: scaleX(0);
@@ -130,30 +266,86 @@
   content: "";
 }
 
-.closingLink:focus-visible .line + .line::after {
+.closingLink:focus-visible .line + .line,
+.closingLink:active .line + .line {
+  font-stretch: calc(var(--display-stretch) + 6%);
+}
+
+.closingLink:focus-visible .line + .line::after,
+.closingLink:active .line + .line::after {
   transform: none;
 }
 
 /* Touch screens get no hover, so no state sticks after a tap. */
 @media (hover: hover) {
+  .closingLink:hover .line + .line {
+    font-stretch: calc(var(--display-stretch) + 6%);
+  }
+
   .closingLink:hover .line + .line::after {
     transform: none;
   }
 }
 
-/* Reduced motion: the same states, without the transition. */
+/*
+ * Reduced motion: the same states, instantly, and no MB reply.
+ * Otherwise: MOVE. stretches in 520 ms on the shared (elastic) engage curve
+ * while its rule travels in 540 ms on an even ease-in-out, so the run can be
+ * watched; the MB's step begins at --mb-delay, when the rule is passing
+ * under it, and lands in 280 ms without overshoot. Release is slower and
+ * all at once. A touch press runs the rule in 180 ms and never waits:
+ * the mail action is never delayed, and the MB stays put on touch.
+ */
 @media (prefers-reduced-motion: no-preference) {
+  .line + .line {
+    transition: font-stretch 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
   .line + .line::after {
-    transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
+    transition: transform 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .mb {
+    transition: translate 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* MOVE. stretches elastically (the shared engage curve); its rule
+     travels evenly, so the run across the open space can be watched. */
+  .closingLink:focus-visible .line + .line {
+    transition-duration: 520ms;
+    transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
   }
 
   .closingLink:focus-visible .line + .line::after {
-    transition-duration: 320ms;
+    transition-duration: 540ms;
+    transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .closingLink:focus-visible .mb {
+    translate: -0.1em 0;
+    transition: translate 280ms cubic-bezier(0.25, 1, 0.5, 1) var(--mb-delay);
+  }
+
+  .closingLink:active .line + .line,
+  .closingLink:active .line + .line::after {
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   @media (hover: hover) {
+    .closingLink:hover .line + .line {
+      transition-duration: 520ms;
+      transition-timing-function: cubic-bezier(0.22, 1.2, 0.36, 1);
+    }
+
     .closingLink:hover .line + .line::after {
-      transition-duration: 320ms;
+      transition-duration: 540ms;
+      transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .closingLink:hover .mb {
+      translate: -0.1em 0;
+      transition: translate 280ms cubic-bezier(0.25, 1, 0.5, 1) var(--mb-delay);
     }
   }
 }
@@ -190,6 +382,20 @@
   .link {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* The value moves less; its hairline runs in from the row's edge. */
+  .links {
+    --row-shift: 0.75rem;
+    --row-gap: 0px;
+  }
+
+  .tie {
+    display: none;
+  }
+
+  .value::before {
+    display: block;
   }
 
   .name {

@@ -988,7 +988,21 @@ Production build, headless Chromium with software raster.
 | WebGL, from the bottom of Plannr's block through both chapters, hovering all six | 0 draws, 0 clears |
 
 - The raster cost is the deliberate trade for sharp type. Moving and re-widthing type is re-rasterized rather than promoted to layers, where it would be resampled. GPU raster numbers are still to be taken on real hardware.
-- A first version moved the Experience field through layout and measured CLS 0.048. It was rebuilt on transforms. The trip then writes no more positions, and its listeners are removed.
+- A first version moved the Experience field through layout and measured CLS 0.048. It was rebuilt on transforms.
+
+## P2.6 Gate C — Off the Clock and Contact (2026-11-02)
+
+Production build, headless Chromium with software raster, 4× CPU throttle unless noted.
+
+| Pass | Frame p95 | Notes |
+|---|---|---|
+| Off the Clock pointer sweep, 1440 | 10 ms | no layout, no paint, ~0 raster: compositor only (images on their own layers); style p95 0.4–0.6 ms |
+| Off the Clock scroll, 1440 | 23 ms | 3 frames over 34 ms (max 59 ms) as the lazy images first enter; no long tasks |
+| Scroll and pointer together, 1440 | 25 ms | 3 frames over 34 ms; no long tasks |
+| Off the Clock scroll, 390 | 9.8 ms | 0 frames over 34 ms |
+| Contact rows and YOUR MOVE., 1440 | 10 ms | layout p95 0.8 ms, paint p95 0.4 ms, negligible raster, CLS 0 |
+
+WebGL: 0 draws and 0 clears in every Off the Clock and Contact pass. The trip then writes no more positions, and its listeners are removed.
 
 ---
 

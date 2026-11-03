@@ -1019,7 +1019,9 @@ real relative scale, on one stage measured in content widths. Objects never
 cross a word or fact, and never overlap each other. Below 60rem the subjects
 stack, word above object, alternating edges: glove left, record bleeding
 about 10% past the right edge (clipped by the chapter), controller beside its
-word. No pointer interaction; the images are not focusable.
+word. The images are not focusable.
+
+P2.6: the objects sit on separate depth planes (scroll, and pointer on desktop). The title is a back plane, and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
 
 This is the strongest candidate for controlled Campione influence.
 
@@ -1034,7 +1036,8 @@ Implemented (P2): the hero's grammar, settled.
 - **Links.** Three label/value links (Email, GitHub, LinkedIn) sit where the hero's descriptor sits.
 - **Closing line.** YOUR MOVE. is anchored to the bottom at the hero name's scale, fitted to the width and never pushed below the fold. Its indent is mirrored: the first line steps in two columns.
 - **MB.** The MB relief, as the hero's static render, stands at the end of YOUR at cap height like a final glyph.
-- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. On hover or keyboard focus it runs on 0.5 em to the right (P2.5); the text and the MB never move.
+- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. Engaged (P2.6), MOVE. stretches to 118% and the rule runs to the content edge; the MB steps 0.1 em toward the word. YOUR never moves.
+- **Engaged rows (P2.6).** The value moves 20 px right. A 1 px tie runs from just after the label's text to the value, the arrow leans up and out, and the other rows are muted. Values always share one column.
 - **Height.** The chapter is at least one viewport tall.
 - **Mobile.** Flush left, with labels over values.
 - **Compact viewport.** The chapter takes its natural height.
