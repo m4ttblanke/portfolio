@@ -1029,10 +1029,13 @@ Verified on the production build. Desktop checks used headless Chrome; mobile ch
 - No canvas and no 3D download. Runways collapse to normal flow.
 - Static compositions show, all Plannr steps are at full ink, and navigation is instant.
 
-**WebGL unsupported, scene error, context loss**
+**WebGL unsupported, scene error**
 
 - `data-webgl="off"`: static renders, collapsed runways, and working navigation.
-- A restored context does not draw over the fallbacks.
+
+**Context loss (P2.6 Gate D)**
+
+- While lost, the fallbacks show in place with the runways kept. When the browser restores the context, the scene returns. Verified through three loss and restore cycles. A context loss on another canvas in the page has no effect.
 
 **Zoom and widths**
 
@@ -1064,7 +1067,7 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
 - `h3`s: each Experience organization, each Education line, and each Off the Clock subject.
 - Experience: the "×" in SpaceComputer × UCSB is `aria-hidden`, with a visually hidden "and". The place is announced after a visually hidden comma. Dates use `<time>`.
 - Education: each line's heading, then its credentials, honors and areas (a list). Mathematics + Physics adds "West Valley College" after its areas. A.A. Liberal Arts follows the block.
-- Off the Clock: the display echo of the title and each "01 —" index are `aria-hidden`. The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, Games / Elden Ring ×3.
+- Off the Clock: the display echo of the title and each "01 —" index are `aria-hidden`. The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, and Games with its record as a description list (title, then result; P2.6).
 - The still-life images and the Contact MB have `alt=""` and are never focusable.
 - Contact: three named links (Email, GitHub, LinkedIn). The closing line is one link, named "Your move. Email mattheweblanke@gmail.com".
 
@@ -1114,6 +1117,8 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
   - Contact rows engage on hover, keyboard focus (with the standard ring), navigator arrival (`data-arrived`, set on arrival and cleared on blur, so a mouse arrival engages without a ring) or a touch press. A tap's own focus does not engage, so nothing sticks after a tap.
   - YOUR MOVE. engages on hover or keyboard focus; its `mailto` action is never delayed.
   - Reduced motion keeps every state change without displacement, and the MB never moves.
+  - Gate D's pointer-approach response in Contact is decorative only. Keyboard focus, arrival and hover still produce the full engaged states, and nothing depends on the pointer.
+  - The navigator never reopens itself when it parks focus on its toggle for a trip.
 
 **Touch (automated, 390×844 and 360×740)**
 

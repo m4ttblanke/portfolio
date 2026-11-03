@@ -735,7 +735,7 @@ Matthew has clear interests and personality beyond technical work.
 
 ## Implemented (P2)
 
-**Content.** Three subjects, each a word and a fact: Baseball (Former pitcher), Vinyl (100+ records), Games (Elden Ring ×3).
+**Content.** Three subjects, each a word and a fact: Baseball (Former pitcher), Vinyl (100+ records). Games carries a short record instead (P2.6): Elden Ring 100% ×3, Hollow Knight 100%, Clair Obscur: Expedition 33 100%, Dark Souls III 100%, Sekiro: Shadows Die Twice 100%.
 
 **Visual model.** A typeset still life in the DOM.
 
@@ -744,7 +744,7 @@ Matthew has clear interests and personality beyond technical work.
 - The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
 - Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
-**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer while the display title leans against it. The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink.
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer while the display title leans against it. The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink. The depth is meant to be seen at normal scrolling speed.
 
 **Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
@@ -776,7 +776,7 @@ There is no résumé link until a corrected PDF exists.
 - The links sit where the hero's descriptor sits.
 - The closing line is anchored to the bottom at the hero name's scale, with the hero's indent mirrored.
 - The MB returns at rest at the end of YOUR. It is the hero's own static render, not a live canvas (`decisions/003`).
-- The rule under MOVE. is the last mark on the page. Nothing moves on its own. On hover or keyboard focus MOVE. stretches, its rule travels out to the margin, and the MB replies with one step. The rows answer hover, focus, arrival and touch: the value moves out and a tie draws to it from its label.
+- The rule under MOVE. is the last mark on the page. Nothing moves on its own. On hover or keyboard focus MOVE. stretches, its rule travels out to the margin, and the MB replies with one step. The rows answer hover, focus, arrival and touch: the value moves out and a tie draws to it from its label. On desktop the chapter also answers the pointer's approach: the nearest row starts to move before it is touched, and the closing line starts to stretch and run as the pointer nears it.
 
 **Mobile.** Stacked and flush left. Labels sit above values, and the MB is a small signature on the first line.
 

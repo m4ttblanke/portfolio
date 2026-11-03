@@ -45,6 +45,7 @@ The chapter navigator used plain hash links, so every jump was an instant cut. A
 
 - The project owns a small travel utility and its history, focus and interruption behavior. Changes to the navigator's activation must keep the rules above.
 - Navigator trips take 0.8–2.4 s instead of an instant jump. Hero → Contact measured about 2.2 s at 1440×900.
+- The navigator must not treat its own focus move to the toggle (made when a trip starts) as keyboard focus arriving from outside, or it would reopen itself.
 - Every navigator destination must be a real element. A destination inside a choreography runway declares `data-nav-hold`, a share of the hold, so it lands on a composed state and needs no spacer element. Static presentation collapses the runway and the hold to zero.
 - A trip through Projects renders the canvas exactly as manual scrolling would. P2 trips add no WebGL work (`003`).
 - In Chromium, Back to a fragment entry lands on that fragment's position, as it does for native anchors. For `#rankle` and `#plannr` that is the block top, not the composed hold. This is accepted as browser-native behavior.

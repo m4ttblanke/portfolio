@@ -23,6 +23,13 @@
   initial-value: 0;
 }
 
+/* The line below this one is engaged: this rule gives way to its bend. */
+@property --above {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
 .chapter {
   position: relative;
   z-index: var(--z-content);
@@ -102,9 +109,9 @@
  * Engaged growth, measured: how much wider each line sets at +5 wdth
  * (--grow) and how far short of its ten columns it ends at rest (--slack),
  * both in ems of the line. The margin is pushed by the growth less the
- * slack and the gutter, keeping 10px between the line and the rule. At
- * every desktop width that push is less than the page margin, so the
- * credentials never leave the viewport (1440: 34–39 px against 44).
+ * slack and the gutter, keeping 14px between the line and the rule. At
+ * every desktop width the credentials stay inside the viewport (they also
+ * close in 8px toward their rule when pushed; see Engagement).
  */
 .area[data-area="computer-science"] {
   --grow: 0.598;
@@ -353,10 +360,15 @@
  *
  * Desktop, with motion: the engaged line stretches +5 on the real width
  * axis past the shared measure (--pull) while the others give 3 (--yield),
- * and pushes its credentials right. The ruled margin bends out around them
- * instead of breaking: a polyline (the margin's ::before) that leaves the
- * rule's line, runs beside the pushed credentials and returns. At rest it
- * is exactly the straight 1px rule. Nothing reflows vertically.
+ * and pushes its credentials right, keeping 14px clear of the rule. The
+ * ruled margin bends out around them instead of breaking: a polyline (the
+ * margin's ::before) that leaves the rule's line, runs beside the pushed
+ * credentials and returns. It leaves the line in the space above the row
+ * (--lead), never beside the title, so it can never cross the line's last
+ * glyph; the rule of the row above gives way by the same length (--above)
+ * so the two never fork. The first row has nothing above it: its rule
+ * simply starts at the pushed position. At rest it is exactly the straight
+ * 1px rule. Nothing reflows vertically.
  */
 .area:has(.title:focus) .margin {
   border-color: var(--color-ink);
@@ -370,18 +382,34 @@
   .margin {
     --push: calc(
       (var(--grow) - var(--slack)) * var(--k) * var(--cq, 1cqi) -
-        var(--gutter) + 10px
+        var(--gutter) + 14px
     );
     --shift: round(calc(var(--pull) * var(--push)), 1px);
     --bend: 1.5rem;
+    --lead: var(--bend);
+    --lead-x: 0px;
 
     translate: var(--shift) 0;
     border-inline-start-color: transparent;
   }
 
+  .area:first-child .margin {
+    --lead: 0px;
+    --lead-x: calc(100% - 1px);
+  }
+
+  /*
+   * The pushed credentials close in toward their rule (16 → 8 px, a
+   * transform, so nothing rewraps), keeping their right edge clear of the
+   * viewport while the rule keeps its full clearance from the line.
+   */
+  .margin > * {
+    translate: calc(var(--pull) * -8px) 0;
+  }
+
   .margin::before {
     position: absolute;
-    inset-block: 0;
+    inset-block: calc(-1 * var(--lead)) calc(var(--bend) * var(--above));
     inset-inline-start: calc(-1 * var(--shift) - 1px);
     inline-size: calc(var(--shift) + 1px);
     background: var(--color-rule);
@@ -391,14 +419,14 @@
      * at an angle, a true 1px reads lighter than the vertical rule.
      */
     clip-path: polygon(
-      0 0,
+      var(--lead-x) 0,
       100% var(--bend),
       100% calc(100% - var(--bend)),
       0 100%,
       0 calc(100% - 1.5px),
       calc(100% - 1px) calc(100% - var(--bend) - 1.5px),
       calc(100% - 1px) calc(var(--bend) + 1.5px),
-      0 1.5px
+      var(--lead-x) 1.5px
     );
     content: "";
   }
@@ -425,7 +453,8 @@
     .area {
       transition:
         --pull 640ms cubic-bezier(0.25, 1, 0.5, 1),
-        --yield 640ms cubic-bezier(0.25, 1, 0.5, 1);
+        --yield 640ms cubic-bezier(0.25, 1, 0.5, 1),
+        --above 640ms cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .title {
@@ -446,6 +475,12 @@
       --yield: 1;
     }
 
+    .area:has(+ .area .title:focus) {
+      --above: 1;
+      /* No overshoot: it must not open a gap. */
+      transition-duration: 420ms;
+    }
+
     @media (hover: hover) {
       .area:hover {
         --pull: 1;
@@ -455,6 +490,12 @@
 
       .block:has(.area:hover) .area:not(:hover) {
         --yield: 1;
+      }
+
+      .area:has(+ .area:hover) {
+        --above: 1;
+        /* No overshoot: it must not open a gap. */
+        transition-duration: 420ms;
       }
     }
   }

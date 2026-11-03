@@ -59,6 +59,8 @@ export function ChapterNavigator() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef<number | undefined>(undefined);
   const switchTimer = useRef<number | undefined>(undefined);
+  /* Set while the navigator moves focus to its own toggle for a trip. */
+  const parking = useRef(false);
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [activeId, setActiveId] = useState<ChapterId>("name");
@@ -108,7 +110,9 @@ export function ChapterNavigator() {
     close();
     // While travelling, focus rests on the navigator's own toggle (the link
     // is about to hide); it moves to the destination only on arrival.
+    parking.current = true;
     toggleRef.current?.focus({ preventScroll: true });
+    parking.current = false;
     travelTo(target, { onArrive: () => focusDestination(target) });
   }
 
@@ -247,7 +251,9 @@ export function ChapterNavigator() {
         );
       }}
       onFocus={(event: FocusEvent<HTMLElement>) => {
-        // Keyboard focus arriving from outside opens the index.
+        // Keyboard focus arriving from outside opens the index (never the
+        // navigator parking focus on its toggle for a trip).
+        if (parking.current) return;
         const fromOutside = !navRef.current?.contains(
           event.relatedTarget as Node | null,
         );

@@ -56,6 +56,11 @@
   position: relative;
   block-size: calc(66 * var(--u));
   margin-block-start: calc(2.5 * var(--u));
+  /* Games' record is fixed-size type below a stage measured in u, so it
+     hangs further past the stage as the stage narrows (36 px at 1440, 117
+     at 961). This keeps it inside the chapter with room to spare; it is
+     zero from about 1700 px up. Phones reset it with the stacked layout. */
+  margin-block-end: max(0px, calc(19rem - 18 * var(--u)));
   padding: 0;
   list-style: none;
 }
@@ -138,11 +143,40 @@
   }
 }
 
-.fact {
+.fact,
+.records {
   margin-block-start: var(--space-md);
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/*
+ * Games: its facts as a short record, the same meta caps as the other facts,
+ * set as two aligned columns (title, result). Denser than a single fact,
+ * still secondary to the word and the controller. On desktop it never
+ * reaches the controller (the caption is capped short of it); long titles
+ * wrap there instead.
+ */
+.records {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) auto;
+  gap: 0.3rem 1.25rem;
+  line-height: 1.35;
+}
+
+.record {
+  display: contents;
+}
+
+.records dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.subject[data-subject="games"] .caption {
+  max-inline-size: calc(27 * var(--u));
 }
 
 .object {
@@ -222,7 +256,7 @@
     display: grid;
     gap: calc(2 * var(--space-lg));
     block-size: auto;
-    margin-block-start: calc(2 * var(--space-lg));
+    margin-block: calc(2 * var(--space-lg)) 0;
   }
 
   .caption,
@@ -252,10 +286,33 @@
     --bleed: 17%;
   }
 
+  /* The controller stays beside its word; the record runs full width
+     beneath them. */
   .subject[data-subject="games"] {
     grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "word object"
+      "records records";
     align-items: center;
     column-gap: var(--space-md);
+  }
+
+  .subject[data-subject="games"] .caption {
+    display: contents;
+    max-inline-size: none;
+  }
+
+  .subject[data-subject="games"] .word {
+    grid-area: word;
+  }
+
+  .subject[data-subject="games"] .object {
+    grid-area: object;
+  }
+
+  .subject[data-subject="games"] .records {
+    grid-area: records;
+    margin-block-start: 0;
   }
 
   .subject[data-subject="games"] .object {

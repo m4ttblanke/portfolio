@@ -991,7 +991,7 @@ Implemented (P2): one typographic block, no nodes, clusters or connecting geomet
 - **Liberal Arts.** A.A. Liberal Arts is a muted "Also …" line in the margin column under the block.
 - **Below 60rem.** The margin moves into flow under a short rule.
 - **Below 40rem.** Each line breaks at its phrase. Each of the six phrases has its own width, so they stack as one justified column.
-- **Engaged (P2.6, desktop).** The line at +5 wdth passes the shared measure. The others at −3 are in muted ink. The pushed credentials keep 10 px from the line, and the margin rule bends around them in ink (its diagonals are drawn to the vertical's optical weight).
+- **Engaged (P2.6, desktop).** The line at +5 wdth passes the shared measure. The others at −3 are in muted ink. The margin rule bends around the pushed credentials in ink (its diagonals are drawn to the vertical's optical weight). It leaves its line above the row, never beside the title, and keeps at least 10 px from the line's last glyph.
 
 Keep it visually legible.
 
@@ -1021,7 +1021,9 @@ stack, word above object, alternating edges: glove left, record bleeding
 about 10% past the right edge (clipped by the chapter), controller beside its
 word. The images are not focusable.
 
-P2.6: the objects sit on separate depth planes (scroll, and pointer on desktop). The title is a back plane, and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
+P2.6: Games' fact is a short record, five games set as two aligned columns (title, result) in the same meta caps as the other facts. On desktop it is capped short of the controller and long titles wrap there. On phones the controller stays beside the word and the record runs full width beneath.
+
+The objects sit on separate depth planes (scroll, and pointer on desktop). The title is a back plane, and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
 
 This is the strongest candidate for controlled Campione influence.
 

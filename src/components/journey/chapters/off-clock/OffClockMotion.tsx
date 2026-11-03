@@ -9,24 +9,26 @@ type Subject = "baseball" | "vinyl" | "games";
 /*
  * Total scroll travel per plane, in content-width units (u, 1% of the
  * still life's width; 13.4 px at 1440): the glove is the front plane, the
- * controller the rear. At 1440 that is 90 / 60 / 38 px; at 1280, 80 / 54 /
- * 34. Each object travels over its own pass across the viewport, so the
- * planes visibly separate while the still life is on screen.
+ * controller the rear. At 1440 that is 120 / 78 / 44 px; at 1280, 107 / 70
+ * / 40. The front gains most and the rear least, so the planes separate
+ * clearly at normal scrolling speed while the controller stays quiet. Each
+ * object travels over its own pass across the viewport, so the planes
+ * visibly separate while the still life is on screen.
  */
 const DEPTH: Record<Subject, number> = {
-  baseball: 6.7,
-  vinyl: 4.5,
-  games: 2.8,
+  baseball: 8.9,
+  vinyl: 5.8,
+  games: 3.3,
 };
 
-/* The display title, a slower back plane: total lag in u (50 px at 1440). */
-const TITLE_DEPTH = 3.7;
+/* The display title, a slower back plane: total lag in u (64 px at 1440). */
+const TITLE_DEPTH = 4.8;
 
 /* Phones: total scroll travel in px. No pointer. */
 const PHONE_DEPTH: Record<Subject, number> = {
-  baseball: 46,
-  vinyl: 36,
-  games: 22,
+  baseball: 56,
+  vinyl: 43,
+  games: 25,
 };
 
 /*
@@ -35,11 +37,11 @@ const PHONE_DEPTH: Record<Subject, number> = {
  * subject (its word focused on arrival from the navigator) leans further.
  */
 const POINTER: Record<Subject, [number, number]> = {
-  baseball: [16, 10],
-  vinyl: [11, 7],
-  games: [6, 4],
+  baseball: [21, 13],
+  vinyl: [14, 9],
+  games: [7, 5],
 };
-const TITLE_POINTER: [number, number] = [-6, -4];
+const TITLE_POINTER: [number, number] = [-8, -5];
 const ENGAGED = 1.35;
 
 /* Damped follow: no overshoot, no bounce. */
@@ -80,9 +82,14 @@ export function OffClockMotion() {
         if (isStatic(conditions)) return;
         const desktop = !!conditions?.desktop;
         const u = () => stage.offsetWidth / 100;
+        // Below 1440 (u = 13.44 px) depth eases off faster than the stage:
+        // the facts are fixed-size type, so the room around them shrinks
+        // faster than the stage does.
+        const depthU = () => u() * Math.min(u() / 13.44, 1);
 
         for (const { object, id } of objects) {
-          const travel = () => (desktop ? DEPTH[id] * u() : PHONE_DEPTH[id]);
+          const travel = () =>
+            desktop ? DEPTH[id] * depthU() : PHONE_DEPTH[id];
           gsap.fromTo(
             object,
             { "--depth": () => travel() / 2 },
@@ -103,9 +110,9 @@ export function OffClockMotion() {
         if (!desktop) return;
         gsap.fromTo(
           title,
-          { "--title-sy": () => (-TITLE_DEPTH * u()) / 2 },
+          { "--title-sy": () => (-TITLE_DEPTH * depthU()) / 2 },
           {
-            "--title-sy": () => (TITLE_DEPTH * u()) / 2,
+            "--title-sy": () => (TITLE_DEPTH * depthU()) / 2,
             ease: "none",
             scrollTrigger: {
               trigger: title,
@@ -141,8 +148,11 @@ export function OffClockMotion() {
             (event.clientY - (box.top + box.height / 2)) / (box.height / 2),
           );
           const engaged = document.activeElement?.closest("[data-subject]");
+          // Amplitudes are set at 1440 (u = 13.44 px) and scale with the
+          // layout, so narrow desktops lean no further relative to it.
+          const scale = Math.min(u() / 13.44, 1);
           for (const { subject, id, x, y } of lean) {
-            const k = subject === engaged ? ENGAGED : 1;
+            const k = (subject === engaged ? ENGAGED : 1) * scale;
             x(nx * POINTER[id][0] * k);
             y(ny * POINTER[id][1] * k);
           }

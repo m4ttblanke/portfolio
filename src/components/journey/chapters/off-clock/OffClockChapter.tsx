@@ -59,7 +59,18 @@ export function OffClockChapter() {
                   </span>{" "}
                   {subject.label}
                 </h3>
-                <p className={styles.fact}>{subject.fact}</p>
+                {"records" in subject ? (
+                  <dl className={styles.records}>
+                    {subject.records.map((record) => (
+                      <div key={record.title} className={styles.record}>
+                        <dt>{record.title}</dt>
+                        <dd>{record.result}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className={styles.fact}>{subject.fact}</p>
+                )}
               </div>
               <picture className={styles.object} data-off-clock-object>
                 <source

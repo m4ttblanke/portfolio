@@ -613,6 +613,7 @@ The three lines enter at one shared Archivo width and resolve to their own calib
 - The ruled margin bends out around them instead of breaking. The rule is a clip-path polyline (the margin's `::before`): it leaves the rule's line, runs beside the pushed credentials and returns over 1.5 rem. Its diagonals are offset 1.5 px vertically (about 1.3 px square to the line), so they match the vertical's optical weight. At rest it is exactly the straight 1 px rule. The engaged rule comes to ink.
 - Same engage/release timing as Experience. Font axis, never `scaleX`. Nothing reflows vertically, and the chapter clips horizontally as a guard.
 - Phones: no width engagement (the phrases already fill the screen). Arrival focus brings the rule above the credentials to ink and mutes the other lines.
+- Gate D clearance fix: the bend's top diagonal used to sit beside the title's cap height and crossed the line's last glyph. It now leaves the rule's line in the space above the row (`--lead`). The rule of the row above gives way by the same length (`--above`, eased without overshoot) so the two never fork. The first row has no rule above, so its rule starts at the pushed position. The target clearance is 14 px, and the pushed credentials close in 8 px toward their rule (a transform, no rewrap). Measured title-to-rule clearance including overshoot: 10–17 px at 1440, 11–17 at 1280, 12–16 at 961. The credentials stay 12 px or more inside the viewport.
 - Reduced motion: ink and rule states only, with no width change and no push.
 
 ---
@@ -646,9 +647,13 @@ Linear, `scrub: 0.6`; scrolling back reverses it. No pin, scaling, pointer respo
 
 Supersedes the P2.5 drift and turn above.
 
-- **Scroll depth.** Each object travels over its own pass across the viewport (its top entering at the bottom → its bottom leaving at the top), linear, `scrub: 0.6`, so the planes separate while each is on screen. Travel is in content-width units: glove 6.7u, record 4.5u, controller 2.8u. That is 90 / 60 / 38 px at 1440 and 80 / 54 / 34 at 1280. The title is a slower back plane, moving the opposite way, 3.7u (50 px at 1440) over its own pass. Phones: 46 / 36 / 22 px, objects only.
+- **Scroll depth.** Each object travels over its own pass across the viewport (its top entering at the bottom → its bottom leaving at the top), linear, `scrub: 0.6`, so the planes separate while each is on screen. Travel is in content-width units, raised in Gate D so the layering reads at normal scrolling speed:
+  - Glove 8.9u, record 5.8u, controller 3.3u: 120 / 78 / 44 px at 1440 (was 90 / 60 / 38). The front plane gains most and the rear least, so the separation grows while the controller stays quiet.
+  - The title is a slower back plane, moving the opposite way, 4.8u (64 px at 1440, was 50).
+  - Below 1440 the depth eases off in proportion to the stage. The facts are fixed-size type, so the room around them shrinks faster than the stage; at 961 the record keeps at least 10 px from the Baseball fact.
+  - Phones: 56 / 43 / 25 px, objects only.
 - **No turn.** Translation only. The baked sheen and shadow argued against rotation, and translation carries depth better.
-- **Pointer depth** (desktop, fine pointer). Pointer position relative to the still life's centre, clamped to ±1, leans each object with it: glove ±16 / ±10 px, record ±11 / ±7, controller ±6 / ±4 (x / y). The title leans against it: ∓6 / ∓4. GSAP `quickTo`, 0.9 s, `power3.out`: damped, no overshoot, eased back to zero on leave. Listeners are on the chapter only, attached only while it is in view.
+- **Pointer depth** (desktop, fine pointer). Pointer position relative to the still life's centre, clamped to ±1, leans each object with it: glove ±21 / ±13 px, record ±14 / ±9, controller ±7 / ±5 (x / y; Gate D, was 16 / 10, 11 / 7, 6 / 4). The title leans against it: ∓8 / ∓5. The amplitudes are set at 1440 and scale down with narrower stages. GSAP `quickTo`, 0.9 s, `power3.out`: damped, no overshoot, eased back to zero on leave. Listeners are on the chapter only, attached only while it is in view.
 - **Architecture.** Scroll depth is `--depth` on each `<picture>` (composed with the phone record's `--bleed`); pointer depth is `--px` / `--py` on its `<img>`. The title's scroll and pointer parts are summed into one whole-pixel `translate`. GSAP tweens only custom properties, so the CSS `translate` is never reset and the two systems never write the same transform. Each image is its own compositor layer (`will-change: translate`, with JS and motion, not compact); the title is never promoted.
 - **Engagement.** Arrival from the navigator focuses a subject's word. Its index dash runs on as a 3 rem rule, its object leans 1.35× further, and the other two subjects' words and facts settle to muted ink.
 - **Static.** Reduced motion, compact and no-JS: the settled still life.
@@ -685,13 +690,20 @@ Links above behave as ordinary links.
 
 Supersedes the P2.5 behavior above. Contact still never moves on its own; every response is to the visitor.
 
-**Rows.** `--row` (registered, 0 → 1) is a row's engagement: hover (hover-capable devices), keyboard focus, arrival from the navigator (`[data-arrived]`), or a press on touch (`:active`).
+**Rows.** `--row-engage` (registered, 0 → 1) is a row's engagement: hover (hover-capable devices), keyboard focus, arrival from the navigator (`[data-arrived]`), or a press on touch (`:active`).
 - The value moves 20 px right (phones 0.75 rem).
 - A 1 px tie draws from just after the label's own text, through the rest of the label column and the gap, to the moving value. It is a flex filler whose negative end margin reaches the value. On phones, where the label sits above the value, a hairline runs in from the row's edge instead.
 - The outbound arrow leans 0.12 em up and out, the underline thickens to 2 px, and the other rows settle to muted ink.
 - Engage 420 ms with overshoot, release 640 ms; a press engages in 160 ms.
 - A tap's own focus never engages, so nothing sticks after a tap.
 - Reduced motion: ink, tie and underline change; nothing moves.
+
+**Approach (Gate D).** On fine pointers, while Contact is on screen, `ContactMotion` eases two pointer-driven amounts that the CSS combines with the states above through `max()`. Contact still never moves on its own.
+- `--near` per row (closeness to its centre line, fading past its value): the nearest row's value starts to slide out and its tie to draw, up to 60% of engagement, and its neighbours follow faintly.
+- `--reach` on the closing line (approach from above): the rule starts to run, MOVE. to stretch and the MB to lean, up to 40%.
+- Follow: `quickTo` 0.5 s, `power3.out`, eased back to zero on leave.
+- Hover and focus still complete each gesture. Touch, reduced motion and compact create nothing.
+- The closing line's gestures are registered properties (`--stretch`, `--rule`, `--reply`) so they can transition on their own curves while the pointer amount blends in.
 
 **YOUR MOVE.** Desktop hover or keyboard focus (and a touch press):
 - MOVE. stretches 112 → 118 on the real width axis. It uses the elastic engage curve over 520 ms.
@@ -1293,6 +1305,10 @@ Navigation is part of the choreography (`decisions/004`). A navigator activation
   - A rail closes all at once in 120ms.
   - On touch, an opened group unrolls down its rule (220ms).
   - Under reduced motion every menu state is instant and travel is a jump.
+
+# Hero Pointer Tilt (P2.6 Gate D)
+
+The MB relief tilts with the pointer up to ±9° yaw / ±6° pitch at the viewport edges (was ±5° / ±3.5°, too slight to notice). It is the same damped response (`MathUtils.damp`, rate 5) and the same fade-out over the first quarter of the hero exit, so the rest pose and the hand-off to Rankle are unchanged. It settles within about 1.5 s; idle at rest is 0 frames.
 
 # Open Motion Decisions
 

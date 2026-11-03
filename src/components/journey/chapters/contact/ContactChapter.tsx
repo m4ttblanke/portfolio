@@ -1,6 +1,7 @@
 import { fallbacks } from "@/lib/assets/fallbacks";
 import { closingLine, contactLinks, resume } from "@/content/contact";
 import { ChapterLabel } from "../ChapterLabel";
+import { ContactMotion } from "./ContactMotion";
 import styles from "./ContactChapter.module.css";
 
 const email = contactLinks.find((link) => link.id === "email")!;
@@ -13,8 +14,9 @@ const { desktop, mobile } = fallbacks.hero;
  * hero's own static render, so it costs nothing to load). The closing line is
  * the email link, and its rule is the last mark on the page. Nothing moves
  * on its own: the visitor moves it. Rows answer hover and focus; the closing
- * line stretches, its rule runs out to the margin and the MB replies (CSS
- * only). No canvas.
+ * line stretches, its rule runs out to the margin and the MB replies (CSS).
+ * On fine pointers the nearest row and the closing line begin to answer as
+ * the pointer approaches (ContactMotion). No canvas.
  */
 export function ContactChapter() {
   return (
@@ -89,6 +91,7 @@ export function ContactChapter() {
           <span className="visually-hidden"> Email {email.value}</span>
         </a>
       </p>
+      <ContactMotion />
     </section>
   );
 }

@@ -1002,7 +1002,33 @@ Production build, headless Chromium with software raster, 4× CPU throttle unles
 | Off the Clock scroll, 390 | 9.8 ms | 0 frames over 34 ms |
 | Contact rows and YOUR MOVE., 1440 | 10 ms | layout p95 0.8 ms, paint p95 0.4 ms, negligible raster, CLS 0 |
 
-WebGL: 0 draws and 0 clears in every Off the Clock and Contact pass. The trip then writes no more positions, and its listeners are removed.
+WebGL: 0 draws and 0 clears in every Off the Clock and Contact pass.
+
+## P2.6 Final Baseline — Gate D (2026-11-03)
+
+Production build on localhost. Headless Chromium with software raster, 4× CPU throttle for the frame columns, unless noted. Real-hardware Chrome was not measured: the automation tab was hidden, so frame callbacks were suspended.
+
+**Payload** (transferred, full scroll): JS 430 KB including the lazy 3D chunk (P2.5: 427 KB, so P2.6 adds about 3 KB in total); CSS 10 KB; fonts 88 KB; P1 fallbacks 62 KB (1440) / 35 KB (390); Off the Clock images 31 KB (1440) / 22 KB (390), still lazy. No new chunk.
+
+| Pass | Frame p95 | Worst | Notes |
+|---|---|---|---|
+| Nav Hero → Contact (1440) | 2.19 s trip | 25 ms | 1 frame over 20 ms when warm; Experience compression, Education resolve and Off the Clock depth all run during the trip |
+| Experience scroll | ≈ 25 ms | — | CLS ≈ 0 |
+| Education scroll | ≈ 25 ms | — | CLS ≈ 0.045 per pass (accepted) |
+| Off the Clock pointer | 9.9 ms | 10.4 ms | no layout, no paint, ~0 raster (compositor only) |
+| Off the Clock scroll + pointer | 25.6 ms | 35 ms | 3 frames over 34 ms, no long tasks |
+| Contact pointer sweep (approach) | 9.9 ms | 10.4 ms | script p95 0.02 ms, layout p95 1.0 ms |
+
+- **Peak draw calls:** 61 per frame (P1, unchanged). Idle at the top: 0 frames; the stronger hero tilt settles within about 1.5 s of the last pointer move.
+- **P2 WebGL:** 0 draws and 0 clears for manual scroll, pointer and idle, in Chromium and WebKit.
+- **Full-journey CLS** (session window): 0.049 at 1440 and 0.042 at 1280, all from Education; 0 at 390 and 360. Experience, Off the Clock and Contact contribute 0.
+- **P1 load stress (after the context-loss fix):**
+  - 30 of 30 root loads (fresh tabs and reloads) animated.
+  - Direct `#rankle`, `#plannr` and `#experience` loads: 6 of 6 each.
+  - Dev server: 8 of 8.
+  - 4 of 4 sessions recovered after a context loss and restore. Before the fix, every loss left P1 static until a reload.
+  - Idle stays 0 frames, and no render loop was added.
+- **First entry into Off the Clock:** the slow frames are not image decode. Decode tasks are at most 1.4 ms. They are also not network: a warm repeat visit with the images HTTP-cached shows the same two slow frames, max 59 ms (cold: 66 ms). A second pass on the same page drops to one 34 ms frame. No main-thread task exceeds 30 ms in any of these. The cost is the first raster and upload of the three newly promoted image layers, off the main thread. Pre-decoding when Education is reached would save only about 1 ms of decode while adding early requests, so loading is unchanged. The trip then writes no more positions, and its listeners are removed.
 
 ---
 
