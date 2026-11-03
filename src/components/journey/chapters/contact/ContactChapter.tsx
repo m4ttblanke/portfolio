@@ -11,8 +11,9 @@ const { desktop, mobile } = fallbacks.hero;
  * descriptor sits, and monumental type anchored to the bottom. The MB relief
  * returns at rest, standing on the closing line like its last glyph (the
  * hero's own static render, so it costs nothing to load). The closing line is
- * the email link, and its rule is the last mark on the page. No motion, no
- * canvas.
+ * the email link, and its rule is the last mark on the page. Nothing moves
+ * on scroll; only the rule answers hover or focus, running on rightward (CSS
+ * only). No canvas.
  */
 export function ContactChapter() {
   return (

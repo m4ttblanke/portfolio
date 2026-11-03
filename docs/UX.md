@@ -633,7 +633,7 @@ Matthew has substantial real-world work experience, academic support experience,
 
 **Visual model.** One shared time field runs from January 2022 to the present. Year numerals and hairlines mark the scale. Each entry hangs from a duration rule on that field. Rule length is the only encoding of time, and all names share one display size. An ongoing rule runs through "Present" to the viewport edge.
 
-**Interaction.** Reading only. Each rule extends from its start as it scrolls into view (scrubbed; see `MOTION.md`). There is no dragging, no sticky year and no replaced role information.
+**Interaction.** Reading only. Each rule extends from its start as it scrolls into view, and on desktop the year numerals settle onto their ticks as the rules draw (scrubbed; see `MOTION.md`). There is no dragging, no sticky year and no replaced role information.
 
 **Mobile.** Below 60rem (phones, and laptops at about 200% zoom), entries stack. Each entry carries its own full-width 2022 → Present gauge on the same scale, so overlaps still read down the column.
 
@@ -671,7 +671,7 @@ The interaction should make these relationships understandable quickly.
 - A few representative areas are glossed beneath each line. They are not a course list.
 - A.A. Liberal Arts stays subordinate, as an "Also …" line under the block.
 
-**Interaction.** None. The chapter is static: no motion, no pointer behavior.
+**Interaction.** None. As the block enters, the lines resolve from one shared width to their calibrated widths on the real width axis (see `MOTION.md`); nothing else moves, and there is no pointer behavior.
 
 **Mobile.** Below 60rem, the credentials follow each line in flow under a short rule. Below 40rem each line breaks at its phrase (COMPUTER / SCIENCE), never mid-word. Each phrase has its own width, so all six phrases share one measure.
 
@@ -712,7 +712,7 @@ Matthew has clear interests and personality beyond technical work.
 - The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
 - Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
-**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. On desktop the objects drift slightly, at different rates, as the chapter scrolls. The words never move.
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. On desktop the objects drift slightly, at different rates, as the chapter scrolls, the record turning a degree or so, and the display title lags a few pixels behind them. The subject words never move.
 
 **Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
@@ -744,7 +744,7 @@ There is no résumé link until a corrected PDF exists.
 - The links sit where the hero's descriptor sits.
 - The closing line is anchored to the bottom at the hero name's scale, with the hero's indent mirrored.
 - The MB returns at rest at the end of YOUR. It is the hero's own static render, not a live canvas (`decisions/003`).
-- The rule under MOVE. is the last mark on the page.
+- The rule under MOVE. is the last mark on the page. Nothing moves on scroll; on hover or keyboard focus the rule runs on half an em to the right, the page's one response to the visitor.
 
 **Mobile.** Stacked and flush left. Labels sit above values, and the MB is a small signature on the first line.
 
@@ -949,11 +949,11 @@ Project objects statically composed.
 
 ## Experience
 
-Duration rules drawn in full; every date is also text.
+Duration rules drawn in full and the numerals on their ticks; every date is also text.
 
 ## Education
 
-Unchanged: the chapter has no motion.
+The lines at their final, calibrated widths.
 
 ## Off the Clock
 
@@ -961,7 +961,7 @@ Objects at their settled positions; every label and fact visible.
 
 ## Contact
 
-Unchanged: the chapter has no motion.
+Nothing moves on scroll. Hover and focus extend the rule instantly, without a transition.
 
 Chapter navigation should move immediately or with minimal motion.
 

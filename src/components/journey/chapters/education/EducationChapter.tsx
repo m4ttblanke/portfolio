@@ -4,13 +4,16 @@ import {
   type Credential,
 } from "@/content/education";
 import { ChapterLabel } from "../ChapterLabel";
+import { EducationMotion } from "./EducationMotion";
 import styles from "./EducationChapter.module.css";
 
 /**
  * 04 — Education. Four academic areas set as three monumental lines that
  * form one block; each line's Archivo width is tuned so the three share a
  * measure. Credentials (and the honors note) sit in a ruled margin beside
- * their line; the areas are glossed in the gap beneath it. Static: no motion.
+ * their line; the areas are glossed in the gap beneath it. As the block
+ * enters, the lines resolve from one shared width to their own
+ * (EducationMotion); nothing else moves.
  */
 export function EducationChapter() {
   return (
@@ -20,10 +23,10 @@ export function EducationChapter() {
       className={styles.chapter}
     >
       <ChapterLabel id="education" />
-      <div className={styles.block}>
+      <div className={styles.block} data-education-block>
         {education.map((line) => (
           <div key={line.id} className={styles.area} data-area={line.id}>
-            <h3 className={styles.title}>
+            <h3 className={styles.title} data-education-title>
               <span className={styles.phrase}>{line.titleLines[0]}</span>{" "}
               <span className={styles.phrase}>{line.titleLines[1]}</span>
             </h3>
@@ -72,6 +75,7 @@ export function EducationChapter() {
           ))}
         </p>
       </div>
+      <EducationMotion />
     </section>
   );
 }

@@ -269,14 +269,14 @@ components/journey/chapters/
   ChapterLabel            shared chapter h2 (number + name, from navigation.ts)
   experience/             ExperienceChapter (server) + ExperienceMotion (client)
                           time-field.ts (Jan 2022 → build month, as fractions)
-  education/              EducationChapter (server, no motion)
+  education/              EducationChapter (server) + EducationMotion (client, P2.5)
   off-clock/              OffClockChapter (server) + OffClockMotion (client)
-  contact/                ContactChapter (server, no motion)
+  contact/                ContactChapter (server; CSS-only hover/focus rule)
 lib/assets/               still-life.ts (Off the Clock image registry, srcset)
 public/off-clock/         AVIF + WebP still-life images, five widths each
 ```
 
-P2 adds two client components, both DOM motion. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
+P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
 
 ---
 
@@ -452,7 +452,7 @@ Contact     0 → 1
 
 Avoid one giant global GSAP timeline.
 
-Implemented: only Hero, Rankle and Plannr write scene progress. Experience and Off the Clock own DOM-only ScrollTriggers, and Education and Contact have none.
+Implemented: only Hero, Rankle and Plannr write scene progress. Experience, Education and Off the Clock own DOM-only ScrollTriggers; Contact has none (its one interaction is CSS).
 
 Preferred model:
 
@@ -722,14 +722,16 @@ There is no "simplified WebGL" tier yet. Mobile gets a different composition fro
 
 Decided in `decisions/003-webgl-scope-ends-after-projects.md`.
 
-WebGL is scoped to P1. Chapters 03–06 (Experience, Education, Off the Clock, Contact) are DOM and CSS only; Off the Clock's still life is raster images with a small GSAP drift, not canvas.
+WebGL is scoped to P1. Chapters 03–06 (Experience, Education, Off the Clock, Contact) are DOM and CSS only; Off the Clock's still life is raster images with a small GSAP drift and turn, not canvas.
 
-The persistent canvas stays mounted for the whole visit (no teardown), but past the P1 scenes it does no work. Every scene group hides once Plannr's frame has scrolled out above the viewport — Kit, RankleScene and PlannrScene all test `frameTop(plannr) > -frameHeight`, which holds exactly while `scrollY < plannr.blockBottom`. `sceneInView()` in `canvas/anchors.ts` states that condition once, and both input-driven wake-ups use it:
+The persistent canvas stays mounted for the whole visit (no teardown), but past the P1 scenes it does no work. Every scene group hides once Plannr's frame has scrolled out above the viewport — Kit, RankleScene and PlannrScene all test `frameTop(plannr) > -frameHeight`, which holds exactly while `scrollY < plannr.blockBottom`. `sceneInView()` in `canvas/anchors.ts` states that condition once, and every wake-up uses it:
 
-- **Scroll** (`useAnchors`): invalidates while a scene is in view, plus one frame on the way out so the last pose is cleared; then nothing until scrolling back above `blockBottom`.
+- **Scroll and layout** (`useAnchors`, one `wake` rule): a scroll or a measured layout change (`ResizeObserver` on `main` and the P1 blocks) invalidates while a scene is in view, plus one frame on the way out so the last pose is cleared; then nothing until a scene can be in view again. The first measure always draws one frame, wherever the page loads.
 - **Pointer tilt** (`Kit`): keeps recording the pointer but only invalidates while a scene is in view, so the relief is current on return.
 
-Scroll timelines still wake the loop through `setScene` while their scrubbed values settle (at most ~0.6 s after leaving Plannr); they are idle in P2. Layout changes (`ResizeObserver`) always draw one frame, which also gives a direct load of a later chapter its first frame. Unknown layout (no Plannr anchors) counts as in view.
+Scroll timelines still wake the loop through `setScene` while their scrubbed values settle (at most ~0.6 s after leaving Plannr); they are idle in P2. A window resize past the scenes lets the renderer redraw its resized, empty canvas once. Unknown layout (no Plannr anchors) counts as in view.
+
+P2.5 found one gap: layout changes past the scenes used to draw a frame unconditionally. On phones and at 200% zoom the lazy Off the Clock images settle `main`'s height by a fraction of a pixel as they load, so each load woke the loop for one empty clear (seen in WebKit as 3 clears per visit; Chromium loads those images earlier, at Experience). Layout changes now follow the same rule as scroll: the anchors are still re-measured whenever P2 content or images settle, but a hidden P1 canvas is not woken for them. Scrolling back into the scenes redraws them exactly as a fresh load at that position would. A window resize is different: the renderer redraws its own resized (empty) canvas once, which is not an application wake-up.
 
 ---
 

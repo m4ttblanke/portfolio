@@ -374,20 +374,22 @@ Anchor navigation should be immediate or nearly immediate.
 
 ## Experience
 
-- duration rules are drawn in full; every date is also text, so no meaning depends on rule length
+- duration rules are drawn in full and the year numerals sit on their ticks; every date is also text, so no meaning depends on rule length
 
 ## Education
 
-- unchanged: the chapter has no motion
+- the lines are set at their final widths; no width interpolation runs
+- during the interpolation (motion allowed) the text stays real, selectable text in reading order; only its width changes, never its size, line height or position
 
 ## Off the Clock
 
-- objects remain static at their settled positions
+- objects remain static at their settled positions: no drift, no record turn, no title lag
 - labels and facts are always visible text
 
 ## Contact
 
-- unchanged: the chapter has no motion
+- nothing moves on scroll in any mode
+- hover and keyboard focus extend the rule under MOVE. instantly, with no transition; keyboard focus always keeps the visible outline as well
 
 ---
 

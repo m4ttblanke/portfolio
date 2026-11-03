@@ -19,9 +19,9 @@ P2 had to finish the journey (Experience, Education, Off the Clock, Contact) and
 
 - Experience is a shared time field of CSS duration rules.
 - Education is one typographic block.
-- Off the Clock is a typeset still life of generated raster images, with a small desktop-only GSAP drift.
-- Contact is static.
-- All P2 motion runs through per-chapter `*Motion` components on DOM elements (`ExperienceMotion`, `OffClockMotion`). None of it writes to `scene`.
+- Off the Clock is a typeset still life of generated raster images, with a small desktop-only GSAP drift (and, since P2.5, a slight record turn and title lag).
+- Contact does not move on scroll (since P2.5 its closing rule answers hover and focus, in CSS).
+- All P2 motion runs through per-chapter `*Motion` components on DOM elements (`ExperienceMotion`, `EducationMotion` since P2.5, `OffClockMotion`). None of it writes to `scene`.
 
 **The persistent canvas stays mounted for the whole visit.**
 
@@ -32,8 +32,8 @@ P2 had to finish the journey (Experience, Education, Off the Clock, Contact) and
 - `sceneInView()` in `canvas/anchors.ts` states the condition under which any P1 scene group can be visible: `scrollY < plannr.blockBottom`.
 - Scroll invalidation (`useAnchors`) runs only while that holds, plus one frame on the way out so the last pose is hidden.
 - Pointer tilt (`Kit`) still records the pointer but invalidates only while a scene is in view.
-- Layout changes (`ResizeObserver`) always draw one frame, so a direct load or a resize lower on the page still leaves the canvas correct.
-- Measured result: scrolling Experience to the end of Contact issues 0 WebGL draws and 0 clears.
+- Layout changes (`ResizeObserver`) follow the same rule as scroll (amended in P2.5; previously they always drew one frame, so lazy images settling past the scenes cleared the empty canvas). The first measure still draws one frame wherever the page loads.
+- Measured result: scrolling Experience to the end of Contact issues 0 WebGL draws and 0 clears in Chromium and WebKit, at desktop and phone sizes. Leaving Plannr costs a few settling clears, once.
 
 **Contact uses a static MB callback.**
 

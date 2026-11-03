@@ -984,7 +984,7 @@ Avoid:
 
 Implemented (P2): one typographic block, no nodes, clusters or connecting geometry.
 
-- **Lines.** Three monumental lines share one size and cap height. Each line's Archivo width (`wdth`) is tuned so the three fill one measure across ten of the twelve columns: Computer Science at 112.7%, Mathematics + Physics at 94.1%, Technology Management at 80%. The rows are equal, so every line starts the same distance below the last.
+- **Lines.** Three monumental lines share one size and cap height. Each line's Archivo width (`wdth`) is tuned so the three fill one measure across ten of the twelve columns: Computer Science at 112.7%, Mathematics + Physics at 94.1%, Technology Management at 80% (browsers render `font-stretch` in 0.25% steps: 112.5 / 94 / 80). The rows are equal, so every line starts the same distance below the last. As the block enters, the lines resolve to these widths from one shared width (P2.5; see `MOTION.md`); the settled composition is unchanged.
 - **Margin.** A ruled margin in the last two columns carries each line's credentials (degree semibold, place and date muted). Credentials from one institution on one date share a place line. The honors note sits there too, muted, under a small caps label.
 - **Areas.** They are glossed beneath each line in small caps, separated by slashes. Where the areas were taken somewhere other than the credentials beside them, a muted small caps line names the source (Mathematics + Physics: WEST VALLEY COLLEGE).
 - **Liberal Arts.** A.A. Liberal Arts is a muted "Also …" line in the margin column under the block.
@@ -1032,7 +1032,7 @@ Implemented (P2): the hero's grammar, settled.
 - **Links.** Three label/value links (Email, GitHub, LinkedIn) sit where the hero's descriptor sits.
 - **Closing line.** YOUR MOVE. is anchored to the bottom at the hero name's scale, fitted to the width and never pushed below the fold. Its indent is mirrored: the first line steps in two columns.
 - **MB.** The MB relief, as the hero's static render, stands at the end of YOUR at cap height like a final glyph.
-- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page.
+- **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. On hover or keyboard focus it runs on 0.5 em to the right (P2.5); the text and the MB never move.
 - **Height.** The chapter is at least one viewport tall.
 - **Mobile.** Flush left, with labels over values.
 - **Compact viewport.** The chapter takes its natural height.

@@ -526,8 +526,17 @@ Implemented (P2): no transition choreography. The live scenes end with Plannr (`
 Each duration rule extends from its start toward its end (`scaleX` 0 → 1, transform origin at the rule's start). It starts when the rule enters the viewport and is complete when the rule reaches 60% of the viewport height.
 
 - Linear, scrubbed (`scrub: 0.6`). Scrolling back retracts it; a fast scroll or direct load lands fully drawn.
-- The years, names and text never move.
 - Static presentation creates nothing: the rules are drawn.
+
+### Implemented (P2.5): the scale calibrates
+
+On desktop (above 60rem, where the shared scale exists) the year numerals start slightly right of their ticks and settle onto them as the rules draw, as if the scale were stretched about 1% and then found its true measure.
+
+- Only the numeral glyphs move (an inner `data-experience-year` span). The ticks, which are the year spans' own borders, never move, so the encoded time is correct at every moment.
+- Offset: 14 px × the year's field position (2022: 0; the latest year about 11 px), settling to 0.
+- One tween, from the scale entering the viewport until the last rule reaches 60% (when the last rule finishes drawing). Linear, `scrub: 0.6`.
+- PRESENT, names, roles, dates and copy never move. Duration remains the only encoding.
+- Below 60rem the per-entry gauges draw as before; there is no numeral motion.
 
 Avoid:
 
@@ -551,9 +560,19 @@ Implemented (P2): none. Education follows in normal flow.
 - exploratory
 - calm
 
-### Implemented (P2)
+### Implemented (P2.5): typography measuring itself
 
-None. Education is the stillest chapter, the low point of the energy curve. It has no timeline, no pointer behavior and no reveal.
+The three lines enter at one shared Archivo width and resolve to their own calibrated widths, which bring them to one measure. Identical settings show how unequal the phrases are; the calibration resolves it. Nothing slides, fades, scales or reveals: only the real width axis moves.
+
+- `EducationMotion` (tiny client component; the chapter stays server-rendered) tweens one custom property, `--resolve` (0 → 1), on the three `h3`s. The CSS interpolates `font-stretch` from `--wdth-from` to each line's (or phrase's) `--wdth`.
+- Start: wdth 76 above 40rem, 66 on phones. Both are below every final width at that breakpoint, so no line ever runs past the measure or into the credential margin. Finals are unchanged (112.7 / 94.1 / 80; phones 93.8, 119.7 · 70.8, 105.3 · 75.2, 70.3).
+- Above 60rem: one shared tween, no stagger, from the block entering the viewport until its top reaches 40%. A direct `#education` load lands resolved.
+- 60rem and below (phones, 200% zoom): the lines stand up to a screen apart, so each line has its own range, from entering the viewport until its bottom reaches 85%. It is resolved before it rises into the reading area.
+- Linear, `scrub: 0.6`. Scrolling back unresolves it.
+- Font size and line height never change, so no line moves vertically and no trigger re-measures. Browsers quantize `font-stretch` to 0.25% steps (about 1.3 px of line width per step); no further quantization was added, and the interpolation is otherwise continuous.
+- Layout stability: on desktop, as a line's first phrase widens, its second phrase moves along the line. Over a full scroll this measures CLS 0.014 at 1440 (accepted; well inside 0.1). Phones stack the phrases: CLS 0.
+- The resolving rule sits in `@supports (font-stretch: calc(50% + 1%))`, after plain final declarations: a browser that cannot compute it keeps the exact final widths. Static presentation and no-JS never set `--resolve`, which defaults to 1 (the final widths).
+- The credential margin, the gloss, the West Valley attribution and the A.A. line never move.
 
 ---
 
@@ -573,13 +592,14 @@ Implemented (P2): no transition choreography. The loosening is compositional. Of
 - tactile
 - slightly less rigid
 
-Implemented (Gate 4): desktop-only scroll drift, no pointer behavior. As the
-chapter crosses the viewport each object drifts upward through its settled
-position (reached mid-pass): the glove 7% of its own height, the record 5%,
-the controller 3%, so they read at different depths. Scrubbed, so scrolling
-back reverses it. No pin, rotation, scaling or loop; the words never move.
-Phones, reduced motion, compact presentation and no-JS show the settled
-composition.
+Implemented (Gate 4, extended in P2.5): desktop-only, scroll-scrubbed, no pointer behavior. Three planes over one pass (section top at the viewport bottom → section bottom at the top), each through its settled position at mid-pass:
+
+- **Objects (front).** Each drifts upward at its own rate: the glove 7% of its own height, the record 5%, the controller 3%.
+- **The record's turn.** The record also turns −1.5° → 0° → +1.5° about its disc centre (measured `transform-origin`), clockwise: a barely perceptible physical turn, never a spin. Its baked sheen and shadow turn with it, which is why it stays this small. It has its own compositor layer (`will-change: transform`, desktop with motion only), so the turn is not re-rasterized every frame.
+- **Display title (back).** OFF THE CLOCK lags: y −8 px → +8 px, snapped to whole pixels, so the type is never resampled and repaints only when the offset changes.
+- **Words (middle).** BASEBALL, VINYL, GAMES and the facts never move.
+
+Linear, `scrub: 0.6`; scrolling back reverses it. No pin, scaling, pointer response or loop. The glove and title never come closer than about 54 px (1280) / 60 px (1440); no object crosses a word or fact at any point of the pass. Phones, reduced motion, compact presentation and no-JS show the settled composition.
 
 ---
 
@@ -599,7 +619,15 @@ Implemented (P2): no transition choreography. Off the Clock's drift settles as i
 - conclusive
 - minimal
 
-Implemented (P2): no motion. The MB returns at rest as the hero's static render (`decisions/003`). Links behave as ordinary links.
+Implemented (P2, P2.5): nothing moves on scroll. The page has stopped; only the thing the visitor acts on responds.
+
+- On hover (`@media (hover: hover)` only) or keyboard focus (`:focus-visible`, alongside the outline), the rule under MOVE. runs on 0.5 em past the word, rightward only. The word keeps its own underline at rest, so the resting rule is unchanged; the extension is a `::after` segment that scales from its left edge.
+- 320 ms in, 200 ms out, `cubic-bezier(0.2, 0, 0, 1)`: no overshoot, no loop. Reduced motion: the same state, without the transition.
+- Touch: no hover state; a tap opens the mail link.
+- The MB and the text never move. CSS only.
+- Known: in Chromium at phone sizes the extension can sit 1 CSS px below the word's underline (Chromium snaps the underline there). It is visible only on keyboard focus, since phones have no hover.
+
+Links above behave as ordinary links.
 
 ---
 
@@ -1159,18 +1187,19 @@ The same static presentation applies on a compact viewport, `(max-width: 40rem) 
 - All four Plannr steps are shown at full ink, so no meaning depends on motion.
 - Chapter links jump instantly.
 
-# Motion Established in P2
+# Motion Established in P2 and P2.5
 
-The second half is DOM motion only. The canvas does nothing past Plannr (`decisions/003`).
+The second half is DOM motion only. The canvas does nothing past Plannr (`decisions/003`). Each chapter has its own motion language: lines measure time, letters measure breadth, objects occupy space, and Contact waits for input.
 
 | Chapter | Motion | Presentation without it |
 |---|---|---|
-| Experience | `ExperienceMotion`: each duration rule draws from its start, scrubbed, from entering the viewport to 60% height | rules drawn |
-| Education | none | — |
-| Off the Clock | `OffClockMotion`, desktop only: objects drift upward through their settled position at 7% / 5% / 3% of their own height | settled |
-| Contact | none | — |
+| Experience | `ExperienceMotion`: each duration rule draws from its start (entering → 60% height); on desktop the year numerals settle onto their fixed ticks by the time the last rule is drawn | rules drawn, numerals on their ticks |
+| Education | `EducationMotion`: the lines resolve from one shared width (76; phones 66) to their calibrated widths on the real `wdth` axis; desktop together, 60rem and below per line | final widths |
+| Off the Clock | `OffClockMotion`, desktop only: objects drift at 7% / 5% / 3% of their height, the record turns ±1.5°, the display title lags ±8 px (whole pixels) | settled still life |
+| Contact | CSS only: the rule under MOVE. extends 0.5 em rightward on hover or keyboard focus | instant state change |
 
-- Both timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`.
+- All timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`. None adds a listener of its own.
+- Intended intensity: Projects highest; Experience about 4/10; Education about 3; Off the Clock about 6, the only later rise; Contact about 1 (interaction only).
 - No pinning, sticky holds, pointer behavior or loops.
 - Reduced motion, compact viewports and no-JS create no timelines and show the composed state. No-WebGL and scene failure leave P2 motion unchanged, because it does not depend on the canvas.
 
@@ -1188,7 +1217,8 @@ Settled in P1:
 
 Settled in P2:
 
-- pointer response stays in the hero; no P2 chapter responds to the pointer
+- pointer response stays in the hero; no P2 chapter responds to the pointer (re-examined in P2.5 for Off the Clock and rejected: at 2–6 px it read as a UI effect, not depth)
+- P2.5: no fades, slides or reveals in the second half; motion there is measurement (rules, numerals, the width axis), depth (Off the Clock's planes) or response (Contact)
 - later chapters reuse `scrub: 0.6` and linear scrubbing; no separate timing tokens were needed
 - no chapter after Projects uses live WebGL (`decisions/003`)
 

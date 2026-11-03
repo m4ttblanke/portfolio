@@ -83,6 +83,18 @@ export function useAnchors() {
     const plannrBlock = document.querySelector('[data-scene="plannr"]');
     if (!hero) return;
 
+    // Scene poses depend on raw scroll position and on layout. Past the P1
+    // scenes nothing can draw, so a scroll or a layout change there wakes the
+    // loop only once more, on the way out (that frame hides the last pose),
+    // then not at all until a scene can be in view again. Starting true, the
+    // first measure always draws one frame, wherever the page loads.
+    let wasInView = true;
+    const wake = () => {
+      const inView = sceneInView(anchors.current, window.scrollY);
+      if (inView || wasInView) invalidate();
+      wasInView = inView;
+    };
+
     const measure = () => {
       const h = hero.getBoundingClientRect();
 
@@ -116,7 +128,9 @@ export function useAnchors() {
         rankle,
         plannr,
       };
-      invalidate();
+      // Layout below the scenes also changes past them (a lazy image
+      // settling in Off the Clock); that must not wake the loop either.
+      wake();
     };
 
     measure();
@@ -133,20 +147,10 @@ export function useAnchors() {
     for (const element of observed) {
       if (element) observer.observe(element);
     }
-    // Scene poses depend on raw scroll position as well as progress. Past
-    // the P1 scenes nothing can draw: invalidate once more on the way out
-    // (that frame hides the last pose), then not at all until scrolling
-    // back. Wherever the page loads, `measure` has drawn one frame.
-    let wasInView = sceneInView(anchors.current, window.scrollY);
-    const onScroll = () => {
-      const inView = sceneInView(anchors.current, window.scrollY);
-      if (inView || wasInView) invalidate();
-      wasInView = inView;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", wake, { passive: true });
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", wake);
     };
   }, [invalidate]);
 

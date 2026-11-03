@@ -2,7 +2,8 @@
  * Education: one typographic block. Three lines (four academic areas) share
  * one size and cap height; each line's Archivo width (wdth) is tuned so the
  * three fill the same measure. Credentials sit in a ruled margin beside their
- * line, areas are glossed in the gap beneath it. Static: no motion.
+ * line, areas are glossed in the gap beneath it. The only motion is the
+ * width axis resolving (EducationMotion); nothing moves or fades.
  */
 
 .chapter {
@@ -36,9 +37,15 @@
  * One size for all three lines; each line's width (wdth) brings it to the
  * same measure, 11.6em (measured at Archivo 700 with display tracking), and
  * --k sizes that measure to the ten-column block.
+ *
+ * --wdth is each line's final width, beside the same value as a plain
+ * declaration. --wdth-from is the one width every line shares before it
+ * resolves; it stays below the narrowest final so no line ever runs past
+ * the measure.
  */
 .block {
   --k: 7.1;
+  --wdth-from: 76;
 }
 
 .title {
@@ -54,14 +61,17 @@
 }
 
 .area[data-area="computer-science"] .title {
+  --wdth: 112.7;
   font-stretch: 112.7%;
 }
 
 .area[data-area="mathematics-physics"] .title {
+  --wdth: 94.1;
   font-stretch: 94.1%;
 }
 
 .area[data-area="technology-management"] .title {
+  --wdth: 80;
   font-stretch: 80%;
 }
 
@@ -215,6 +225,8 @@
   .block {
     /* 100 / 5.3 */
     --k: 18.8;
+    /* Below the narrowest phrase (70.3). */
+    --wdth-from: 66;
   }
 
   .phrase {
@@ -222,26 +234,32 @@
   }
 
   .area[data-area="computer-science"] .phrase:first-child {
+    --wdth: 93.8;
     font-stretch: 93.8%;
   }
 
   .area[data-area="computer-science"] .phrase:last-child {
+    --wdth: 119.7;
     font-stretch: 119.7%;
   }
 
   .area[data-area="mathematics-physics"] .phrase:first-child {
+    --wdth: 70.8;
     font-stretch: 70.8%;
   }
 
   .area[data-area="mathematics-physics"] .phrase:last-child {
+    --wdth: 105.3;
     font-stretch: 105.3%;
   }
 
   .area[data-area="technology-management"] .phrase:first-child {
+    --wdth: 75.2;
     font-stretch: 75.2%;
   }
 
   .area[data-area="technology-management"] .phrase:last-child {
+    --wdth: 70.3;
     font-stretch: 70.3%;
   }
 
@@ -256,5 +274,27 @@
 
   .areas li:not(:last-child)::after {
     content: none;
+  }
+}
+
+/*
+ * Resolving: every line (on phones every phrase) interpolates from the shared
+ * --wdth-from to its own --wdth as --resolve runs 0 → 1 (EducationMotion).
+ * Unset, --resolve is 1: exactly the final widths above, so static
+ * presentation and no-JS never see the shared width. Guarded, because a
+ * var() declaration a browser cannot compute falls back to 100%, not to the
+ * plain final width. Last in the file and as specific as the rules above, so
+ * it wins wherever it applies.
+ */
+@supports (font-stretch: calc(50% + 1%)) {
+  .block .area .title,
+  .block .area .title .phrase {
+    font-stretch: calc(
+      (
+          var(--wdth-from) + (var(--wdth) - var(--wdth-from)) *
+            var(--resolve, 1)
+        ) *
+        1%
+    );
   }
 }
