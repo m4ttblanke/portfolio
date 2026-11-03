@@ -1069,7 +1069,7 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
 - Education: each line's heading, then its credentials, honors and areas (a list). Mathematics + Physics adds "West Valley College" after its areas. A.A. Liberal Arts follows the block.
 - Off the Clock: the display echo of the title and each "01 —" index are `aria-hidden`. The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, and Games with its record as a description list (title, then result; P2.6).
 - The still-life images and the Contact MB have `alt=""` and are never focusable.
-- Contact: three named links (Email, GitHub, LinkedIn). The closing line is one link, named "Your move. Email mattheweblanke@gmail.com".
+- Contact: four named links (Email, GitHub, LinkedIn, Resume; the Resume link's name adds "PDF, opens in a new tab"). The closing line is one link, named "Your move. Email mattheweblanke@gmail.com".
 
 **Keyboard and navigation (automated)**
 
@@ -1104,7 +1104,7 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
 
 **Keyboard (automated, 1440)**
 
-- Tab order: skip link, toggle, then 01 → 02 → Rankle → Plannr → 03 → its three entries → … → 06 → Email → GitHub → LinkedIn, then on into the page. Focusing a chapter or one of its subsections shows that group's rail. Hidden groups are `visibility: hidden` and out of the tab order. Leaving the index closes it, so there is no trap.
+- Tab order: skip link, toggle, then 01 → 02 → Rankle → Plannr → 03 → its three entries → … → 06 → Email → GitHub → LinkedIn → Resume, then on into the page. Focusing a chapter or one of its subsections shows that group's rail. Hidden groups are `visibility: hidden` and out of the tab order. Leaving the index closes it, so there is no trap.
 - Shift+Tab into the closed index from the page lands on the toggle, and Tab from there opens and enters it.
 - Escape on a subsection returns focus to its chapter. Escape on a chapter closes the index and returns focus to the toggle.
 - Enter on a destination: focus rests on the toggle during the trip, then moves to the destination on arrival (`:focus-visible`). That is the heading for chapters and project, entry, area and subject targets (given `tabindex="-1"` on first use), or the contact link itself. A key, wheel or touch during the trip stops it and leaves focus on the toggle.

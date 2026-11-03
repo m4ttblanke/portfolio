@@ -585,7 +585,7 @@ Implemented (P2):
 YOUR MOVE.
 ```
 
-It is the email link. Email, GitHub and LinkedIn are live; the résumé link waits for a corrected PDF.
+It is the email link. Email, GitHub, LinkedIn and the résumé PDF are live.
 
 Do not over-write the ending.
 
@@ -1041,6 +1041,7 @@ The images beside them are generated representations of each interest, not Matth
 - Email: mattheweblanke@gmail.com
 - GitHub: @m4ttblanke
 - LinkedIn: in/m4ttblanke
+- Resume: View résumé (`/resume.pdf`, opens in a new tab; `/resume` redirects to it)
 - Closing line: YOUR MOVE. (the email link)
 
 **Sources and limits**
@@ -1048,7 +1049,7 @@ The images beside them are generated representations of each interest, not Matth
 - Experience and Education facts come from the résumé/CV evidence audited for the previous portfolio.
 - SpaceComputer × UCSB is verified against the private 4Orbit repository and confirmed by Matthew. It has no link while the repository is private.
 - No metrics, GPA, grades or honors lists are shown.
-- There is no résumé link until a corrected PDF exists, and no footer or colophon.
+- The résumé is the PDF at `public/resume.pdf`, served unmodified. There is no footer or colophon.
 
 # Open Content Questions
 
@@ -1067,7 +1068,6 @@ These should be resolved later, not prematurely.
 - which secondary projects appear
 - whether project deep details are expandable
 - whether project source links are visible by default
-- the corrected résumé PDF and its link
 
 These decisions should be made in context of the actual compositions.
 

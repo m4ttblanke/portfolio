@@ -112,10 +112,10 @@ The site is primarily one page:
 
 The homepage contains the complete portfolio journey.
 
-Potential utility route:
+Utility route:
 
 ```text
-/resume
+/resume  →  /resume.pdf  (permanent redirect, next.config.ts)
 ```
 
 Additional routes should be introduced only when they serve a clear product need.
@@ -132,9 +132,6 @@ A target structure. Application paths are relative to `src/`; `docs/` and `decis
 app/
   layout.tsx
   page.tsx
-
-  resume/
-    page.tsx
 
 components/
   journey/
@@ -954,17 +951,9 @@ Do not use custom state that makes the URL lie about the current location.
 
 # Resume Route
 
-The likely `/resume` route should remain simple.
-
-Potential implementation:
-
-- HTML resume
-- PDF download
-- both
+Implemented: the résumé is a PDF at `public/resume.pdf` (served at `/resume.pdf`). `/resume` is a permanent (308) redirect to it, declared in `next.config.ts`. There is one copy of the PDF and no HTML résumé.
 
 Do not make the resume route depend on WebGL.
-
-It should load quickly and print cleanly if HTML-based.
 
 ---
 
@@ -1311,7 +1300,6 @@ Still open:
 
 - exact quality-tier strategy (P1 has full WebGL or static only)
 - exact model compression pipeline (P1 loads no models)
-- whether `/resume` is HTML, PDF, or both
 - whether any project detail route is eventually justified
 
 Do not resolve these through speculation alone.

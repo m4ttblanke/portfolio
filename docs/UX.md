@@ -273,7 +273,7 @@ For reduced-motion users, navigation should be immediate or minimally animated.
 03 EXPERIENCE      Trader Joe's #trader-joes · Physics Learning Center #physics-learning-center · SpaceComputer × UCSB #spacecomputer-ucsb
 04 EDUCATION       Computer Science #computer-science · Mathematics + Physics #mathematics-physics · Technology Management #technology-management
 05 OFF THE CLOCK   Baseball #baseball · Vinyl #vinyl · Games #games
-06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin
+06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin · Resume #contact-resume
 ```
 
 Every destination is an element that already existed (the project blocks, entries, areas, subjects and contact links). None is a spacer.
@@ -767,9 +767,10 @@ Give the journey a clear ending and make contact frictionless.
 - Email: mattheweblanke@gmail.com
 - GitHub: @m4ttblanke
 - LinkedIn: in/m4ttblanke
+- Resume: View résumé, the PDF at `/resume.pdf` in a new tab (`/resume` redirects to it).
 - The closing line, YOUR MOVE., which is itself the email link.
 
-There is no résumé link until a corrected PDF exists.
+The navigator's Resume entry travels to and engages the row; it never opens the PDF itself.
 
 **Visual model.** A still bookend to the hero.
 

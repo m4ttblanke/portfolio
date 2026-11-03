@@ -1,6 +1,7 @@
 /*
  * Canonical contact points (verified in the previous portfolio's
- * lib/site.ts). The résumé link stays absent until a corrected PDF exists.
+ * lib/site.ts), plus the résumé PDF served from `public/resume.pdf`
+ * (`/resume` redirects to it; see next.config.ts).
  */
 
 export type ContactLink = {
@@ -8,6 +9,10 @@ export type ContactLink = {
   readonly label: string;
   readonly value: string;
   readonly href: string;
+  /** Opens in a new tab (the résumé PDF). */
+  readonly newTab?: boolean;
+  /** Appended to the accessible name only, e.g. what opening it does. */
+  readonly srHint?: string;
 };
 
 export const contactLinks = [
@@ -29,10 +34,15 @@ export const contactLinks = [
     value: "in/m4ttblanke",
     href: "https://www.linkedin.com/in/m4ttblanke",
   },
+  {
+    id: "resume",
+    label: "Resume",
+    value: "View résumé",
+    href: "/resume.pdf",
+    newTab: true,
+    srHint: "(PDF, opens in a new tab)",
+  },
 ] as const satisfies readonly ContactLink[];
-
-/** Set to the PDF path once the corrected résumé is in `public/`. */
-export const resume: { readonly href: string } | null = null;
 
 /** The closing line, set in two lines (approved at Gate 3). */
 export const closingLine = ["Your", "move."] as const;

@@ -1,5 +1,5 @@
 import { fallbacks } from "@/lib/assets/fallbacks";
-import { closingLine, contactLinks, resume } from "@/content/contact";
+import { closingLine, contactLinks, type ContactLink } from "@/content/contact";
 import { ChapterLabel } from "../ChapterLabel";
 import { ContactMotion } from "./ContactMotion";
 import styles from "./ContactChapter.module.css";
@@ -28,12 +28,16 @@ export function ContactChapter() {
       <div className={styles.top}>
         <ChapterLabel id="contact" />
         <ul className={styles.links}>
-          {contactLinks.map((link) => (
+          {contactLinks.map((link: ContactLink) => (
             <li key={link.id}>
               <a
                 id={`contact-${link.id}`}
                 className={styles.link}
                 href={link.href}
+                {...(link.newTab && {
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                })}
               >
                 <span className={styles.name}>
                   <span>{link.label}</span>
@@ -51,17 +55,12 @@ export function ContactChapter() {
                     </>
                   )}
                 </span>
+                {link.srHint && (
+                  <span className="visually-hidden"> {link.srHint}</span>
+                )}
               </a>
             </li>
           ))}
-          {resume && (
-            <li>
-              <a className={styles.link} href={resume.href}>
-                <span className={styles.name}>Résumé</span>{" "}
-                <span className={styles.value}>PDF</span>
-              </a>
-            </li>
-          )}
         </ul>
       </div>
 

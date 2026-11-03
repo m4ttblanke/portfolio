@@ -1035,7 +1035,7 @@ Return to simplicity.
 
 Implemented (P2): the hero's grammar, settled.
 
-- **Links.** Three label/value links (Email, GitHub, LinkedIn) sit where the hero's descriptor sits.
+- **Links.** Four label/value links (Email, GitHub, LinkedIn, Resume) sit where the hero's descriptor sits.
 - **Closing line.** YOUR MOVE. is anchored to the bottom at the hero name's scale, fitted to the width and never pushed below the fold. Its indent is mirrored: the first line steps in two columns.
 - **MB.** The MB relief, as the hero's static render, stands at the end of YOUR at cap height like a final glyph.
 - **Final mark.** The closing line is the email link. Its heavy underline under MOVE. is the last mark on the page. Engaged (P2.6), MOVE. stretches to 118% and the rule runs to the content edge; the MB steps 0.1 em toward the word. YOUR never moves.
