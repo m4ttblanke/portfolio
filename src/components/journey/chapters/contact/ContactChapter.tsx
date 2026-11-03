@@ -27,7 +27,11 @@ export function ContactChapter() {
         <ul className={styles.links}>
           {contactLinks.map((link) => (
             <li key={link.id}>
-              <a className={styles.link} href={link.href}>
+              <a
+                id={`contact-${link.id}`}
+                className={styles.link}
+                href={link.href}
+              >
                 <span className={styles.name}>{link.label}</span>{" "}
                 <span className={styles.value}>
                   {link.value}

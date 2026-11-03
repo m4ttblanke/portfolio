@@ -3,6 +3,13 @@ import { SceneFallback } from "../../fallback/SceneFallback";
 import { PlannrMotion } from "./PlannrMotion";
 import styles from "./PlannrProject.module.css";
 
+/*
+ * The navigator's "Plannr" lands this far through the hold, where the
+ * workflow is composed: the calendar settled (PLANNR_KEYS end at 0.82),
+ * step 04 current, before the frame releases at 1.
+ */
+const NAV_HOLD = 0.9;
+
 /**
  * Plannr scene. A tall block whose sticky frame holds the copy, the workflow
  * as a numbered list (so the process reads without motion), and a stage the
@@ -10,7 +17,13 @@ import styles from "./PlannrProject.module.css";
  */
 export function PlannrProject() {
   return (
-    <div className={styles.block} data-scene="plannr">
+    <div
+      id="plannr"
+      className={styles.block}
+      data-scene="plannr"
+      data-nav-hold={NAV_HOLD}
+      data-nav-focus="plannr-heading"
+    >
       <div className={styles.frame} data-sticky>
         <div
           aria-hidden="true"

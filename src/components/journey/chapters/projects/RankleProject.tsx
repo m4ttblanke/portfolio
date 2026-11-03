@@ -5,6 +5,13 @@ import { TIERS } from "../../scenes/rankle/ranklePose";
 import { RankleMotion } from "./RankleMotion";
 import styles from "./RankleProject.module.css";
 
+/*
+ * The navigator's "Rankle" lands this far through the hold, where the scene
+ * is composed: both boards and the threads (RANKLE_KEYS end at 0.8), before
+ * the hand-off to Plannr begins at 1. "Projects" lands at the block top.
+ */
+const NAV_HOLD = 0.9;
+
 /**
  * Rankle scene. A tall block whose sticky frame holds the copy and a stage of
  * two tier boards — yours and a friend's — that the canvas fills with the same
@@ -12,7 +19,13 @@ import styles from "./RankleProject.module.css";
  */
 export function RankleProject({ heading }: { heading: ReactNode }) {
   return (
-    <div className={styles.block} data-scene="rankle">
+    <div
+      id="rankle"
+      className={styles.block}
+      data-scene="rankle"
+      data-nav-hold={NAV_HOLD}
+      data-nav-focus="rankle-heading"
+    >
       <div className={styles.frame} data-sticky>
         {heading}
         <article className={styles.copy} aria-labelledby="rankle-heading">

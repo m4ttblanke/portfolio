@@ -68,7 +68,12 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
   } as CSSProperties;
 
   return (
-    <li className={styles.entry} data-kind={entry.kind} style={style}>
+    <li
+      id={entry.id}
+      className={styles.entry}
+      data-kind={entry.kind}
+      style={style}
+    >
       {/* Duration rule; on narrow screens a gauge with its own scale. */}
       <div aria-hidden="true" className={styles.rule}>
         {years.slice(1).map(({ year, at }) => (

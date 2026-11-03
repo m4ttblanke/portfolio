@@ -1203,6 +1203,25 @@ The second half is DOM motion only. The canvas does nothing past Plannr (`decisi
 - No pinning, sticky holds, pointer behavior or loops.
 - Reduced motion, compact viewports and no-JS create no timelines and show the composed state. No-WebGL and scene failure leave P2 motion unchanged, because it does not depend on the canvas.
 
+# Navigation Travel (P2.6 Gate A)
+
+Navigation is part of the choreography (`decisions/004`). A navigator activation travels the native document scroll to its destination, so every chapter in between plays at speed. Nothing else travels: Back/Forward, hash loads and the skip link stay native and instant.
+
+- **Duration:** `t = clamp(0.8s, 0.6 + 0.5·√v, 2.4s)`, with `v` the distance in viewport heights.
+- **Curve:** a smoothed trapezoid velocity profile. Speed rises from rest along a smoothstep, cruises, then falls along a mirrored smoothstep. Position is the integral of that profile (`travelEase` in `lib/motion/travel.ts`). The ramp share of each end goes from 0.5 (one viewport or less: no cruise) to 0.28 (eight viewports or more), so a long trip peaks at about 1.4× its average speed. A cubic in-out would peak at about 3×.
+- **Measured at 1440×900:**
+  - Projects → Experience: 6.0 viewports in 1.79s
+  - Hero → Contact: 10.5 viewports in 2.18s
+  - Contact → Projects: 9.5 viewports in 2.11s
+  - Computer Science → Mathematics + Physics: 0.17 viewports in 0.8s
+- **Interruption:** wheel, touch, pointer down, any non-modifier key, or scroll the trip did not write (over 3 px) stops it on that frame, with no snap and no resume.
+- **Menu motion:**
+  - The index opens with its existing downward clip (its clip now reaches past the list to the left and below, where the rails hang).
+  - A rail draws its connector (`scaleX`, 160ms) and is revealed right to left along it (220ms). Its labels slide the last half rem against the rail, staggered 25ms.
+  - A rail closes all at once in 120ms.
+  - On touch, an opened group unrolls down its rule (220ms).
+  - Under reduced motion every menu state is instant and travel is a jump.
+
 # Open Motion Decisions
 
 Settled in P1:
@@ -1221,6 +1240,10 @@ Settled in P2:
 - P2.5: no fades, slides or reveals in the second half; motion there is measurement (rules, numerals, the width axis), depth (Off the Clock's planes) or response (Contact)
 - later chapters reuse `scrub: 0.6` and linear scrubbing; no separate timing tokens were needed
 - no chapter after Projects uses live WebGL (`decisions/003`)
+
+Settled in P2.6 Gate A:
+
+- navigator jumps travel the real scroll (`decisions/004`); Back/Forward never animate
 
 Still open:
 

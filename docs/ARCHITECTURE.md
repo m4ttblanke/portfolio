@@ -276,6 +276,18 @@ lib/assets/               still-life.ts (Off the Clock image registry, srcset)
 public/off-clock/         AVIF + WebP still-life images, five widths each
 ```
 
+## Structure Added in P2.6 Gate A
+
+```text
+content/navigation.ts     chapters gain subsections (ids and labels derived
+                          from the content modules) and a tracking rule
+lib/motion/travel.ts      navigator travel: destination resolution, the
+                          distance-aware rAF loop, interruption, hash-load
+                          correction, destination focus (decisions/004)
+```
+
+The navigator stays the only client component for navigation. Travel is a plain module with one frame loop and no React state. The chapters stay server components: subsection targets are ids on existing elements, `data-nav-hold` on the project blocks, and `scroll-margin` in the chapter CSS.
+
 P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
 
 ---

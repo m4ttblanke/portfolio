@@ -56,7 +56,9 @@
   text-underline-offset: 0.25em;
 }
 
-.link:hover .value {
+/* Pointed at, or arrived at from the navigator (plain focus). */
+.link:hover .value,
+.link:focus .value {
   text-decoration-thickness: 2px;
 }
 

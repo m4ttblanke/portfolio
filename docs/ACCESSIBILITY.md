@@ -233,6 +233,8 @@ Do not move focus automatically during normal scrolling.
 
 Scrolling to a chapter should not unexpectedly steal focus.
 
+Exception, by design: a deliberate navigator activation moves focus to its destination once the trip arrives (`decisions/004`), so the visual position, keyboard focus and screen-reader context agree. A cancelled trip moves no focus.
+
 Focus should only move when:
 
 - a modal-like pattern truly requires it
@@ -1007,7 +1009,7 @@ Verified on the production build. Desktop checks used headless Chrome; mobile ch
 
 - The skip link is the first tab stop, visible on focus, and moves focus to `<main>`.
 - Keyboard focus opens the navigator. Escape closes it and returns focus to its toggle.
-- Enter on a chapter link follows the native hash link.
+- Enter on a chapter link follows the native hash link. (Since P2.6 it travels there and focuses the destination; see the P2.6 Gate A section below.)
 - Focus rings are 2px solid.
 
 **Navigation**
@@ -1087,6 +1089,43 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
   - 390×844, 360×740 and 320×568
 - 250% and up switch to the compact static presentation, as in P1.
 - Page zoom was emulated as a smaller viewport at a higher DPR. That matches Chrome. Real Safari page zoom behaves differently (see the WebKit note above) and is checked by hand.
+
+## P2.6 Gate A — Hierarchical navigator and travel (2026-11-02)
+
+**Structure**
+
+- One `<nav aria-label="Chapters">`, the toggle (`aria-expanded`, `aria-controls`), and an `<ol>` of chapters. Each chapter with subsections nests its own labelled `<ol>` ("Projects sections" and so on).
+- All destinations are real anchors. There is no ARIA `menu` and no roving tabindex.
+- On touch, narrow and compact screens, each such chapter has a separate disclosure `<button>` named "<Chapter> sections", with `aria-expanded` and `aria-controls`. The chapter link and its disclosure are never one control.
+- Without JS the whole tree renders expanded as plain anchors (20 links), with no disclosure buttons.
+
+**Keyboard (automated, 1440)**
+
+- Tab order: skip link, toggle, then 01 → 02 → Rankle → Plannr → 03 → its three entries → … → 06 → Email → GitHub → LinkedIn, then on into the page. Focusing a chapter or one of its subsections shows that group's rail. Hidden groups are `visibility: hidden` and out of the tab order. Leaving the index closes it, so there is no trap.
+- Shift+Tab into the closed index from the page lands on the toggle, and Tab from there opens and enters it.
+- Escape on a subsection returns focus to its chapter. Escape on a chapter closes the index and returns focus to the toggle.
+- Enter on a destination: focus rests on the toggle during the trip, then moves to the destination on arrival (`:focus-visible`). That is the heading for chapters and project, entry, area and subject targets (given `tabindex="-1"` on first use), or the contact link itself. A key, wheel or touch during the trip stops it and leaves focus on the toggle.
+- The skip link is untouched: native, instant, focuses `<main>`.
+- **Arrival states.** Plain `:focus` on a destination produces that chapter's engaged state, so a mouse-started trip also arrives visibly. `:focus-visible` adds the keyboard cue on top.
+- **Keyboard cue.** Destination headings never get the standard 2px box around display type. A 3px ink bar in the margin, 8px from the type (the navigator's own current-marker), is drawn as the heading's border with an equal negative margin, so the type does not move. Mouse arrival draws no bar.
+- **Interim engaged states, until Gate C:** an Off the Clock subject's index dash runs on as a 3rem rule, and a Contact row's value underline thickens to 2px, as on hover.
+
+**Touch (automated, 390×844 and 360×740)**
+
+- The toggle opens the index with the current chapter's group open. One group opens at a time. Tapping a destination closes the index, travels and focuses the destination. Long subsection names wrap within the screen.
+- The current subsection is correct after every subsection landing.
+
+**History and hashes**
+
+- Navigator activation pushes one history entry. The same hash again pushes none. Modified and middle clicks stay native.
+- Back and Forward restore instantly, with no reload (Next's router state is kept by its `pushState` patch). In Chromium, a fragment entry is restored to its fragment's position, exactly as for native anchors.
+- A trip in progress is cancelled by Back.
+- Direct loads of every subsection hash land natively, then `#rankle` and `#plannr` correct instantly to their composed holds once the page has loaded. Native hash loads honour the negative `scroll-margin` of the record and the controller.
+
+**Modes**
+
+- Reduced motion: instant jumps, instant menu states, and focus still moves. Rankle and Plannr land at their block tops, because the static runways have no hold.
+- Compact (600×400): the touch form of the index fits within the viewport, and travel is animated.
 
 **Pending manual verification**
 

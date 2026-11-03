@@ -27,6 +27,9 @@
 }
 
 .area {
+  /* Navigator destination: the line a quarter of the way down, the line
+     above it still whole. */
+  scroll-margin-block-start: 25svh;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto 1fr;

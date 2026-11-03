@@ -47,6 +47,7 @@ export function OffClockChapter() {
           return (
             <li
               key={subject.id}
+              id={subject.id}
               className={styles.subject}
               data-subject={subject.id}
             >

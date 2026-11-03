@@ -89,6 +89,9 @@
   padding-block-start: calc(var(--index) * var(--step));
   /* Entries overlap as boxes; only their text columns take input. */
   pointer-events: none;
+  /* Navigator destination: the entries share one cell, so each lands on the
+     whole field, its year scale in view. */
+  scroll-margin-block-start: calc(var(--head) + 2 * var(--space-lg));
 }
 
 .rule {
@@ -194,6 +197,7 @@
   .entry {
     grid-area: auto;
     padding-block-start: 0;
+    scroll-margin-block-start: calc(2 * var(--space-lg));
   }
 
   .rule {

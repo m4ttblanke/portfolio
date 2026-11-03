@@ -50,6 +50,23 @@
   list-style: none;
 }
 
+/*
+ * Navigator destination. On desktop every subject's box is the top of the
+ * stage, so each lands by its own object: the glove (13u above the stage)
+ * with the title, the record whole, the controller with its word.
+ */
+.subject[data-subject="baseball"] {
+  scroll-margin-block-start: calc(16 * var(--u));
+}
+
+.subject[data-subject="vinyl"] {
+  scroll-margin-block-start: calc(-12 * var(--u));
+}
+
+.subject[data-subject="games"] {
+  scroll-margin-block-start: calc(-30 * var(--u));
+}
+
 .caption,
 .object {
   position: absolute;
@@ -69,6 +86,36 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   line-height: 1.45;
+}
+
+/*
+ * Arrival from the navigator (the word takes focus): the index's dash runs
+ * on as a rule toward the word, the subject engaged. Gate C will extend this.
+ */
+.index::after {
+  display: inline-block;
+  inline-size: 3rem;
+  block-size: 2px;
+  margin-inline-start: 0.5rem;
+  vertical-align: middle;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  content: "";
+}
+
+.word:focus .index::after {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .index::after {
+    transition: transform 640ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .word:focus .index::after {
+    transition: transform 420ms cubic-bezier(0.22, 1.2, 0.36, 1);
+  }
 }
 
 .fact {
@@ -161,9 +208,11 @@
     position: static;
   }
 
-  .subject {
+  .subject,
+  .subject[data-subject] {
     display: grid;
     gap: var(--space-md);
+    scroll-margin-block-start: calc(2 * var(--space-lg));
   }
 
   /* Alternating edges: glove left, record bleeding off the right edge,

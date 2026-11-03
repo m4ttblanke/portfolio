@@ -957,6 +957,24 @@ Production build on localhost, Playwright Chromium (GPU) unless noted, with auto
 
 **Console.** No hydration warnings and no new messages; the THREE.Clock deprecation and GPU driver notices are from P1.
 
+## P2.6 Gate A — Navigation Travel (2026-11-02)
+
+Production build on localhost, Playwright Chromium (headless, software WebGL), unthrottled. Times run from activation to the last frame that moved the scroll.
+
+| Trip (1440×900) | Distance | Time | Frames > 20 ms | Nav DOM mutations |
+|---|---|---|---|---|
+| Hero → Contact (warm) | 10.5 vh | 2.19 s | 1 (max 25 ms) | 46 |
+| Contact → Projects | 9.5 vh | 2.11 s | 2 | 39 |
+| Projects → Experience | 6.0 vh | 1.79 s | 0 | 17 |
+| Experience → Computer Science | 1.1 vh | 1.10 s | 2 | 19 |
+| Computer Science → Mathematics + Physics | 0.17 vh | 0.8 s | 0 | 9 |
+
+- 1280×800 matches within 50 ms (Hero → Contact 2.23 s, Rankle → Plannr 1.42 s, Games → Vinyl 0.8 s). The phone sizes do too (390×844 Hero → Contact 2.22 s, 0 frames over 20 ms).
+- The first Hero → Contact after load had longer frames (11 over 20 ms, max 125 ms). The Rankle and Plannr scenes compile on their first appearance, as they do when scrolling by hand.
+- No React state changes per frame. The navigator re-renders only when the current chapter or subsection changes: one change for each chapter crossed during a trip.
+- **WebGL:** a trip through Projects renders the P1 scenes frame by frame, as manual scrolling would (Hero → Contact: about 5,000 draws). The last draw happens at scroll 6,286, inside Plannr's block (bottom 6,300). Past that there are 0 draws. Trips within P2 issue 0 draws and 0 clears (`decisions/003` unchanged).
+- **Interruption:** wheel, touch and keyboard input, and an external scroll, each stop the trip on the next frame. The trip then writes no more positions, and its listeners are removed.
+
 ---
 
 # Performance Decision Gate

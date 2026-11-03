@@ -263,6 +263,38 @@ For normal-motion users, movement may be smoothly choreographed.
 
 For reduced-motion users, navigation should be immediate or minimally animated.
 
+## Implemented (P2.6 Gate A)
+
+**Subsections.** The navigator is a two-level tree. Labels and ids come from the content modules (`content/navigation.ts`):
+
+```text
+01 NAME
+02 PROJECTS        Rankle #rankle · Plannr #plannr
+03 EXPERIENCE      Trader Joe's #trader-joes · Physics Learning Center #physics-learning-center · SpaceComputer × UCSB #spacecomputer-ucsb
+04 EDUCATION       Computer Science #computer-science · Mathematics + Physics #mathematics-physics · Technology Management #technology-management
+05 OFF THE CLOCK   Baseball #baseball · Vinyl #vinyl · Games #games
+06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin
+```
+
+Every destination is an element that already existed (the project blocks, entries, areas, subjects and contact links). None is a spacer.
+
+**Where each destination lands.**
+
+- Chapters land at the section top.
+- Rankle and Plannr land 90% of the way through their holds (`data-nav-hold`), on the composed scene: both boards with their threads; the settled calendar with step 04 current. "Projects" still lands at the start, as the pieces arrive.
+- Experience entries share one field on desktop, so each lands on the whole field with its year scale. On phones each lands on its own entry.
+- Education lines land a quarter of the way down, with the line above still whole.
+- Off the Clock subjects land by their own objects on desktop (`scroll-margin`, negative for the record and the controller). On phones each lands on its own subject.
+- Contact links land on the chapter (the end of the page).
+
+**Desktop (fine pointer, 48rem and wider).** Hovering or focusing a chapter shows its subsections on a rail to the left of the index. A hairline connector joins the chapter row to the rail, and labels align against the rail, mirroring the chapters. Moving to another chapter switches rails after a 100ms dwell. Entering the open rail cancels a pending switch, so the pointer can cross a neighbouring row on its way in. When the index opens, the current chapter's rail is already shown.
+
+**Touch, narrow and compact.** Each chapter with subsections has its own disclosure button, separate from the chapter link. Its glyph is the navigator's hairline, whose end drops when the group is open. One group is open at a time, and the current chapter's group starts open. Long names wrap.
+
+**Travel.** Activating a destination closes the index and travels the real page scroll to it over 0.8–2.4s, depending on distance. Every chapter in between plays as it passes. Focus moves to the destination on arrival. Any wheel, touch, key or pointer input stops the trip where it is. Back and Forward are instant. See `decisions/004` and `MOTION.md`.
+
+**Current subsection.** The current subsection is marked only where subsections stand apart: Projects and Education always, Experience and Off the Clock below 60rem. Contact never has one. It is tracked on a band 30% down the viewport, where destinations land.
+
 ---
 
 # Chapter 01 — Name
@@ -963,7 +995,7 @@ Objects at their settled positions; every label and fact visible.
 
 Nothing moves on scroll. Hover and focus extend the rule instantly, without a transition.
 
-Chapter navigation should move immediately or with minimal motion.
+Navigator destinations jump instantly. Focus still moves to the destination, and every menu state changes without motion.
 
 ---
 
