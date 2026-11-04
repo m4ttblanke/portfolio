@@ -169,6 +169,8 @@ Potentially:
 
 Do not crowd the hero.
 
+Implemented (usability pass): one context line and a résumé link, set as a quiet caption above the name. Exact copy: "Content Established in P1" below.
+
 ## Do Not Include
 
 - biography paragraph
@@ -980,7 +982,10 @@ Live copy is in `src/content/` (`profile.ts`, `projects.ts`, `navigation.ts`).
 **Hero**
 
 - MATTHEW BLANKE
-- Descriptor: "Computer Science / Software / Product"
+- Descriptor: "Software / Product" (usability pass, 2026-11-03: "Computer Science" moved into the context line, so it is not said twice)
+- Context line: "UC Santa Barbara · B.S. Computer Science · June 2027" (verified in `src/content/education.ts`; expected graduation)
+- Contact rail: "Email · GitHub · LinkedIn · Résumé ↗". Labels only (no address or handles); the links reuse `contactLinks`, so the hero and Contact never disagree. Email stays in the tab; GitHub, LinkedIn and the résumé PDF open a new one.
+- No seeking/availability copy, no bio, no skill tags
 
 **Rankle**
 
@@ -1041,7 +1046,7 @@ The images beside them are generated representations of each interest, not Matth
 - Email: mattheweblanke@gmail.com
 - GitHub: @m4ttblanke
 - LinkedIn: in/m4ttblanke
-- Resume: View résumé (`/resume.pdf`, opens in a new tab; `/resume` redirects to it)
+- Résumé: View résumé (`/resume.pdf`, opens in a new tab; `/resume` redirects to it). Visible spelling is "Résumé" everywhere (hero, Contact, navigator); URLs and ids stay ASCII (`/resume`, `#contact-resume`)
 - Closing line: YOUR MOVE. (the email link)
 
 **Sources and limits**

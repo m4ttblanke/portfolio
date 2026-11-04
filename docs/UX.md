@@ -273,7 +273,7 @@ For reduced-motion users, navigation should be immediate or minimally animated.
 03 EXPERIENCE      Trader Joe's #trader-joes · Physics Learning Center #physics-learning-center · SpaceComputer × UCSB #spacecomputer-ucsb
 04 EDUCATION       Computer Science #computer-science · Mathematics + Physics #mathematics-physics · Technology Management #technology-management
 05 OFF THE CLOCK   Baseball #baseball · Vinyl #vinyl · Games #games
-06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin · Resume #contact-resume
+06 CONTACT         Email #contact-email · GitHub #contact-github · LinkedIn #contact-linkedin · Résumé #contact-resume
 ```
 
 Every destination is an element that already existed (the project blocks, entries, areas, subjects and contact links). None is a spacer.
@@ -341,6 +341,15 @@ Avoid:
 - multiple CTAs
 - résumé summary
 - skill list
+
+Implemented (usability pass, 2026-11-03): the descriptor is "Software / Product". A context group sits at the foot of the empty field, one step above MATTHEW. It holds the line "UC Santa Barbara · B.S. Computer Science · June 2027" and a contact rail, "Email · GitHub · LinkedIn · Résumé ↗". The rail is one quiet utility line: meta size, sentence case, hairline underlines that thicken on hover, the global focus ring, no motion. Both stay well below the name and clear of the MB.
+
+- Grid row 2 (the 1fr field), columns 1–7 (all four on phones), bottom-aligned. It takes height from the field, so the name keeps its bottom anchor.
+- In the DOM it follows the h1. Reading order is descriptor, name, context, then the contact links.
+- The rail stays on one line down to 360 px. It is allowed to wrap, but measured it never needs to. Targets are 44 px tall on touch and 2 rem on fine pointers, so the focus ring clears the context line.
+- Where one line no longer fits (hero width ≤ 60rem: phones, about 200% zoom on a laptop), the school takes its own line and the degree and date share the second. The date is never left alone on a line.
+- Compact presentation: in flow after the name (descriptor, relief, name, context).
+- The hero exit splits only the name; the context group scrolls away with the hero.
 
 ---
 
@@ -767,10 +776,10 @@ Give the journey a clear ending and make contact frictionless.
 - Email: mattheweblanke@gmail.com
 - GitHub: @m4ttblanke
 - LinkedIn: in/m4ttblanke
-- Resume: View résumé, the PDF at `/resume.pdf` in a new tab (`/resume` redirects to it).
+- Résumé: View résumé, the PDF at `/resume.pdf` in a new tab (`/resume` redirects to it).
 - The closing line, YOUR MOVE., which is itself the email link.
 
-The navigator's Resume entry travels to and engages the row; it never opens the PDF itself.
+The navigator's Résumé entry travels to and engages the row; it never opens the PDF itself.
 
 **Visual model.** A still bookend to the hero.
 
@@ -808,7 +817,7 @@ Implemented (P2): Contact is one viewport tall, so the journey ends on the closi
 
 ---
 
-# Resume UX
+# Résumé UX
 
 A résumé should remain directly accessible.
 
@@ -827,6 +836,13 @@ The final implementation may be:
 The homepage should link to it clearly.
 
 The résumé should not become another major visual chapter.
+
+Implemented (usability pass, 2026-11-03): two access points, no persistent chrome.
+
+- Hero: "Résumé ↗" at the end of the contact rail (Email · GitHub · LinkedIn · Résumé) above the name, on the first screen. It opens `/resume.pdf` in a new tab; its accessible name adds "(PDF, opens in a new tab)".
+- Contact: the Résumé row (and the navigator's 06 → Résumé subsection, which travels to that row).
+
+There is deliberately no résumé link beside the navigator: the hero rail covers the first screen, and the navigator reaches the Contact row in two activations. The Contact chapter and the navigator's Contact subsections are unchanged; the hero rail is immediate access, and Contact stays the full closing interaction.
 
 ---
 

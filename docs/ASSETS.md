@@ -893,6 +893,33 @@ The capture tooling used in P1 is not part of the repository.
 
 ---
 
+# Social Preview Image
+
+`src/app/opengraph-image.png` and its copy `src/app/twitter-image.png` are 1200×630 PNGs of about 65 KB each. Each has a matching `.alt.txt`. Next.js emits the `og:image` and `twitter:image` tags from these files.
+
+- **Role:** the link preview for LinkedIn, Slack, iMessage, X and similar. It identifies the site at preview size: bone ground, MATTHEW / BLANKE, the MB relief, and the school line.
+- **Source:** the live hero at rest, its composed pose, with the real Archivo type and the real MB relief. It is not a template and not a separate composition.
+- **Fallback:** none needed. It is a static file and is never loaded by visitors to the page.
+
+**Re-capturing.** Regenerate the image whenever the hero changes.
+
+1. Run the site (dev or production) and open `/` in Chromium at a 1200×630 viewport, DPR 1, normal motion, at the top of the page. Wait until the relief has drawn (`html[data-webgl="live"]`).
+2. Inject a capture-only stylesheet. It is never committed:
+
+   ```css
+   nextjs-portal, header nav { display: none !important; }
+   #name [class*="descriptor"], #name [class*="context"] { font-size: 1.375rem !important; }
+   #name [data-break] { display: block !important; block-size: 0 !important; overflow: hidden !important; }
+   #name ul { display: none !important; }
+   ```
+
+   This hides the navigator and the dev indicator. It also raises the descriptor and context line from 14 px to 22 px so they read at about 500 px preview width, and breaks the context line after the school. The contact rail is hidden because a preview image is not clickable.
+3. Screenshot the viewport and save it as an optimized PNG to both file names.
+
+**Icons.** `favicon.ico` (16/32/48), `icon.png` (512) and `apple-icon.png` (180) all come from the flat MB favicon mark. The PNGs are flattened to bone and ink with eight antialias steps, so they stay a few KB.
+
+---
+
 # Mobile Asset Strategy
 
 Mobile does not automatically load every desktop asset.
