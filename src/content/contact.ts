@@ -36,7 +36,7 @@ export const contactLinks = [
   },
   {
     id: "resume",
-    label: "Resume",
+    label: "Résumé",
     value: "View résumé",
     href: "/resume.pdf",
     newTab: true,

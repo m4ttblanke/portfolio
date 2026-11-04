@@ -967,6 +967,15 @@ Next.js metadata should define:
 - Open Graph metadata
 - favicon/icons
 
+Implemented (usability pass, 2026-11-03), all server-only, with no client JavaScript:
+
+- Root `metadata` in `src/app/layout.tsx`: `metadataBase`, title with template, description, canonical, Open Graph, Twitter `summary_large_image`, robots. The `viewport` export sets the bone theme colour.
+- File conventions in `src/app/`:
+  - `opengraph-image.png` and `twitter-image.png`, each with an `.alt.txt`
+  - `icon.png` (512) and `apple-icon.png` (180), from the MB favicon mark
+  - `favicon.ico` (16/32/48)
+  - `robots.ts` and `sitemap.ts`
+
 Important content should remain server-rendered where possible.
 
 Do not hide the entire portfolio behind a client-only render.

@@ -589,6 +589,8 @@ https://matthewblanke.com
 
 once live.
 
+Implemented (usability pass): `metadataBase` is `https://matthewblanke.com`, and the canonical is `/`. A preview deployment's canonical therefore points at production, never at its own URL. `robots.ts` allows all and names the sitemap. `sitemap.ts` lists the homepage only; the résumé PDF stays out.
+
 ---
 
 # Open Graph Assets
@@ -603,6 +605,8 @@ It should be:
 - usable without WebGL
 
 Do not rely on a screenshot of an arbitrary animated state.
+
+Implemented (usability pass, 2026-11-03): static `src/app/opengraph-image.png` and `twitter-image.png` (1200×630, about 65 KB each, with `.alt.txt` files). Each is a capture of the hero at rest, its composed pose, not a frame of motion. The recipe is in `docs/ASSETS.md` ("Social Preview Image"). Regenerate it when the hero changes.
 
 ---
 
@@ -881,8 +885,8 @@ These should be finalized closer to launch:
 - canonical www vs bare-domain behavior
 - whether Vercel Analytics is enabled
 - whether Speed Insights is enabled
-- whether a sitemap is necessary
-- final Open Graph generation strategy
+- ~~whether a sitemap is necessary~~ (resolved: one-URL `sitemap.ts`)
+- ~~final Open Graph generation strategy~~ (resolved: static capture, see `docs/ASSETS.md`)
 - whether V1 remains deployed after the stabilization period
 
 ---
