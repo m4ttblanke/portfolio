@@ -281,7 +281,7 @@ Every destination is an element that already existed (the project blocks, entrie
 **Where each destination lands.**
 
 - Chapters land at the section top.
-- Rankle and Plannr land 90% of the way through their holds (`data-nav-hold`), on the composed scene: both boards with their threads; the settled calendar with step 04 current. "Projects" still lands at the start, as the pieces arrive.
+- Rankle and Plannr land 90% of the way through their holds (`data-nav-hold`), on the composed scene: the prompt, both boards with all five labeled plates and their threads (re-verified after Gate B's plates); the settled calendar with step 04 current. "Projects" still lands at the start, as the pieces arrive.
 - Experience entries share one field on desktop, so each lands on the whole field with its year scale. On phones each lands on its own entry.
 - Education lines land a quarter of the way down, with the line above still whole.
 - Off the Clock subjects land by their own objects on desktop (`scroll-margin`, negative for the record and the controller). On phones each lands on its own subject.
@@ -647,6 +647,8 @@ The visitor should feel:
 > I understand what he builds. Now show me where he has been.
 
 Implemented (P2): there is no bridge animation. The live scenes end with Plannr, and Experience opens as plain type on the page (`decisions/003`). The drop in energy is the transition.
+
+Gate B (2026-11-03): Plannr's copy now ends on its stack and link (the origin line moved under the summary), and Experience's top padding is one `--space-lg` on the desktop field layout (two below 60rem). At 1440 the empty band between Plannr's last line and Experience went from 341 to 299 px: Plannr leaves as one block, density drops briefly, and the year field follows. The remaining band is intended; Plannr's centred composition is not changed to shrink it.
 
 ---
 

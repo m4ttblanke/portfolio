@@ -9,6 +9,17 @@ export const rankle = {
   stack: ["Next.js", "Supabase"],
   href: "https://rankle.io",
   linkLabel: "rankle.io",
+  /*
+   * The scene's worked example (approved at Gate B). The stage is
+   * decorative, so `comparison` states its point for screen readers and
+   * no-canvas reading; it is visually hidden.
+   */
+  example: {
+    prompt: "Best breakfast food",
+    items: ["Pancakes", "Waffles", "Burrito", "Bagel", "Cereal"],
+  },
+  comparison:
+    "Two people rank the same items from S to F, then compare where they disagree.",
 } as const;
 
 /*

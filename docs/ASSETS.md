@@ -873,7 +873,7 @@ They should not look like error states.
 | Scene | Canonical pose | Desktop | Mobile |
 |---|---|---|---|
 | Hero | MB relief at rest | `hero-desktop.webp` 16 KB | `hero-mobile.webp` 9 KB |
-| Rankle | comparison hold | `rankle-desktop.webp` 45 KB | `rankle-mobile.webp` 26 KB |
+| Rankle | comparison hold (labeled plates, Gate B) | `rankle-desktop.webp` 54 KB | `rankle-mobile.webp` 35 KB |
 | Plannr | syllabus beside the calendar | `plannr-desktop.webp` 15 KB | `plannr-mobile.webp` 12 KB |
 
 - **Role:** the static composition for reduced motion, no WebGL and scene failure, and the placeholder until WebGL's first frame.
@@ -889,7 +889,14 @@ They should not look like error states.
 5. Trim to the alpha bounds and encode as WebP with alpha.
 6. Record the new dimensions and the image's offset from the stage as `inset` fractions.
 
-The capture tooling used in P1 is not part of the repository.
+The capture tooling used in P1 is not part of the repository. The Rankle renders were re-captured at Gate B this way (canonical pose: 90% of the hold, matching the navigator), encoded with `cwebp -q 70 -alpha_q 80 -m 6`; text on the plates is part of the render, and the DOM prompt, board names and tier letters are not.
+
+## Rankle Plate Labels
+
+- **Role:** the item names (Pancakes, Waffles, Burrito, Bagel, Cereal) printed on the plates' faces, so the comparison reads without prose.
+- **Source:** generated at runtime, not files. One 512×183 `CanvasTexture` per item (the plate's 2.8:1 proportions), painted once in Archivo when the scene mounts, shared by the item's plate on both boards, repainted once only if the font had not loaded.
+- **Cost:** about 1.1 ms to paint all five; about 2.5 MB of GPU memory with mipmaps; uploaded on Rankle's first frame, not at page load.
+- **Fallback:** baked into the Rankle static renders above.
 
 ---
 

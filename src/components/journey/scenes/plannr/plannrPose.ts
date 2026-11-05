@@ -6,7 +6,7 @@ import type { Rect } from "../../canvas/anchors";
  * accepted, declined, or edited before syncing to Google Calendar.
  *
  * The same physical pieces carry over from Rankle: your tier rows flatten
- * into lines of the syllabus, and your item cards turn back over to become
+ * into lines of the syllabus, and your item plates turn back over to become
  * the extracted date chips.
  */
 
@@ -32,7 +32,7 @@ export const LINE_WIDTHS = [
 ];
 /** Tier row (S…F) → syllabus line it becomes. These lines hold the dates. */
 export const ROW_LINE = [2, 4, 6, 8, 10];
-/** Item (your card) → the date line it lands on as a chip. */
+/** Item (your plate) → the date line it lands on as a chip. */
 export const ITEM_LINE = [2, 4, 6, 8, 10];
 /** Review verdicts: one extracted date is declined and stays on the page. */
 export const APPROVED = [true, true, true, false, true];

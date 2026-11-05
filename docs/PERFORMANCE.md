@@ -1030,6 +1030,17 @@ Production build on localhost. Headless Chromium with software raster, 4× CPU t
   - Idle stays 0 frames, and no render loop was added.
 - **First entry into Off the Clock:** the slow frames are not image decode. Decode tasks are at most 1.4 ms. They are also not network: a warm repeat visit with the images HTTP-cached shows the same two slow frames, max 59 ms (cold: 66 ms). A second pass on the same page drops to one 34 ms frame. No main-thread task exceeds 30 ms in any of these. The cost is the first raster and upload of the three newly promoted image layers, off the main thread. Pre-decoding when Education is reached would save only about 1 ms of decode while adding early requests, so loading is unchanged. The trip then writes no more positions, and its listeners are removed.
 
+## Usability Gate B — Rankle Labels (2026-11-03)
+
+Production build on localhost, Chromium with GPU rendering, 1440×900 and 390×844 (identical counts).
+
+- **Peak:** 61 draw calls / 6.9k triangles per frame at the Rankle hold, unchanged: the wide plates keep the same geometry and draw count.
+- **Textures:** 5 new (the plate labels, 512×183 each, about 2.5 MB GPU with mipmaps). Painted once on mount (about 1.1 ms total), uploaded on Rankle's first frame. Two full Rankle ↔ Plannr round trips create and upload nothing.
+- **Idle:** 0 frames at the top and at the Rankle hold.
+- **P2 WebGL:** 0 draws and 0 clears across Experience → Contact scroll, pointer movement and idle.
+- **P1 startup:** 10 of 10 root loads and 3 of 3 each for direct `#rankle`, `#plannr` and `#experience` went live and drew. Context loss and restore recovers with labels intact. The forced restore logs WebGL "object does not belong to this context" warnings; `main` logs the same count, so they predate Gate B.
+- **Payload:** Rankle fallbacks 54 KB (desktop) / 35 KB (mobile), up from 45 / 26 KB because the renders now carry text. No new chunk or dependency.
+
 ---
 
 # Performance Decision Gate
@@ -1154,7 +1165,7 @@ Still open:
 - whether KTX2 is necessary
 - whether Draco or Meshopt is preferred
 - exact low-power detection strategy
-- whether to defer the Rankle fallback download on the live path (about 45 KB on desktop; accepted for P1, revisit only if profiling shows it matters)
+- whether to defer the Rankle fallback download on the live path (about 54 KB on desktop since Gate B; accepted, revisit only if profiling shows it matters)
 
 ---
 

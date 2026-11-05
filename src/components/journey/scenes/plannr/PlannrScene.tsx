@@ -34,7 +34,7 @@ import {
 /*
  * Plannr's own objects: the syllabus page, the lines Rankle didn't provide,
  * the highlighted dates, and the calendar sheet. (Rankle's rows become the
- * date lines and its cards the date chips — see Kit and RankleScene.)
+ * date lines and its plates the date chips — see Kit and RankleScene.)
  * Sheets share Rankle's outlined-card language: paper over an ink backing.
  */
 
