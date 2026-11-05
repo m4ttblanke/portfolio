@@ -43,6 +43,7 @@ export function PlannrProject() {
             </span>
           </h3>
           <p className={styles.summary}>{plannr.summary}</p>
+          <p className={styles.origin}>{plannr.origin}</p>
           <ol className={styles.steps}>
             {plannr.steps.map((step, index) => (
               <li key={step} className={styles.step} data-plannr-step={index}>
@@ -61,7 +62,6 @@ export function PlannrProject() {
               <span aria-hidden="true"> ↗</span>
             </a>
           </p>
-          <p className={styles.origin}>{plannr.origin}</p>
         </article>
       </div>
       <PlannrMotion />

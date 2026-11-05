@@ -350,6 +350,14 @@
  * starts compressed toward 2022 and opens to full width, so nothing on it
  * ever runs off the screen.
  */
+/* The field layout: one --space-lg on top, so the time field follows
+   Plannr's release closely instead of after a blank screen. */
+@media (min-width: 60.001rem) {
+  .chapter {
+    padding-block-start: var(--space-lg);
+  }
+}
+
 @media (max-width: 60rem) {
   .scale {
     display: none;

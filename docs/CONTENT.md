@@ -992,6 +992,11 @@ Live copy is in `src/content/` (`profile.ts`, `projects.ts`, `navigation.ts`).
 - "A daily ranking game built for arguments with friends."
 - Next.js / Supabase
 - rankle.io
+- Worked example in the scene (Gate B, 2026-11-03): the prompt "Best breakfast food" above the boards, and five items printed on the plates, one per tier.
+  - You: S Pancakes · A Waffles · B Burrito · C Bagel · F Cereal
+  - A friend: S Burrito · A Pancakes · B Bagel · C Cereal · F Waffles
+- The prompt and items are in `rankle.example` (`src/content/projects.ts`); the rankings are scene data (`YOU`, `FRIEND` in `ranklePose.ts`).
+- Visually hidden line (`rankle.comparison`), so the stage does not carry the product's meaning alone: "Two people rank the same items from S to F, then compare where they disagree." The five-item ranking itself is not duplicated in the DOM.
 
 **Plannr**
 
@@ -1000,7 +1005,7 @@ Live copy is in `src/content/` (`profile.ts`, `projects.ts`, `navigation.ts`).
 - SwiftUI / FastAPI
 - Free TestFlight beta
 - tryplannr.app
-- Provenance, kept subordinate: "Began as a UCSB team project."
+- Provenance, kept subordinate: "Began as a UCSB team project." It sits directly under the summary it qualifies (Gate B), so the copy ends on the stack and link rather than on an orphaned line.
 
 **Sources and limits**
 

@@ -4,18 +4,21 @@ import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/motion/gsap";
 import { isStatic, PRESENTATION_CONDITIONS } from "@/lib/motion/presentation";
 import { setScene } from "@/lib/motion/scene-progress";
-import { plannrStep } from "../../scenes/plannr/plannrPose";
+import { HANDOFF_KEYS, plannrStep } from "../../scenes/plannr/plannrPose";
 
 /**
  * Plannr choreography. While the frame rises, the hand-off from Rankle is
- * scrubbed into `scene.handoff`; while it is held, the workflow is scrubbed
- * into `scene.plannr`, and the DOM step list marks the current step.
+ * scrubbed into `scene.handoff` — Rankle's stage labels (prompt, board names,
+ * tiers) fade with the boards' retraction — and while it is held, the
+ * workflow is scrubbed into `scene.plannr`, and the DOM step list marks the
+ * current step.
  */
 export function PlannrMotion() {
   useLayoutEffect(() => {
     const block = document.querySelector<HTMLElement>("[data-scene='plannr']");
     const title = block?.querySelector("[data-plannr-title]");
     const steps = block?.querySelectorAll<HTMLElement>("[data-plannr-step]");
+    const rankleLabels = document.querySelectorAll("[data-rankle-label]");
     if (!block || !title || !steps) return;
 
     let current = -1;
@@ -42,6 +45,14 @@ export function PlannrMotion() {
         onUpdate: () => setScene("handoff", handoff.progress()),
       });
       handoff.to({}, { duration: 1 }, 0);
+      // Over HANDOFF_KEYS.retract: the labels leave with what they label.
+      const [, retracted] = HANDOFF_KEYS.retract;
+      handoff.fromTo(
+        rankleLabels,
+        { autoAlpha: 1 },
+        { autoAlpha: 0, duration: retracted },
+        0,
+      );
       handoff.fromTo(
         title,
         { yPercent: 110 },
