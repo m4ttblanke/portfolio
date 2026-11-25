@@ -31,15 +31,15 @@ export const fallbacks = {
   rankle: {
     desktop: {
       src: "/fallbacks/rankle-desktop.webp",
-      width: 1305,
-      height: 1203,
-      inset: [-0.0558, 0.0093, -0.0044, -0.0281],
+      width: 1293,
+      height: 1120,
+      inset: [-0.1172, 0.005, -0.0078, -0.0328],
     },
     mobile: {
       src: "/fallbacks/rankle-mobile.webp",
-      width: 685,
-      height: 943,
-      inset: [-0.0687, 0.0078, -0.0048, -0.0483],
+      width: 673,
+      height: 861,
+      inset: [-0.1442, 0.0001, -0.0099, -0.0573],
     },
   },
   plannr: {

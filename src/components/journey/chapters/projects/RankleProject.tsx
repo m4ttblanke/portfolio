@@ -7,8 +7,9 @@ import styles from "./RankleProject.module.css";
 
 /*
  * The navigator's "Rankle" lands this far through the hold, where the scene
- * is composed: both boards and the threads (RANKLE_KEYS end at 0.8), before
- * the hand-off to Plannr begins at 1. "Projects" lands at the block top.
+ * is composed: both boards, all five labeled plates, the threads (RANKLE_KEYS
+ * end at 0.8) and the prompt, before the hand-off to Plannr begins at 1.
+ * "Projects" lands at the block top.
  */
 const NAV_HOLD = 0.9;
 
@@ -35,6 +36,7 @@ export function RankleProject({ heading }: { heading: ReactNode }) {
             </span>
           </h3>
           <p className={styles.summary}>{rankle.summary}</p>
+          <p className={styles.visuallyHidden}>{rankle.comparison}</p>
           <p className={styles.meta}>
             <span>{rankle.stack.join(" / ")}</span>
             <a className={styles.link} href={rankle.href}>
@@ -48,17 +50,32 @@ export function RankleProject({ heading }: { heading: ReactNode }) {
           className={styles.stage}
           data-scene-anchor="rankle"
         >
-          <span className={styles.boardLabel} data-board="you">
+          {/* Stage labels leave with the boards in the hand-off (PlannrMotion). */}
+          <span className={styles.prompt} data-rankle-label>
+            <span className={styles.promptInner} data-rankle-prompt>
+              {rankle.example.prompt}
+            </span>
+          </span>
+          <span
+            className={styles.boardLabel}
+            data-board="you"
+            data-rankle-label
+          >
             You
           </span>
-          <span className={styles.boardLabel} data-board="friend">
+          <span
+            className={styles.boardLabel}
+            data-board="friend"
+            data-rankle-label
+          >
             A friend
           </span>
           {TIERS.map((tier, row) => (
             <span
               key={tier}
               className={styles.tier}
-              style={{ gridRow: row + 2 }}
+              style={{ gridRow: row + 3 }}
+              data-rankle-label
             >
               {tier}
             </span>

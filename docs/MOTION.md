@@ -1250,8 +1250,8 @@ The opening journey (hero → Rankle → Plannr) is one continuous object story.
 |---|---|---|
 | Hero | not pinned (one viewport) | The MB plates form an anamorphic, slightly turned relief that overlaps the name. On fine pointers they tilt up to 5°/3.5°, damped, fading out over the first quarter of the exit. |
 | Hero → Rankle | first viewport of scroll | The name lines part like curtains, cropping off opposite edges. The plates turn over and travel into the Rankle stage; the long plates become your board's tier rows. |
-| Rankle | 300svh desktop / 240svh mobile | The title rises out of a mask. While the frame is held, items settle into your tiers, the friend's board fills, and comparison lines connect the matching items, ending in the comparison hold. |
-| Rankle → Plannr | Plannr frame rising (one viewport) | Item cards retract and flip to become date chips. Tier rows flatten into syllabus lines on a paper page. |
+| Rankle | 300svh desktop / 240svh mobile | The title rises out of a mask. While the frame is held, the prompt "Best breakfast food" rises out of its own mask as your rows form (scene progress 0.06–0.18), your labeled plates settle into your tiers (0.16–0.42), the friend's board fills (0.38–0.66), and threads connect each item's plates edge to edge (0.62–0.80), ending in the comparison hold (0.80–1). |
+| Rankle → Plannr | Plannr frame rising (one viewport) | The prompt, YOU / A FRIEND and the tier letters fade (`autoAlpha`) over hand-off 0–0.3, with the friend's board and the threads retracting. Your plates flip to their paper side (the printed name turns away with the face) and become date chips. Tier rows flatten into syllabus lines on a paper page. Scrubbed, so scrolling back restores everything in reverse order. |
 | Plannr | 300svh desktop / 280svh mobile | Dates are highlighted, lift into a review queue and receive verdicts (one declined date stays on the page). The approved dates land in a landscape calendar while the page recedes. The DOM step list (Syllabus, Dates, Review, Calendar) tracks the current stage. |
 
 ## Mobile

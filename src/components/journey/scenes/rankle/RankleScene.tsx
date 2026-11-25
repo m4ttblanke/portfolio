@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, type RefObject } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import {
   BoxGeometry,
+  CanvasTexture,
   Color,
   Euler,
   ExtrudeGeometry,
@@ -10,6 +11,7 @@ import {
   MeshStandardMaterial,
   Quaternion,
   Shape,
+  SRGBColorSpace,
   Vector3,
   type Group,
   type Mesh,
@@ -33,11 +35,15 @@ import {
   ROW_LINE,
 } from "../plannr/plannrPose";
 import {
-  cardCenter,
-  cardSize,
   FRIEND,
   ITEM_COLORS,
+  ITEMS,
+  LABEL_INK,
   OUTLINE_COLOR,
+  PLATE_ASPECT,
+  PLATE_RADIUS,
+  plateCenter,
+  plateSize,
   RANKLE_KEYS,
   RANKLE_TURN,
   rowCenter,
@@ -48,13 +54,16 @@ import {
 } from "./ranklePose";
 
 /*
- * Rankle's own objects: item cards on both boards, a friend's tier rows, the
+ * Rankle's own objects: item plates on both boards, a friend's tier rows, the
  * two rows that complete your board, and the threads joining each item across
  * the boards. (Your other rows are the kit's stems — see Kit.)
  *
- * Into Plannr: a friend's board and the threads retract; your cards turn over
- * to their paper side and become the syllabus's date chips, which are then
- * lifted, reviewed (accepted or declined) and settled into the calendar.
+ * Each plate's name is printed on its face (a texture, drawn once), so the
+ * label turns and flips with the plate.
+ *
+ * Into Plannr: a friend's board and the threads retract; your plates turn
+ * over to their paper side and become the syllabus's date chips, which are
+ * then lifted, reviewed (accepted or declined) and settled into the calendar.
  */
 
 const CARD_THICKNESS = 0.16;
@@ -95,19 +104,68 @@ function rankOrder(placement: number[]) {
   return order;
 }
 
-function roundedSquare(radius: number) {
+/** A rounded rectangle `aspect` wide and 1 high, centered on the origin. */
+function roundedRect(aspect: number, radius: number) {
+  const w = aspect / 2;
   const h = 0.5;
   const shape = new Shape();
-  shape.moveTo(-h + radius, -h);
-  shape.lineTo(h - radius, -h);
-  shape.quadraticCurveTo(h, -h, h, -h + radius);
-  shape.lineTo(h, h - radius);
-  shape.quadraticCurveTo(h, h, h - radius, h);
-  shape.lineTo(-h + radius, h);
-  shape.quadraticCurveTo(-h, h, -h, h - radius);
-  shape.lineTo(-h, -h + radius);
-  shape.quadraticCurveTo(-h, -h, -h + radius, -h);
+  shape.moveTo(-w + radius, -h);
+  shape.lineTo(w - radius, -h);
+  shape.quadraticCurveTo(w, -h, w, -h + radius);
+  shape.lineTo(w, h - radius);
+  shape.quadraticCurveTo(w, h, w - radius, h);
+  shape.lineTo(-w + radius, h);
+  shape.quadraticCurveTo(-w, h, -w, h - radius);
+  shape.lineTo(-w, -h + radius);
+  shape.quadraticCurveTo(-w, -h, -w + radius, -h);
   return shape;
+}
+
+/*
+ * Label texture size, px: the plate's proportions. 512 wide covers the
+ * widest plate (≈ 210 CSS px at 1440) at the canvas's 1.5 DPR cap with room
+ * to spare; mipmaps keep the narrow phone plates clean.
+ */
+const LABEL_WIDTH = 512;
+const LABEL_HEIGHT = Math.round(LABEL_WIDTH / PLATE_ASPECT);
+/* Heavier than the DOM labels' 600: dark ink on a lit face reads light. */
+const LABEL_WEIGHT = 650;
+const LABEL_TRACKING = 0.06;
+
+/**
+ * Paints one plate face: its color, and its item's name centered in the
+ * page's label type (Archivo, tracked caps). Runs once per item —
+ * and once more if the face font had not loaded at first.
+ */
+function paintLabel(canvas: HTMLCanvasElement, item: number) {
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  const family = getComputedStyle(document.body).fontFamily;
+  context.fillStyle = ITEM_COLORS[item];
+  context.fillRect(0, 0, LABEL_WIDTH, LABEL_HEIGHT);
+  const text = ITEMS[item].toUpperCase();
+  let size = LABEL_HEIGHT * 0.31;
+  const set = () => {
+    context.font = `${LABEL_WEIGHT} ${size}px ${family}`;
+    context.letterSpacing = `${(size * LABEL_TRACKING).toFixed(1)}px`;
+  };
+  set();
+  const fit = LABEL_WIDTH * 0.8;
+  const measured = context.measureText(text).width;
+  if (measured > fit) {
+    size *= fit / measured;
+    set();
+  }
+  const metrics = context.measureText(text);
+  context.fillStyle = LABEL_INK[item];
+  context.textAlign = "center";
+  context.textBaseline = "alphabetic";
+  // Caps only: center the cap height (tracking pads the right by one gap).
+  context.fillText(
+    text,
+    LABEL_WIDTH / 2 + (size * LABEL_TRACKING) / 2,
+    LABEL_HEIGHT / 2 + metrics.actualBoundingBoxAscent / 2,
+  );
 }
 
 /** A frame-relative px pose: center, size, depth offset. */
@@ -125,6 +183,7 @@ export function RankleScene({
 }: {
   anchors: RefObject<Anchors | null>;
 }) {
+  const invalidate = useThree((state) => state.invalidate);
   const group = useRef<Group>(null);
   const cards = useRef<(Mesh | null)[]>([]);
   const outlines = useRef<(Mesh | null)[]>([]);
@@ -132,8 +191,10 @@ export function RankleScene({
   const threads = useRef<(Mesh | null)[]>([]);
 
   const resources = useMemo(() => {
-    // Card silhouette after Rankle's mark: a rounded square (radius ≈ 0.26).
-    const card = new ExtrudeGeometry(roundedSquare(0.26), {
+    // A wide plate with the rounded corners of Rankle's mark, built at its
+    // true proportions, then normalized to a unit square: scaled back out to
+    // PLATE_ASPECT (as it is on the boards) its corners are round again.
+    const card = new ExtrudeGeometry(roundedRect(PLATE_ASPECT, PLATE_RADIUS), {
       depth: CARD_THICKNESS,
       bevelEnabled: true,
       bevelThickness: 0.02,
@@ -141,18 +202,40 @@ export function RankleScene({
       bevelSegments: 2,
       curveSegments: 6,
     }).translate(0, 0, -CARD_THICKNESS / 2);
-    // Front (color) and back (paper) carry separate materials.
+    // Planar UVs across the face, so the label spans the plate.
+    const position = card.getAttribute("position");
+    const uv = card.getAttribute("uv");
+    for (let i = 0; i < position.count; i++) {
+      uv.setXY(
+        i,
+        position.getX(i) / PLATE_ASPECT + 0.5,
+        position.getY(i) + 0.5,
+      );
+    }
+    card.scale(1 / PLATE_ASPECT, 1, 1);
+    // Front (labeled color) and back (paper) carry separate materials.
     const [caps, sides] = card.groups;
     card.clearGroups();
     card.addGroup(caps.start, caps.count / 2, 2);
     card.addGroup(caps.start + caps.count / 2, caps.count / 2, 0);
     card.addGroup(sides.start, sides.count, 1);
     const box = new BoxGeometry(1, 1, 1);
-    const faces = ITEM_COLORS.map(
-      (color) =>
-        new MeshStandardMaterial({ color: new Color(color), roughness: 0.45 }),
+    // One label texture per item, shared by its plate on both boards. Drawn
+    // here once; never regenerated while scrolling.
+    const labels = ITEMS.map((_, item) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = LABEL_WIDTH;
+      canvas.height = LABEL_HEIGHT;
+      paintLabel(canvas, item);
+      const texture = new CanvasTexture(canvas);
+      texture.colorSpace = SRGBColorSpace;
+      texture.anisotropy = 4;
+      return texture;
+    });
+    const faces = labels.map(
+      (map) => new MeshStandardMaterial({ map, roughness: 0.45 }),
     );
-    // Your cards' paper backs; tinted navy when a date is accepted.
+    // Your plates' paper backs; tinted navy when a date is accepted.
     const backs = ITEM_COLORS.map(
       () =>
         new MeshStandardMaterial({
@@ -189,6 +272,7 @@ export function RankleScene({
     return {
       card,
       box,
+      labels,
       faces,
       backs,
       outline,
@@ -202,15 +286,36 @@ export function RankleScene({
 
   useEffect(
     () => () => {
-      const { card, box, faces, backs, outline, yourRow, row, threads } =
+      const { card, box, labels, faces, backs, outline, yourRow, row } =
         resources;
       [card, box].forEach((geometry) => geometry.dispose());
-      [...faces, ...backs, outline, yourRow, row, ...threads].forEach(
+      labels.forEach((texture) => texture.dispose());
+      [...faces, ...backs, outline, yourRow, row, ...resources.threads].forEach(
         (material) => material.dispose(),
       );
     },
     [resources],
   );
+
+  // If the label face was not loaded when the textures were drawn, draw them
+  // once more when it is (a one-time repaint, not per frame).
+  useEffect(() => {
+    let cancelled = false;
+    const family = getComputedStyle(document.body).fontFamily;
+    const font = `${LABEL_WEIGHT} ${Math.round(LABEL_HEIGHT * 0.31)}px ${family}`;
+    if (document.fonts.check(font)) return;
+    document.fonts.load(font).then(() => {
+      if (cancelled) return;
+      resources.labels.forEach((texture, item) => {
+        paintLabel(texture.image as HTMLCanvasElement, item);
+        texture.needsUpdate = true;
+      });
+      invalidate();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [resources, invalidate]);
 
   const fixed = useMemo(() => {
     const turn = new Quaternion().setFromEuler(
@@ -233,6 +338,10 @@ export function RankleScene({
       paper: new Color(PLANNR_COLORS.paper),
       navy: new Color(PLANNR_COLORS.navy),
       quat: new Quaternion(),
+      along: new Vector3(1, 0, 0),
+      start: new Vector3(),
+      end: new Vector3(),
+      direction: new Vector3(),
     };
   }, []);
 
@@ -337,7 +446,7 @@ export function RankleScene({
       placeBox(band, bandPose(r.friend, row, w, top), fixed.turn, 0.2, 0);
     });
 
-    // Cards. A friend's arrive from the right and leave the same way. Yours
+    // Plates. A friend's arrive from the right and leave the same way. Yours
     // are placed out of the gutter, then carry on into Plannr.
     const gutter =
       r.you.left + r.you.width + (r.friend.left - r.you.left - r.you.width) / 2;
@@ -346,7 +455,7 @@ export function RankleScene({
       const placement = b === 0 ? YOU : FRIEND;
       const range = b === 0 ? RANKLE_KEYS.you : RANKLE_KEYS.friend;
       const fromX = b === 0 ? gutter : r.friend.left + r.friend.width * 1.25;
-      const cardPx = cardSize(board);
+      const plate = plateSize(board);
       const order = rankOrder(placement);
       for (let item = 0; item < items; item++) {
         const index = b * items + item;
@@ -356,14 +465,14 @@ export function RankleScene({
 
         let w = stagger(range, order[item], items, progress);
         if (b === 1) w = Math.min(w, retract(item, items));
-        const center = cardCenter(board, placement, item);
+        const center = plateCenter(board, placement, item);
         const rankle: Pose = {
           x: MathUtils.lerp(fromX, center.x, w),
           y: top + center.y,
           // Lifted while it travels, set down as it lands.
-          z: 0.12 * cardPx + Math.sin(Math.PI * w) * cardPx * 0.9,
-          width: cardPx * MathUtils.lerp(0.55, 1, w),
-          height: cardPx * MathUtils.lerp(0.55, 1, w),
+          z: 0.12 * plate.height + Math.sin(Math.PI * w) * plate.height * 0.9,
+          width: plate.width * MathUtils.lerp(0.55, 1, w),
+          height: plate.height * MathUtils.lerp(0.55, 1, w),
         };
 
         let pose = rankle;
@@ -388,7 +497,7 @@ export function RankleScene({
           pose = mix(rankle, plannrPose.pose, travel);
           if (travel > 0) {
             // Lifted out of the board, set onto the page.
-            pose.z += Math.sin(Math.PI * travel) * cardPx * 1.2;
+            pose.z += Math.sin(Math.PI * travel) * plate.height * 1.2;
           }
         }
 
@@ -425,13 +534,30 @@ export function RankleScene({
       }
     }
 
-    // Threads: drawn from your board across the gutter, one per item — flat
-    // where you agree, crossing where you don't. Retract first on hand-off.
-    const offset = (board: Rect, placement: number[], item: number) => {
-      const row = placement[item];
-      const shared = placement.filter((p) => p === row).length;
-      const index = placement.slice(0, item).filter((p) => p === row).length;
-      return (index - (shared - 1) / 2) * rowHeight(board) * 0.22;
+    // Threads: one per item, from the right edge of its plate on your board
+    // to the left edge of the same item's plate on a friend's — flat where
+    // you agree, crossing where you don't. Anchored to the plates' settled
+    // edges (turned with them), so a thread never reaches into a label.
+    // Retract first on hand-off.
+    const plateEdge = (
+      out: Vector3,
+      board: Rect,
+      placement: number[],
+      item: number,
+      side: 1 | -1,
+    ) => {
+      const plate = plateSize(board);
+      const center = plateCenter(board, placement, item);
+      out
+        .set(side * plate.width * 0.5 * toWorld, 0, 0)
+        .applyQuaternion(fixed.turn);
+      return out.add(
+        fixed.direction.set(
+          worldX(center.x),
+          worldY(top + center.y),
+          0.12 * plate.height * toWorld,
+        ),
+      );
     };
     const threadsBack = 1 - smooth(0, HANDOFF_KEYS.retract[1] * 0.7, handoff);
     for (let item = 0; item < items; item++) {
@@ -442,24 +568,17 @@ export function RankleScene({
         threadsBack,
       );
       thread.visible = w > 0.001;
-      const x0 = worldX(r.you.left + r.you.width);
-      const y0 = worldY(
-        top + rowCenter(r.you, YOU[item]) + offset(r.you, YOU, item),
-      );
-      const x1 = worldX(r.friend.left);
-      const y1 = worldY(
-        top +
-          rowCenter(r.friend, FRIEND[item]) +
-          offset(r.friend, FRIEND, item),
-      );
-      const length = Math.hypot(x1 - x0, y1 - y0) * w;
-      const angle = Math.atan2(y1 - y0, x1 - x0);
-      thread.position.set(
-        x0 + (Math.cos(angle) * length) / 2,
-        y0 + (Math.sin(angle) * length) / 2,
-        0,
-      );
-      thread.rotation.set(0, 0, angle);
+      if (!thread.visible) continue;
+      plateEdge(fixed.start, r.you, YOU, item, 1);
+      plateEdge(fixed.end, r.friend, FRIEND, item, -1);
+      fixed.direction.subVectors(fixed.end, fixed.start);
+      const length = fixed.direction.length() * w;
+      fixed.direction.normalize();
+      thread.position
+        .copy(fixed.direction)
+        .multiplyScalar(length / 2)
+        .add(fixed.start);
+      thread.quaternion.setFromUnitVectors(fixed.along, fixed.direction);
       thread.scale.set(
         Math.max(length, 1e-4),
         THREAD_WIDTH * toWorld,
@@ -516,9 +635,8 @@ export function RankleScene({
             material={[
               resources.faces[index % items],
               resources.outline,
-              index < items
-                ? resources.backs[index]
-                : resources.faces[index % items],
+              // A friend's plates never turn over.
+              index < items ? resources.backs[index] : resources.outline,
             ]}
           />
           <mesh
@@ -555,7 +673,7 @@ export function RankleScene({
 }
 
 /**
- * Where one of your cards is in Plannr's workflow, frame-relative px: a date
+ * Where one of your plates is in Plannr's workflow, frame-relative px: a date
  * chip on its syllabus line → lifted → queued for review → accepted (navy,
  * nudged on) or declined (back to its line) → accepted dates settle into
  * the calendar.
