@@ -123,7 +123,13 @@ Three.js
 @react-three/fiber
 ```
 
-Evaluated and not adopted in P1: Lenis, @react-three/drei (`decisions/001`, `decisions/002`).
+Added after P1:
+
+```text
+lenis   (wheel smoothing, decisions/005)
+```
+
+Evaluated and not adopted: @react-three/drei (`decisions/002`). Lenis was not adopted in P1 (`decisions/001`) and was added later (`decisions/005`).
 
 Potential later dependency:
 

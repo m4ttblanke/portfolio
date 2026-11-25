@@ -901,9 +901,9 @@ Do not force full-page snap sections unless prototype testing proves it improves
 
 # Smooth Scrolling
 
-A smooth scrolling library was evaluated in P1 and not adopted: the journey uses native scrolling (`decisions/001-gsap-scrolltrigger-native-scroll.md`).
+Not adopted in P1 (`decisions/001`). Since `decisions/005`, Lenis smooths wheel and trackpad input on fine pointers so the 3D scene and the page move together. Touch, keyboard, anchors, Back/Forward and navigator travel stay native; reduced motion and compact presentation get no smoothing.
 
-If one is reconsidered:
+It must keep these true:
 
 - native scroll behavior remains the conceptual foundation
 - smooth scrolling must not break keyboard navigation

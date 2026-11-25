@@ -1,6 +1,6 @@
 # 001 — GSAP and ScrollTrigger on native scrolling
 
-Status: Accepted
+Status: Accepted; the native-scrolling clause is superseded by 005
 Date: 2026-10-01
 
 ## Context

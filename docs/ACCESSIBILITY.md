@@ -397,7 +397,7 @@ Anchor navigation should be immediate or nearly immediate.
 
 # Smooth Scrolling
 
-P1 uses native scrolling (no Lenis). If a smooth-scroll layer is ever added, reduced-motion preferences must be respected.
+Lenis smooths wheel and trackpad input on fine pointers (`decisions/005`). It is never created under `prefers-reduced-motion: reduce` or compact presentation, and touch scrolling stays native. Verified 2026-11-25: Page Down and End scroll natively, navigator travel lands and focuses its heading, and reduced motion has no Lenis and no canvas.
 
 Smooth scrolling must not interfere with:
 
@@ -1163,7 +1163,7 @@ The following may be refined during implementation:
 Settled in P1:
 
 - Reduced motion uses captured static renders, never live 3D.
-- Lenis was not adopted, so there is no smooth-scroll layer to disable.
+- The smooth-scroll layer (Lenis, `decisions/005`) is not created under reduced motion.
 - exact accessibility treatment for any future 3D direct manipulation
 - final `/resume` accessibility approach
 

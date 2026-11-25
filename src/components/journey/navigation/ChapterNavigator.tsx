@@ -297,7 +297,7 @@ export function ChapterNavigator() {
         </span>
       </button>
 
-      <ol id={LIST_ID} className={styles.list}>
+      <ol id={LIST_ID} className={styles.list} data-lenis-prevent>
         {chapters.map((chapter) => {
           const isActive = chapter.id === activeId;
           const isExpanded = expanded === chapter.id;

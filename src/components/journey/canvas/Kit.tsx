@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, type RefObject } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import {
   Color,
   Euler,
@@ -11,7 +11,7 @@ import {
   type Group,
   type Mesh,
 } from "three";
-import { scene } from "@/lib/motion/scene-progress";
+import { requestFrame, scene } from "@/lib/motion/scene-progress";
 import { frameTop as heldFrameTop, sceneInView, type Anchors } from "./anchors";
 import {
   CANONICAL_TURN,
@@ -78,7 +78,6 @@ const TILT_PITCH = MathUtils.degToRad(6);
 const NARROW = 640;
 
 function usePointer(anchors: RefObject<Anchors | null>) {
-  const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
@@ -86,11 +85,11 @@ function usePointer(anchors: RefObject<Anchors | null>) {
       scene.pointerY = (event.clientY / window.innerHeight) * 2 - 1;
       // Past the P1 scenes the tilt has nothing to draw; the position is
       // still kept, so the relief is current on the way back.
-      if (sceneInView(anchors.current, window.scrollY)) invalidate();
+      if (sceneInView(anchors.current, window.scrollY)) requestFrame();
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
-  }, [anchors, invalidate]);
+  }, [anchors]);
 }
 
 const smooth = (edge0: number, edge1: number, x: number) =>
@@ -285,7 +284,7 @@ export function Kit({
   useFrame((state, delta) => {
     const a = anchors.current;
     if (!a) return;
-    const { size, viewport, camera, invalidate } = state;
+    const { size, viewport, camera } = state;
     const camZ = camera.position.z;
     const p = scene.hero;
     const narrow = size.width <= NARROW;
@@ -306,7 +305,7 @@ export function Kit({
       Math.abs(t.yaw - targetYaw) > 1e-4 ||
       Math.abs(t.pitch - targetPitch) > 1e-4
     ) {
-      invalidate();
+      requestFrame();
     }
     scratch.tilt.setFromEuler(scratch.euler.set(t.pitch, t.yaw, 0));
 

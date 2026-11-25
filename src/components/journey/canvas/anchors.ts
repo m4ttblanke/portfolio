@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { useThree } from "@react-three/fiber";
+import { useLayoutEffect, useRef } from "react";
+import { requestFrame } from "@/lib/motion/scene-progress";
 
 /*
  * DOM-owned layout for the canvas. Scenes never hard-code positions: they read
@@ -75,7 +75,6 @@ function measureHeld(block: Element) {
 
 export function useAnchors() {
   const anchors = useRef<Anchors | null>(null);
-  const invalidate = useThree((state) => state.invalidate);
 
   useLayoutEffect(() => {
     const hero = document.querySelector('[data-scene-anchor="hero"]');
@@ -91,7 +90,7 @@ export function useAnchors() {
     let wasInView = true;
     const wake = () => {
       const inView = sceneInView(anchors.current, window.scrollY);
-      if (inView || wasInView) invalidate();
+      if (inView || wasInView) requestFrame();
       wasInView = inView;
     };
 
@@ -152,16 +151,7 @@ export function useAnchors() {
       observer.disconnect();
       window.removeEventListener("scroll", wake);
     };
-  }, [invalidate]);
-
-  // The startup frame. The measure above runs in a layout effect, before the
-  // canvas root (an ancestor) has marked itself active, so R3F drops any
-  // invalidate made there. Passive effects run after every layout effect,
-  // so this request is the one that is guaranteed to draw the first frame
-  // for the anchors just measured, wherever the page loaded.
-  useEffect(() => {
-    invalidate();
-  }, [invalidate]);
+  }, []);
 
   return anchors;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, type RefObject } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import {
   BoxGeometry,
   CanvasTexture,
@@ -16,7 +16,7 @@ import {
   type Group,
   type Mesh,
 } from "three";
-import { scene } from "@/lib/motion/scene-progress";
+import { requestFrame, scene } from "@/lib/motion/scene-progress";
 import { frameTop, type Anchors, type Rect } from "../../canvas/anchors";
 import {
   APPROVED,
@@ -183,7 +183,6 @@ export function RankleScene({
 }: {
   anchors: RefObject<Anchors | null>;
 }) {
-  const invalidate = useThree((state) => state.invalidate);
   const group = useRef<Group>(null);
   const cards = useRef<(Mesh | null)[]>([]);
   const outlines = useRef<(Mesh | null)[]>([]);
@@ -310,12 +309,12 @@ export function RankleScene({
         paintLabel(texture.image as HTMLCanvasElement, item);
         texture.needsUpdate = true;
       });
-      invalidate();
+      requestFrame();
     });
     return () => {
       cancelled = true;
     };
-  }, [resources, invalidate]);
+  }, [resources]);
 
   const fixed = useMemo(() => {
     const turn = new Quaternion().setFromEuler(

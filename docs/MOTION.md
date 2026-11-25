@@ -1044,9 +1044,9 @@ DOM animation and 3D animation should be coordinated through shared scene progre
 
 # Lenis Responsibility
 
-Not adopted in P1 (`decisions/001-gsap-scrolltrigger-native-scroll.md`): scrolling is native, and each timeline smooths its own values with `scrub: 0.6`.
+Adopted for wheel and trackpad input on fine pointers (`decisions/005-wheel-smoothing-and-ticker-driven-canvas.md`). It exists so the canvas and the page move in the same frame, not as a style of scrolling. Defaults (`lerp: 0.1`) sit on top of each timeline's own `scrub: 0.6`: tune one of them if the choreography feels floaty, not both. Reduced motion, compact presentation and touch get native scrolling.
 
-Any future smooth-scroll layer must not:
+The smooth-scroll layer must not:
 
 - break anchor navigation
 - interfere with keyboard scroll
@@ -1323,7 +1323,7 @@ The MB relief tilts with the pointer up to ±9° yaw / ±6° pitch at the viewpo
 Settled in P1:
 
 - easing and smoothing (as above)
-- Lenis: not adopted
+- Lenis: not adopted in P1; adopted for wheel smoothing afterwards (`decisions/005`)
 - the hero is not pinned
 - the Name → Projects choreography
 - the Rankle hold
