@@ -92,16 +92,6 @@
   text-decoration-thickness: 2px;
 }
 
-/* Read by assistive technology; the stage it describes is decorative. */
-.visuallyHidden {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /*
  * Two tier boards under the example's prompt: tier letters, your board, a
  * gutter for threads, a friend's.

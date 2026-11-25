@@ -385,7 +385,7 @@ Anchor navigation should be immediate or nearly immediate.
 
 ## Off the Clock
 
-- objects remain static at their settled positions: no drift, no record turn, no title lag
+- objects remain static at their settled positions: no drift, no record turn
 - labels and facts are always visible text
 
 ## Contact
@@ -1067,7 +1067,7 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
 - `h3`s: each Experience organization, each Education line, and each Off the Clock subject.
 - Experience: the "×" in SpaceComputer × UCSB is `aria-hidden`, with a visually hidden "and". The place is announced after a visually hidden comma. Dates use `<time>`.
 - Education: each line's heading, then its credentials, honors and areas (a list). Mathematics + Physics adds "West Valley College" after its areas. A.A. Liberal Arts follows the block.
-- Off the Clock: the display echo of the title and each "01 —" index are `aria-hidden`. The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, and Games with its record as a description list (title, then result; P2.6).
+- Off the Clock: each "01 —" index is `aria-hidden` (the display echo of the title was removed in usability Gate C; "05 Off the Clock" is the section's `h2` and only heading above the subjects). The accessibility tree reads Baseball / Former pitcher, Vinyl / 100+ records, and Games with its record as a description list (title, then result; P2.6).
 - The still-life images and the Contact MB have `alt=""` and are never focusable.
 - Hero (usability pass): the context line follows the `h1` and is read as "UC Santa Barbara, B.S. Computer Science, June 2027" (the "·" separators are `aria-hidden`, with visually hidden commas). The contact rail is a list labelled "Contact" with four links: "Email mattheweblanke@gmail.com", "GitHub (opens in a new tab)", "LinkedIn (opens in a new tab)" and "Résumé (PDF, opens in a new tab)". The "·" separators and the ↗ are `aria-hidden`, so they are never part of a link name.
 - Contact: four named links (Email, GitHub, LinkedIn, Résumé; the Résumé link's name adds "PDF, opens in a new tab"). The closing line is one link, named "Your move. Email mattheweblanke@gmail.com".
@@ -1120,6 +1120,13 @@ Chapters 03–06 on the production build, 2026-10-29. Desktop and zoom checks ra
   - Reduced motion keeps every state change without displacement, and the MB never moves.
   - Gate D's pointer-approach response in Contact is decorative only. Keyboard focus, arrival and hover still produce the full engaged states, and nothing depends on the pointer.
   - The navigator never reopens itself when it parks focus on its toggle for a trip.
+
+**Usability Gate C (2026-11-04)**
+
+- **Focus never clips.** Inside the index, focus is drawn inward (`outline-offset: -2px`, with an inset bone ring inside it), so the phone list's `overflow-y` and the rail's reveal clip never cut it. The open list's clip now reaches 0.5 rem past it on every side, and the toggle sits above the opened list, so its own ring is whole. Checked with Tab, Shift+Tab and Escape over chapters, subsections and the phone disclosures.
+- **Disclosure.** Its new glyph is `aria-hidden`; the button is still named "<Chapter> sections", with `aria-expanded` and `aria-controls`, a 44×44 target, and separate from the chapter link. Nothing depends on the glyph.
+- **Experience.** The kind and dates share one row; a visually hidden comma separates them, so it reads "Sponsored senior project, Fall 2026 – Present". The kind still states that SpaceComputer is a sponsored project, not employment.
+- **Rankle (Gate B).** A visually hidden line in the copy says what the decorative stage shows: two people rank the same items and compare.
 
 **Touch (automated, 390×844 and 360×740)**
 

@@ -31,6 +31,9 @@
 }
 
 .toggle {
+  /* Above the opened list, so the list never covers the toggle's ring. */
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.625rem;
@@ -38,7 +41,8 @@
   min-inline-size: 2.75rem;
   padding: 0 0.75rem;
   border: 0;
-  background: none;
+  /* Opaque bone, so the page moving underneath never runs through it. */
+  background: var(--color-bg);
   color: var(--color-ink);
   font: inherit;
   letter-spacing: 0.04em;
@@ -212,9 +216,8 @@
 }
 
 /*
- * Inline (JS): one disclosure per chapter with subsections. The branch glyph
- * is the navigator's own hairline: a short rule whose end drops when its
- * group is open, into the group's rule below.
+ * Inline (JS): one disclosure per chapter with subsections. Its glyph is a
+ * miniature of the group in the navigator's own hairlines (see .branch).
  */
 :root[data-js] .list {
   min-inline-size: 15rem;
@@ -238,16 +241,31 @@
   cursor: pointer;
 }
 
+/*
+ * The disclosure glyph: a miniature branching diagram of the chapter's
+ * group. Closed, a short rule carries one hanging tick per subsection (the
+ * group folded up). Open, a drop runs down from the rule's start, the way
+ * the group's own rule runs down the list, and the ticks turn out from it
+ * one level each: the subsections, stepped. Decorative: the button's name
+ * and aria-expanded carry the meaning.
+ */
 .branch {
+  --pitch: 0.1875rem;
+
   position: relative;
-  inline-size: 0.875rem;
-  block-size: 0.75rem;
+  inline-size: 1rem;
+  block-size: 0.875rem;
+}
+
+.branch::before,
+.branch::after,
+.leaf {
+  position: absolute;
+  background: currentColor;
 }
 
 .branch::before,
 .branch::after {
-  position: absolute;
-  background: currentColor;
   content: "";
 }
 
@@ -258,16 +276,36 @@
   block-size: 1px;
 }
 
-/* Its drop: a short tick when closed, the full drop when open. */
+/* The drop: folded away when closed (so the ticks count the subsections),
+   the group's full rule when open. */
 .branch::after {
   inset-block: 0;
-  inset-inline-end: 0;
+  inset-inline-start: 0.125rem;
   inline-size: 1px;
-  transform: scaleY(0.34);
+  transform: scaleY(0);
   transform-origin: top;
 }
 
-.disclosure[aria-expanded="true"] .branch::after {
+/*
+ * A leaf, drawn in its open place: a 4px hairline turning out of the drop
+ * at level k. Closed, it is carried up onto the rule and turned down into a
+ * 3px tick, one pitch apart along it.
+ */
+.leaf {
+  inset-block-start: calc(0.25rem + var(--k) * var(--pitch));
+  inset-inline-start: 0.125rem;
+  inline-size: 0.25rem;
+  block-size: 1px;
+  transform-origin: left center;
+  transform: translate(
+      calc(0.25rem + var(--k) * var(--pitch)),
+      calc(-0.25rem - var(--k) * var(--pitch))
+    )
+    rotate(90deg) scaleX(0.75);
+}
+
+.disclosure[aria-expanded="true"] .branch::after,
+.disclosure[aria-expanded="true"] .leaf {
   transform: none;
 }
 
@@ -277,6 +315,41 @@
 
 :root[data-js] .item[data-expanded] .sections {
   display: grid;
+}
+
+/*
+ * Inside the scrolling inline list an outside ring would be clipped, so
+ * focus is drawn inward there: the ink ring on the control's edge, the bone
+ * separation inside it.
+ */
+:root[data-js] .list :is(.link, .section, .disclosure):focus-visible {
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 4px var(--color-bg);
+}
+
+/*
+ * Phones: the open index is a structural band, not a floating card. It runs
+ * from the page's left content margin to the screen's right edge under the
+ * toggle, opaque bone between two hairlines, and covers whatever is beneath
+ * it. Its right column stays under the toggle.
+ */
+@media (max-width: 40rem) {
+  :root[data-js] .list {
+    position: fixed;
+    inset-block-start: calc(
+      max(var(--space-sm), env(safe-area-inset-top)) + 2.75rem
+    );
+    inset-inline: var(--margin) 0;
+    min-inline-size: 0;
+    max-inline-size: none;
+    max-block-size: calc(100svh - 4rem);
+    padding-inline-end: max(
+      calc(var(--margin) - 0.75rem),
+      env(safe-area-inset-right)
+    );
+    border-inline-start: 0;
+    border-block: 1px solid var(--color-rule);
+  }
 }
 
 /*
@@ -362,8 +435,9 @@
       visibility 0s linear 220ms;
   }
 
+  /* Open, it reaches past the list on every side, so no focus ring is cut. */
   :root[data-js] .nav[data-open] .list {
-    clip-path: inset(0 0 -8rem -30rem);
+    clip-path: inset(-0.5rem -0.5rem -8rem -30rem);
     transition:
       clip-path 260ms cubic-bezier(0.25, 1, 0.5, 1),
       visibility 0s;
@@ -377,8 +451,13 @@
     transition: color 150ms ease;
   }
 
-  .branch::after {
+  .branch::after,
+  .leaf {
     transition: transform 180ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .leaf {
+    transition-delay: calc(var(--k) * 20ms);
   }
 
   /* Inline: an opened group unrolls down its rule. */

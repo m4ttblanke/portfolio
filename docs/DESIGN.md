@@ -968,7 +968,8 @@ Implemented (P2): a shared time field.
 
 - **Scale.** Light display year numerals with hairlines (2022 → "Present") across the content width.
 - **Rules.** Each entry's ink duration rule steps down in a tight band beneath the scale, so the long ongoing rule visibly runs over the shorter ones. Ongoing rules run off the viewport edge.
-- **Entry text.** It hangs from the start of its rule in a narrow column: organization in display caps (place beneath, in small caps), then kind (muted), role (semibold), dates, and one signal line.
+- **Entry text.** It hangs from the start of its rule in a narrow column: organization in display caps (place beneath, in small caps), role (semibold), one meta row, and one signal line. The meta row sets the kind (muted) and the dates (ink) side by side in the same meta caps; in a narrow column they wrap as one tight block (usability Gate C, which folded the kind into the dates row: five levels instead of six). The column never leaves the screen: a column pinned to the right edge stays pinned while the field is stretched.
+- **SpaceComputer emphasis (usability Gate C).** Its signal is set at weight 500, a step stronger than the others' 400. Name size, rule, column and colour are the shared system; there is no border, card or badge.
 - **Names.** All share one display size. Duration is encoded only by the rules.
 - **Below 60rem.** Entries stack, each with its own full-width gauge (track, year ticks, "2022" and "Present" at its ends) on the same scale.
 - **Engaged (P2.6).** The rule is 4 px, with two 1 px ink projections from its ends to the scale and its years in ink. Other entries are muted with 1 px muted rules. Ink and muted are the only two tones; nothing fades.
@@ -1010,11 +1011,11 @@ Potentially:
 
 Still avoid clutter.
 
-Implemented (Gate 4): a typeset still life. A display echo of the chapter
-title (decorative; the chapter label is the heading), then three subjects as
-large display words ("01 — BASEBALL" with its fact beneath), each facing its
-object in the space the word leaves. Desktop is a Z — glove upper right
-beside the title, record middle left, controller lower right — at roughly
+Implemented (Gate 4): a typeset still life. Three subjects as large display
+words ("01 — BASEBALL" with its fact beneath), each facing its object in the
+space the word leaves, under the chapter label (usability Gate C removed the
+display echo of the title). Desktop is a Z — glove upper right, rising beside
+the chapter label, record middle left, controller lower right — at roughly
 real relative scale, on one stage measured in content widths. Objects never
 cross a word or fact, and never overlap each other. Below 60rem the subjects
 stack, word above object, alternating edges: glove left, record bleeding
@@ -1023,7 +1024,7 @@ word. The images are not focusable.
 
 P2.6: Games' fact is a short record, five games set as two aligned columns (title, result) in the same meta caps as the other facts. On desktop it is capped short of the controller and long titles wrap there. On phones the controller stays beside the word and the record runs full width beneath.
 
-The objects sit on separate depth planes (scroll, and pointer on desktop). The title is a back plane, and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
+The objects sit on separate depth planes (scroll, and pointer on desktop), and the words and facts are the fixed reading plane. An engaged subject's index dash runs on as a 3 rem rule while the others turn muted.
 
 This is the strongest candidate for controlled Campione influence.
 
@@ -1183,8 +1184,11 @@ These are working values proven in the P1 opening (hero, Rankle, Plannr). Tokens
 
 ## Navigator
 
-- A compact corner index: the current chapter number plus one tick per chapter.
+- A compact corner index: the current chapter number plus one tick per chapter, on an opaque bone ground (usability Gate C).
 - It expands to the full list on hover (fine pointers), keyboard focus or tap. Without JavaScript it renders expanded.
+- Phones: the open list is a band from the left content margin to the right edge, bone between top and bottom hairlines.
+- Disclosure: a miniature branching diagram (rule and one tick per subsection; open, a drop with the ticks turned out as levels), drawn in the navigator's hairlines.
+- Focus inside the list is drawn inward (ink ring on the control's edge, bone inside it), so a scrolling list never cuts it.
 
 ## Objects
 

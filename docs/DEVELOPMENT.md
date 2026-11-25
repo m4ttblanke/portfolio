@@ -936,6 +936,8 @@ Production should have no unexplained:
 
 Intentional development logs should be removed before merge.
 
+**Accepted third-party warning: `THREE.Clock`.** The console shows "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead." It comes from React Three Fiber 9.8.x, which constructs a `THREE.Clock` in its store. No application code instantiates `THREE.Clock`, and current stable R3F has not fully moved to `THREE.Timer`. It is accepted as third-party: do not patch R3F, downgrade three or suppress the message. It should disappear through ordinary dependency updates once R3F migrates.
+
 ---
 
 # Error Boundaries

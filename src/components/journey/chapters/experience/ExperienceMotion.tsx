@@ -7,8 +7,9 @@ import { isStatic, PRESENTATION_CONDITIONS } from "@/lib/motion/presentation";
 /*
  * The field's starting scale about its 2022 origin: every position starts
  * 25% further from 2022 than it settles. At 1440 that carries Trader Joe's
- * about 35 px, the Physics Learning Center about 160 px, SpaceComputer about
- * 260 px and PRESENT off the right edge.
+ * text about 35 px and the Physics Learning Center's about 160 px; the
+ * SpaceComputer rule and PRESENT start off the right edge, while its text,
+ * already pinned to the edge, stays in place (see `.text` in the CSS).
  */
 const STRETCH = 1.25;
 

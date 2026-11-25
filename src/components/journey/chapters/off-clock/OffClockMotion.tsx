@@ -21,9 +21,6 @@ const DEPTH: Record<Subject, number> = {
   games: 3.3,
 };
 
-/* The display title, a slower back plane: total lag in u (64 px at 1440). */
-const TITLE_DEPTH = 4.8;
-
 /* Phones: total scroll travel in px. No pointer. */
 const PHONE_DEPTH: Record<Subject, number> = {
   baseball: 56,
@@ -32,16 +29,15 @@ const PHONE_DEPTH: Record<Subject, number> = {
 };
 
 /*
- * Pointer depth, px at the still life's edge (x, y). Objects lean with the
- * pointer, the title against it, so the scene has a back plane. The engaged
- * subject (its word focused on arrival from the navigator) leans further.
+ * Pointer depth, px at the still life's edge (x, y): the front plane leans
+ * most, the rear least. The engaged subject (its word focused on arrival
+ * from the navigator) leans further.
  */
 const POINTER: Record<Subject, [number, number]> = {
   baseball: [21, 13],
   vinyl: [14, 9],
   games: [7, 5],
 };
-const TITLE_POINTER: [number, number] = [-8, -5];
 const ENGAGED = 1.35;
 
 /* Damped follow: no overshoot, no bounce. */
@@ -49,7 +45,7 @@ const FOLLOW = { duration: 0.9, ease: "power3.out" } as const;
 
 /**
  * Off the Clock depth. Scrubbed scroll depth on desktop and phones (each
- * object over its own pass, the title lagging); pointer depth on desktop
+ * object over its own pass); pointer depth on desktop
  * with a fine pointer, listened for on the chapter only while it is in view.
  * Every offset is a custom property the CSS composes (see the module), so
  * scroll and pointer never write the same transform. Static presentation
@@ -59,8 +55,7 @@ export function OffClockMotion() {
   useLayoutEffect(() => {
     const section = document.getElementById("off-clock");
     const stage = section?.querySelector<HTMLElement>("ul");
-    const title = section?.querySelector<HTMLElement>("[data-off-clock-title]");
-    if (!section || !stage || !title) return;
+    if (!section || !stage) return;
     const objects = [
       ...section.querySelectorAll<HTMLElement>("[data-off-clock-object]"),
     ].map((object) => ({
@@ -107,32 +102,13 @@ export function OffClockMotion() {
           );
         }
 
-        if (!desktop) return;
-        gsap.fromTo(
-          title,
-          { "--title-sy": () => (-TITLE_DEPTH * depthU()) / 2 },
-          {
-            "--title-sy": () => (TITLE_DEPTH * depthU()) / 2,
-            ease: "none",
-            scrollTrigger: {
-              trigger: title,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          },
-        );
-
-        if (!conditions?.finePointer) return;
+        if (!desktop || !conditions?.finePointer) return;
         const lean = objects.map(({ image, subject, id }) => ({
           subject,
           id,
           x: gsap.quickTo(image, "--px", FOLLOW),
           y: gsap.quickTo(image, "--py", FOLLOW),
         }));
-        const titleX = gsap.quickTo(title, "--title-px", FOLLOW);
-        const titleY = gsap.quickTo(title, "--title-py", FOLLOW);
 
         const onMove = (event: PointerEvent) => {
           if (event.pointerType === "touch") return;
@@ -156,16 +132,12 @@ export function OffClockMotion() {
             x(nx * POINTER[id][0] * k);
             y(ny * POINTER[id][1] * k);
           }
-          titleX(nx * TITLE_POINTER[0]);
-          titleY(ny * TITLE_POINTER[1]);
         };
         const onLeave = () => {
           for (const { x, y } of lean) {
             x(0);
             y(0);
           }
-          titleX(0);
-          titleY(0);
         };
 
         // Listen on the chapter only while it is on screen.
@@ -190,8 +162,6 @@ export function OffClockMotion() {
             image.style.removeProperty("--px");
             image.style.removeProperty("--py");
           }
-          title.style.removeProperty("--title-px");
-          title.style.removeProperty("--title-py");
         };
       },
     );

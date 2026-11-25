@@ -13,9 +13,8 @@
  *
  * Depth (OffClockMotion) is written as custom properties, never as GSAP
  * transforms: scroll depth on each <picture> (--depth, composed with the
- * phone record's bleed), pointer depth on its <img> (--px, --py), and the
- * display title's scroll and pointer offsets summed into one whole-pixel
- * translate. The subject words and facts never move.
+ * phone record's bleed) and pointer depth on its <img> (--px, --py). The
+ * subject words and facts never move.
  */
 
 .chapter {
@@ -32,7 +31,6 @@
   container-type: inline-size;
 }
 
-.title,
 .word {
   font-family: var(--font-display);
   font-stretch: var(--display-stretch);
@@ -42,20 +40,13 @@
   text-transform: uppercase;
 }
 
-.title {
-  margin-block-start: var(--space-lg);
-  font-size: calc(7.2 * var(--cq, 1cqi));
-  white-space: nowrap;
-  /* A slower back plane: scroll lag plus a small counter-pointer offset,
-     in whole pixels so the type is never resampled. Never promoted. */
-  translate: round(calc(var(--title-px, 0) * 1px), 1px)
-    round(calc((var(--title-sy, 0) + var(--title-py, 0)) * 1px), 1px);
-}
-
 .stillLife {
   position: relative;
   block-size: calc(66 * var(--u));
-  margin-block-start: calc(2.5 * var(--u));
+  /* The glove rises 13u above the stage, beside the chapter label (it is on
+     the right; the label is on the left), so the stage starts close under
+     the label and Baseball's word leads the chapter. */
+  margin-block-start: calc(9 * var(--u));
   /* Games' record is fixed-size type below a stage measured in u, so it
      hangs further past the stage as the stage narrows (36 px at 1440, 117
      at 961). This keeps it inside the chapter with room to spare; it is
@@ -68,7 +59,7 @@
 /*
  * Navigator destination. On desktop every subject's box is the top of the
  * stage, so each lands by its own object: the glove (13u above the stage)
- * with the title, the record whole, the controller with its word.
+ * whole, the record whole, the controller with its word.
  */
 .subject[data-subject="baseball"] {
   scroll-margin-block-start: calc(16 * var(--u));
@@ -245,11 +236,6 @@
 @media (max-width: 60rem) {
   .chapter {
     --word-size: min(calc(13 * var(--cq, 1cqi)), 4.5rem);
-  }
-
-  .title {
-    font-size: min(calc(15 * var(--cq, 1cqi)), 6rem);
-    white-space: normal;
   }
 
   .stillLife {

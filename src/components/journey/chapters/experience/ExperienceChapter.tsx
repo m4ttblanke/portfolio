@@ -114,10 +114,14 @@ function Entry({ entry, index }: { entry: ExperienceEntry; index: number }) {
             </span>
           )}
         </h3>
-        <p className={styles.kind}>{entry.kindLabel}</p>
         <p className={styles.role}>{entry.role}</p>
-        <p className={styles.dates}>
-          <Period entry={entry} />
+        {/* One meta row: what kind of experience, and when. */}
+        <p className={styles.meta}>
+          <span className={styles.kind}>{entry.kindLabel}</span>
+          <span className="visually-hidden">, </span>
+          <span className={styles.dates}>
+            <Period entry={entry} />
+          </span>
         </p>
         <p className={styles.signal}>{entry.signal}</p>
       </div>

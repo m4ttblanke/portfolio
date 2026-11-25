@@ -955,7 +955,7 @@ Production build on localhost, Playwright Chromium (GPU) unless noted, with auto
 
 **Layout stability.** CLS 0.014 over a full scroll at 1440 (0.0001–0.0008 per frame) and 0 at 390. The desktop shifts are Education's interpolation: as the first phrase of a line widens, the second phrase on the same line moves along it. Phones stack the phrases, so nothing shifts. No other P2.5 motion shifts layout (transforms only).
 
-**Console.** No hydration warnings and no new messages; the THREE.Clock deprecation and GPU driver notices are from P1.
+**Console.** No hydration warnings and no new messages; the THREE.Clock deprecation (R3F's own, accepted as third-party; see DEVELOPMENT.md) and GPU driver notices are from P1.
 
 ## P2.6 Gate A — Navigation Travel (2026-11-02)
 
@@ -1040,6 +1040,18 @@ Production build on localhost, Chromium with GPU rendering, 1440×900 and 390×8
 - **P2 WebGL:** 0 draws and 0 clears across Experience → Contact scroll, pointer movement and idle.
 - **P1 startup:** 10 of 10 root loads and 3 of 3 each for direct `#rankle`, `#plannr` and `#experience` went live and drew. Context loss and restore recovers with labels intact. The forced restore logs WebGL "object does not belong to this context" warnings; `main` logs the same count, so they predate Gate B.
 - **Payload:** Rankle fallbacks 54 KB (desktop) / 35 KB (mobile), up from 45 / 26 KB because the renders now carry text. No new chunk or dependency.
+
+## Usability Gate C — Experience, Off the Clock, Navigator (2026-11-04)
+
+Production build on localhost, Chromium with GPU rendering.
+
+- **Off the Clock without the display title** (1440, the same scripted scroll and pointer pass over the chapter, three runs each, compared with the Gate B build):
+  - Raster tasks: 666 → 532 per pass (−20%), 141 → 135 ms. The large title no longer re-rasterizes when its whole-pixel offset changes.
+  - Paint: 349 → 358 records, 43 ms either way, so unchanged within noise.
+  - Style recalculation: 457 → 445 (264 vs 303 ms), and layout and script are unchanged within run-to-run noise. The title was one scrubbed tween and two `quickTo` setters, which is too little JavaScript to measure.
+- **CLS** (full scroll, attributed by the shifted nodes): Experience 0 and Off the Clock 0 at 1440, 1280, 961 and 390. The Experience clipping fix is still transforms only. All remaining CLS is Education's accepted width interpolation (0.037 at 1440, 0 on phones).
+- **WebGL:** peak 61 draw calls (unchanged). Idle is 0 frames at the top and at the Rankle hold. P2 issues 0 draws and 0 clears across scroll, pointer and idle.
+- No new dependency, chunk or asset.
 
 ---
 

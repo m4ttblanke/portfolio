@@ -1020,8 +1020,9 @@ Live copy is in `src/content/` (`experience.ts`, `education.ts`, `personal.ts`, 
 **Experience**
 
 - TRADER JOE'S. Work. Crew member, grocery section lead. June 2022 – Present. "Led grocery ordering, inventory planning and merchandising, contributing to 10% year-over-year grocery sales growth." (The metric was approved by Matthew on 2026-11-02; it is stated as a contribution to grocery sales, not sole credit or store-wide growth.)
-- PHYSICS LEARNING CENTER, Cabrillo College. Teaching. Math and physics tutor. August 2024 – May 2025. "Tutored mathematics, mechanics and introductory physics."
-- SPACECOMPUTER × UCSB. Sponsored senior project. Team lead, 4Orbit. Fall 2026 – Present. "Built an end-to-end flow where Cedar policy decides whether an agent's request reaches SpaceComputer KMS through Orbitport, auditing every allow and deny."
+- PHYSICS LEARNING CENTER, Cabrillo College. Teaching. Math and physics tutor. August 2024 – May 2025. "Mathematics, mechanics and introductory physics." (Gate C: the role already says "tutor", so the signal names the subjects only.)
+- SPACECOMPUTER × UCSB. Sponsored senior project. Team lead, 4Orbit. Fall 2026 – Present. "Built Cedar-gated KMS access for AI agents, auditing every allow/deny decision." (Gate C: shortened for scanning. Orbitport, the authorization architecture, credential plans, agent identity claims and GitLab stay out of this layer.)
+- The kind (Work, Teaching, Sponsored senior project) stays: it keeps the senior project from reading as employment. Since Gate C it shares the dates row.
 
 **Education**
 

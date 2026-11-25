@@ -25,9 +25,9 @@ const sizes: Record<StillLifeId, { mobile: string; desktop: string }> = {
  * middle left, controller lower right) at roughly real relative scale. The
  * images are generated references, decorative beside the words that name
  * them. The objects move on separate depth planes as the chapter scrolls
- * (phones too), lean with a fine pointer on desktop, and the display title
- * lags behind them as a back plane (OffClockMotion); the subject words and
- * facts never move.
+ * (phones too) and lean with a fine pointer on desktop (OffClockMotion); the
+ * subject words and facts never move. The chapter label is the only heading
+ * above the subjects: there is no display echo of it.
  */
 export function OffClockChapter() {
   return (
@@ -37,10 +37,6 @@ export function OffClockChapter() {
       className={styles.chapter}
     >
       <ChapterLabel id="off-clock" />
-      {/* Display echo of the chapter label, which is the heading. */}
-      <p aria-hidden="true" className={styles.title} data-off-clock-title>
-        Off the Clock
-      </p>
 
       <ul className={styles.stillLife}>
         {personal.map((subject, index) => {

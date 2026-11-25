@@ -287,7 +287,7 @@ P2.6 also adds `chapters/contact/ContactMotion` (client; pointer approach, fine 
 
 The navigator stays the only client component for navigation. Travel is a plain module with one frame loop and no React state. The chapters stay server components: subsection targets are ids on existing elements, `data-nav-hold` on the project blocks, and `scroll-margin` in the chapter CSS.
 
-P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
+P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). (Usability Gate C removed `OffClockMotion`'s display-title tweens; its objects' scroll and pointer depth are unchanged.) Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
 
 ---
 
@@ -728,6 +728,7 @@ P1 uses two tiers: full WebGL, and a static render.
   - three.js keeps the context restorable. On restore, the GPU-generated environment is rebuilt, one frame is requested, and the scene goes live again after that frame renders.
   - Before this, any `webglcontextlost` event anywhere in the document set `off` for the rest of the visit, so one transient loss left P1 static (fallbacks, collapsed runways) until a reload.
 - **Startup frame.** The anchors' first measure runs in a layout effect, before R3F's root (an ancestor) marks itself active, and R3F drops an `invalidate()` made then. The anchors therefore request their startup frame from a passive effect, which runs after every layout effect. The first frame no longer depends on other components' requests.
+- **Render clock.** R3F 9.8.x creates a deprecated `THREE.Clock` in its store, which logs a deprecation warning. The application never creates one; the warning is accepted as third-party (see DEVELOPMENT.md, Console Discipline).
 - **Static presentation** (`lib/motion/presentation.ts`) has two triggers: `prefers-reduced-motion: reduce`, or a **compact viewport**, `(max-width: 40rem) and (max-height: 30rem)`, which is narrow and short together (for example a desktop browser at 250%+ page zoom). Under it the canvas never mounts, the 3D chunk is never downloaded, no timeline is created (`gsap.matchMedia` with `PRESENTATION_CONDITIONS` and `isStatic`), and the runways collapse the same way.
 - Width alone never triggers it, so phones such as 390×844 keep the animated mobile composition.
 - On a compact viewport each scene also drops its 100svh frame and its svh type caps, flowing at its natural height with the stage at the static render's proportions. The threshold lives only in `COMPACT_VIEWPORT`; the layout's pre-paint boot script mirrors it onto `<html data-presentation="compact">`, and scene CSS responds to that attribute.

@@ -560,8 +560,12 @@ Supersedes the P2.5 calibration above, which was the same idea at about 14 px.
 - The years it spans, with their ticks (and PRESENT if ongoing), come to full ink. `ExperienceMotion` marks them on pointer and focus events, never per frame.
 - Other entries settle back: rules 1 px and muted, text muted, all fully readable.
 - Timing: engage 420 ms `cubic-bezier(0.22, 1.2, 0.36, 1)`, release 640 ms `cubic-bezier(0.25, 1, 0.5, 1)`.
+
+**The shared engage curve.** `cubic-bezier(0.22, 1.2, 0.36, 1)` is used for every engage in P2.6 (Experience, Education, Off the Clock, Contact). Its peak overshoot is about 1.25% of the distance: roughly 1% overshoot creates tension without a visible return. It is not elastic and no use of it reads as a bounce. Release uses `cubic-bezier(0.25, 1, 0.5, 1)`, which never overshoots. (Gate C reviewed every use and kept them all; no CSS changed.)
 - On phones, arrival focus doubles the gauge and mutes the other entries.
 - No bending, no proximity warping: endpoints are always true.
+
+**Usability Gate C: no text pushed off screen.** Each hanging text column sits at `min(start, 1 − column)` of the field, so a late entry is pinned to the right edge. The compression used to offset every column by `min(start, 1 − column) × (f − 1)`, which pushed the pinned SpaceComputer column up to 223 px past the edge at 1440 (146 px at 961). Each column now sits at `min(start × f, 1 − column)` on the stretched scale (offset: that minus its settled place). A column with room rides the scale as before. A pinned column stays pinned, at 44 px from the edge at 1440, 40 px at 1280 and 31 px at 961, through the whole pass. Rules, projections, ticks and PRESENT still follow the true temporary scale, so the SpaceComputer rule and PRESENT may start past the edge, as designed.
 
 Avoid:
 
@@ -649,7 +653,7 @@ Supersedes the P2.5 drift and turn above.
 
 - **Scroll depth.** Each object travels over its own pass across the viewport (its top entering at the bottom → its bottom leaving at the top), linear, `scrub: 0.6`, so the planes separate while each is on screen. Travel is in content-width units, raised in Gate D so the layering reads at normal scrolling speed:
   - Glove 8.9u, record 5.8u, controller 3.3u: 120 / 78 / 44 px at 1440 (was 90 / 60 / 38). The front plane gains most and the rear least, so the separation grows while the controller stays quiet.
-  - The title is a slower back plane, moving the opposite way, 4.8u (64 px at 1440, was 50).
+  - (Removed in usability Gate C: the display title's back plane. See below.)
   - Below 1440 the depth eases off in proportion to the stage. The facts are fixed-size type, so the room around them shrinks faster than the stage; at 961 the record keeps at least 10 px from the Baseball fact.
   - Phones: 56 / 43 / 25 px, objects only.
 - **No turn.** Translation only. The baked sheen and shadow argued against rotation, and translation carries depth better.
@@ -657,6 +661,10 @@ Supersedes the P2.5 drift and turn above.
 - **Architecture.** Scroll depth is `--depth` on each `<picture>` (composed with the phone record's `--bleed`); pointer depth is `--px` / `--py` on its `<img>`. The title's scroll and pointer parts are summed into one whole-pixel `translate`. GSAP tweens only custom properties, so the CSS `translate` is never reset and the two systems never write the same transform. Each image is its own compositor layer (`will-change: translate`, with JS and motion, not compact); the title is never promoted.
 - **Engagement.** Arrival from the navigator focuses a subject's word. Its index dash runs on as a 3 rem rule, its object leans 1.35× further, and the other two subjects' words and facts settle to muted ink.
 - **Static.** Reduced motion, compact and no-JS: the settled still life.
+
+### Usability Gate C: no display title
+
+The large OFF THE CLOCK echo read as a second heading rather than as depth, so it was removed with its scroll lag (`TITLE_DEPTH`) and counter-pointer offset (`TITLE_POINTER`). "05 OFF THE CLOCK" is the chapter's only heading. The objects keep their full scroll depth (120 / 78 / 44 px at 1440) and pointer depth (±21 / ±13, ±14 / ±9, ±7 / ±5). With three object planes and the fixed reading plane of words and facts, the layering still separates clearly without a back plane. Amplitudes are unchanged.
 
 ---
 
@@ -694,7 +702,7 @@ Supersedes the P2.5 behavior above. Contact still never moves on its own; every 
 - The value moves 20 px right (phones 0.75 rem).
 - A 1 px tie draws from just after the label's own text, through the rest of the label column and the gap, to the moving value. It is a flex filler whose negative end margin reaches the value. On phones, where the label sits above the value, a hairline runs in from the row's edge instead.
 - The outbound arrow leans 0.12 em up and out, the underline thickens to 2 px, and the other rows settle to muted ink.
-- Engage 420 ms with overshoot, release 640 ms; a press engages in 160 ms.
+- Engage 420 ms on the shared engage curve, release 640 ms; a press engages in 160 ms.
 - A tap's own focus never engages, so nothing sticks after a tap.
 - Reduced motion: ink, tie and underline change; nothing moves.
 
@@ -706,7 +714,7 @@ Supersedes the P2.5 behavior above. Contact still never moves on its own; every 
 - The closing line's gestures are registered properties (`--stretch`, `--rule`, `--reply`) so they can transition on their own curves while the pointer amount blends in.
 
 **YOUR MOVE.** Desktop hover or keyboard focus (and a touch press):
-- MOVE. stretches 112 → 118 on the real width axis. It uses the elastic engage curve over 520 ms.
+- MOVE. stretches 112 → 118 on the real width axis. It uses the shared engage curve over 520 ms.
 - Its rule runs from the moving end of the word to the content edge (`100cqi`). It travels on an even ease-in-out over 540 ms (`cubic-bezier(0.65, 0, 0.35, 1)`), so the run can be watched. At 1440 it reaches the MB at 277 ms, passes its centre at 327 ms and arrives at 536 ms.
 - The MB then replies: one 0.1 em step toward the word (21 px at 1440). It starts at 380 ms (`--mb-delay`, just after the rule passes its centre), lands in 280 ms without overshoot, and holds while engaged.
 - Release: 640 ms.
@@ -1279,7 +1287,7 @@ The second half is DOM motion only. The canvas does nothing past Plannr (`decisi
 |---|---|---|
 | Experience | P2.6: the field compresses 1.25 → 1 about 2022 with a diagonal settle while the rules draw (desktop); gauges open 0.7 → 1 (60rem and below); engaged entries thicken, project to the scale and light their years | settled field; engagement as ink and weight only |
 | Education | P2.6: the lines resolve from 64 (phones 62) to their calibrated widths on the real `wdth` axis; an engaged line stretches +5, the others give 3, and its margin rule bends out (desktop) | final widths; engagement as ink only |
-| Off the Clock | P2.6: per-object scroll depth (desktop 90 / 60 / 38 px at 1440, phones 46 / 36 / 22), the title a counter-moving back plane, damped pointer depth on desktop | settled still life |
+| Off the Clock | P2.6: per-object scroll depth (desktop 120 / 78 / 44 px at 1440, phones 56 / 43 / 25), damped pointer depth on desktop; no display title since usability Gate C | settled still life |
 | Contact | P2.6: rows engage (value shift, tie, arrow, muted siblings); MOVE. stretches, its rule travels to the edge, the MB replies; CSS only | instant ink/rule/width states, no movement |
 
 - All timelines use the P1 system: per-chapter client components, `gsap.matchMedia` with `PRESENTATION_CONDITIONS`, linear and `scrub: 0.6`. None adds a listener of its own.
