@@ -53,12 +53,12 @@ Confirmed foundation:
 
 Visual stack, validated in P1:
 
-- **GSAP** + **ScrollTrigger**, on native scrolling (`decisions/001`)
+- **GSAP** + **ScrollTrigger** (`decisions/001`)
+- **Lenis**, wheel smoothing for fine pointers only, run from the GSAP ticker (`decisions/005`)
 - **Three.js** + **React Three Fiber**, one persistent canvas (`decisions/002`)
 
 Evaluated and not adopted in P1:
 
-- **Lenis**: native scroll with per-timeline `scrub` was enough (`decisions/001`)
 - **Drei**: nothing in P1 needed it; geometry is procedural and lighting is generated with three's own `RoomEnvironment`
 
 Potential state tool:
@@ -287,7 +287,7 @@ P2.6 also adds `chapters/contact/ContactMotion` (client; pointer approach, fine 
 
 The navigator stays the only client component for navigation. Travel is a plain module with one frame loop and no React state. The chapters stay server components: subsection targets are ids on existing elements, `data-nav-hold` on the project blocks, and `scroll-margin` in the chapter CSS.
 
-P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
+P2 adds two client components, both DOM motion; P2.5 adds a third, `EducationMotion` (about 0.4 KB compressed). (Usability Gate C removed `OffClockMotion`'s display-title tweens; its objects' scroll and pointer depth are unchanged.) Each returns `null`, creates its ScrollTriggers inside `gsap.matchMedia`, and adds no listener of its own. Nothing in P2 imports three or R3F, or writes to `scene`. The "present" end of the Experience time field is the build date, because the page is prerendered.
 
 ---
 
@@ -527,16 +527,14 @@ Do not depend on magic hard-coded page pixel values.
 
 # Lenis Architecture
 
-Not adopted in P1 (`decisions/001`). Scrolling is native; timelines smooth their own values with `scrub`.
+Not needed in P1 (`decisions/001`). Adopted after the usability pass (`decisions/005`), to keep the canvas in step with the page:
 
-If a future scene proves it needs a smooth-scroll layer, that is a new decision. It would then have to:
+- one instance, created by `components/journey/scroll/SmoothScroll.tsx` inside `gsap.matchMedia()`, only for fine pointers with motion allowed and outside compact presentation
+- run from the GSAP ticker as its first listener, calling `ScrollTrigger.update` from its scroll event; it writes the real document scroll, so ScrollTrigger and sticky holds need no proxy
+- touch, keyboard, anchors, Find in Page and navigator travel stay native (travel settles Lenis first: `lib/motion/smooth-scroll.ts`)
+- nested scrollers opt out with `data-lenis-prevent` (the navigator's list)
 
-- create one instance
-- integrate cleanly with GSAP/ScrollTrigger
-- preserve anchor navigation
-- preserve keyboard scrolling
-- disable or simplify under reduced-motion if appropriate
-- test touch carefully
+The canvas is drawn on the same ticker, after Lenis and the timelines (`FrameDriver`, `frameloop="never"`), so the page and its 3D frame land in the same animation frame. Anything that changes what the canvas shows calls `requestFrame()` from `lib/motion/scene-progress.ts`; R3F's `invalidate()` does nothing in this mode.
 
 Do not create multiple scroll containers.
 
@@ -727,7 +725,8 @@ P1 uses two tiers: full WebGL, and a static render.
   - On a loss the state returns to pending: the fallbacks show in place and the runways stay, so the layout does not jump.
   - three.js keeps the context restorable. On restore, the GPU-generated environment is rebuilt, one frame is requested, and the scene goes live again after that frame renders.
   - Before this, any `webglcontextlost` event anywhere in the document set `off` for the rest of the visit, so one transient loss left P1 static (fallbacks, collapsed runways) until a reload.
-- **Startup frame.** The anchors' first measure runs in a layout effect, before R3F's root (an ancestor) marks itself active, and R3F drops an `invalidate()` made then. The anchors therefore request their startup frame from a passive effect, which runs after every layout effect. The first frame no longer depends on other components' requests.
+- **Startup frame.** Frame requests are a flag in `lib/motion/scene-progress.ts`, not R3F's `invalidate()`, so a request made before the canvas is ready (the anchors' first measure, in a layout effect) is kept, and `FrameDriver` also requests one when it starts (`decisions/005`). The first frame no longer depends on other components' requests.
+- **Render clock.** R3F 9.8.x creates a deprecated `THREE.Clock` in its store, which logs a deprecation warning. The application never creates one; the warning is accepted as third-party (see DEVELOPMENT.md, Console Discipline).
 - **Static presentation** (`lib/motion/presentation.ts`) has two triggers: `prefers-reduced-motion: reduce`, or a **compact viewport**, `(max-width: 40rem) and (max-height: 30rem)`, which is narrow and short together (for example a desktop browser at 250%+ page zoom). Under it the canvas never mounts, the 3D chunk is never downloaded, no timeline is created (`gsap.matchMedia` with `PRESENTATION_CONDITIONS` and `isStatic`), and the runways collapse the same way.
 - Width alone never triggers it, so phones such as 390×844 keep the animated mobile composition.
 - On a compact viewport each scene also drops its 100svh frame and its svh type caps, flowing at its natural height with the stage at the static render's proportions. The threshold lives only in `COMPACT_VIEWPORT`; the layout's pre-paint boot script mirrors it onto `<html data-presentation="compact">`, and scene CSS responds to that attribute.
@@ -743,8 +742,8 @@ WebGL is scoped to P1. Chapters 03–06 (Experience, Education, Off the Clock, C
 
 The persistent canvas stays mounted for the whole visit (no teardown), but past the P1 scenes it does no work. Every scene group hides once Plannr's frame has scrolled out above the viewport — Kit, RankleScene and PlannrScene all test `frameTop(plannr) > -frameHeight`, which holds exactly while `scrollY < plannr.blockBottom`. `sceneInView()` in `canvas/anchors.ts` states that condition once, and every wake-up uses it:
 
-- **Scroll and layout** (`useAnchors`, one `wake` rule): a scroll or a measured layout change (`ResizeObserver` on `main` and the P1 blocks) invalidates while a scene is in view, plus one frame on the way out so the last pose is cleared; then nothing until a scene can be in view again. The first measure always draws one frame, wherever the page loads.
-- **Pointer tilt** (`Kit`): keeps recording the pointer but only invalidates while a scene is in view, so the relief is current on return.
+- **Scroll and layout** (`useAnchors`, one `wake` rule): a scroll or a measured layout change (`ResizeObserver` on `main` and the P1 blocks) requests a frame while a scene is in view, plus one on the way out so the last pose is cleared; then nothing until a scene can be in view again. The first measure always draws one frame, wherever the page loads.
+- **Pointer tilt** (`Kit`): keeps recording the pointer but only requests frames while a scene is in view, so the relief is current on return.
 
 Scroll timelines still wake the loop through `setScene` while their scrubbed values settle (at most ~0.6 s after leaving Plannr); they are idle in P2. A window resize past the scenes lets the renderer redraw its resized, empty canvas once. Unknown layout (no Plannr anchors) counts as in view.
 
@@ -1198,7 +1197,7 @@ P1 should validate:
 - Rankle
 - Plannr
 
-P1 outcome: R3F, GSAP and ScrollTrigger were validated. Lenis was not needed. The hero, Rankle and Plannr scenes are built on one shared object system.
+P1 outcome: R3F, GSAP and ScrollTrigger were validated. Lenis was not needed in P1 (later adopted for canvas sync, `decisions/005`). The hero, Rankle and Plannr scenes are built on one shared object system.
 
 Only then should later chapter architecture expand.
 
@@ -1298,7 +1297,7 @@ Settled during P0: Next.js 16 (App Router, `src/` directory) and pnpm.
 
 Settled during P1:
 
-- Lenis: not adopted (`decisions/001`)
+- Lenis: not adopted in P1 (`decisions/001`); adopted for wheel smoothing afterwards (`decisions/005`)
 - Zustand: not needed; one shared scene object (`decisions/002`)
 - client boundary: navigator, per-chapter `*Motion` timelines and the canvas only
 - scene control: scroll-derived progress plus DOM-measured stages; no separate scene-controller layer

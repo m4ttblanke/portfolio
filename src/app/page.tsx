@@ -6,6 +6,7 @@ import { HeroChapter } from "@/components/journey/chapters/hero/HeroChapter";
 import { OffClockChapter } from "@/components/journey/chapters/off-clock/OffClockChapter";
 import { ProjectsChapter } from "@/components/journey/chapters/projects/ProjectsChapter";
 import { ChapterNavigator } from "@/components/journey/navigation/ChapterNavigator";
+import { SmoothScroll } from "@/components/journey/scroll/SmoothScroll";
 import { MeasuredUnits } from "@/components/journey/units/MeasuredUnits";
 import styles from "./page.module.css";
 
@@ -28,6 +29,7 @@ export default function Home() {
       </main>
       <MeasuredUnits />
       <JourneyCanvas />
+      <SmoothScroll />
     </>
   );
 }

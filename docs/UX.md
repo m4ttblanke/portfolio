@@ -289,7 +289,9 @@ Every destination is an element that already existed (the project blocks, entrie
 
 **Desktop (fine pointer, 48rem and wider).** Hovering or focusing a chapter shows its subsections on a rail to the left of the index. A hairline connector joins the chapter row to the rail, and labels align against the rail, mirroring the chapters. Moving to another chapter switches rails after a 100ms dwell. Entering the open rail cancels a pending switch, so the pointer can cross a neighbouring row on its way in. When the index opens, the current chapter's rail is already shown.
 
-**Touch, narrow and compact.** Each chapter with subsections has its own disclosure button, separate from the chapter link. Its glyph is the navigator's hairline, whose end drops when the group is open. One group is open at a time, and the current chapter's group starts open. Long names wrap.
+**Touch, narrow and compact.** Each chapter with subsections has its own disclosure button, separate from the chapter link. Its glyph is a miniature branching diagram of the group (usability Gate C). Closed, it is a short rule with one hanging tick per subsection. Open, a drop runs down from the rule's start and the ticks turn out from it, one level each. The glyph is decorative: the button's name ("<Chapter> sections") and `aria-expanded` carry the meaning. One group is open at a time, and the current chapter's group starts open. Long names wrap.
+
+**Phones (40rem and narrower; usability Gate C).** The closed toggle has an opaque bone ground, so the page scrolling underneath never runs through the number and ticks. The open index is a structural band: it runs from the page's left content margin to the screen's right edge under the toggle, opaque bone between a top and a bottom hairline, and deliberately covers what is beneath it. Its right column stays under the toggle. It is not a drawer or card: no shadow, blur or rounding.
 
 **Travel.** Activating a destination closes the index and travels the real page scroll to it over 0.8–2.4s, depending on distance. Every chapter in between plays as it passes. Focus moves to the destination on arrival. Any wheel, touch, key or pointer input stops the trip where it is. Back and Forward are instant. See `decisions/004` and `MOTION.md`.
 
@@ -750,12 +752,11 @@ Matthew has clear interests and personality beyond technical work.
 
 **Visual model.** A typeset still life in the DOM.
 
-- A display echo of the chapter title comes first.
 - Each subject is a large display word with its fact beneath. It faces a generated reference image of its object: a glove, a record, a controller.
 - The images represent the interests. They are not Matthew's own objects, and no copy claims they are.
 - Desktop arranges them in a Z at roughly real relative scale. Objects never cross a word or a fact.
 
-**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer while the display title leans against it. The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink. The depth is meant to be seen at normal scrolling speed.
+**Interaction.** Every label and fact is always visible text. Nothing is revealed by hover, focus or tap, and the images are not interactive. The objects move on separate depth planes as the chapter scrolls (phones too), and on desktop they lean with the pointer. (The display echo of the chapter title was removed in usability Gate C; "05 OFF THE CLOCK" is the only heading.) The subject words and facts never move. Arriving at a subject from the navigator engages it: its index rule runs out and the other subjects settle to muted ink. The depth is meant to be seen at normal scrolling speed.
 
 **Mobile.** Below 60rem the subjects stack, word above object, alternating edges. The record bleeds about 10% past the right edge. Nothing moves.
 
@@ -900,9 +901,9 @@ Do not force full-page snap sections unless prototype testing proves it improves
 
 # Smooth Scrolling
 
-A smooth scrolling library was evaluated in P1 and not adopted: the journey uses native scrolling (`decisions/001-gsap-scrolltrigger-native-scroll.md`).
+Not adopted in P1 (`decisions/001`). Since `decisions/005`, Lenis smooths wheel and trackpad input on fine pointers so the 3D scene and the page move together. Touch, keyboard, anchors, Back/Forward and navigator travel stay native; reduced motion and compact presentation get no smoothing.
 
-If one is reconsidered:
+It must keep these true:
 
 - native scroll behavior remains the conceptual foundation
 - smooth scrolling must not break keyboard navigation

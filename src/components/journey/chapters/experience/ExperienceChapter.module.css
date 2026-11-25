@@ -155,9 +155,19 @@
     calc(var(--start) * 100%),
     calc(100% - var(--column))
   );
+  /*
+   * Its settled place is min(start, 1 − column); on the stretched scale it
+   * is min(start × f, 1 − column). A column with room rides the scale; one
+   * already pinned at the right edge stays pinned, so no text is ever pushed
+   * past the edge (the rule itself may run on, as PRESENT does).
+   */
   translate: round(
       calc(
-        min(var(--start), 1 - var(--column-share)) * (var(--f, 1) - 1) * 100cqi
+        (
+            min(var(--start) * var(--f, 1), 1 - var(--column-share)) -
+              min(var(--start), 1 - var(--column-share))
+          ) *
+          100cqi
       ),
       1px
     )
@@ -187,32 +197,42 @@
   line-height: 1.45;
 }
 
-.kind,
-.dates {
+.role {
+  margin-block-start: var(--space-lg);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Kind (muted) and dates (ink) share one row; they wrap as one block. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-md);
+  margin-block-start: var(--space-xs);
   font-size: var(--text-meta);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .kind {
-  margin-block-start: var(--space-lg);
   color: var(--color-muted);
 }
 
-.role {
-  margin-block-start: var(--space-xs);
-  font-weight: 600;
-  line-height: 1.35;
-}
-
 .dates {
-  margin-block-start: var(--space-xs);
   font-variant-numeric: tabular-nums;
 }
 
 .signal {
   margin-block-start: var(--space-md);
   line-height: 1.45;
+}
+
+/*
+ * The software signal reads a step stronger: the same type, set at medium
+ * weight. Names, rules and the shared system are unchanged.
+ */
+.entry[data-kind="sponsored-project"] .signal {
+  font-weight: 500;
 }
 
 /*
@@ -343,13 +363,6 @@
   }
 }
 
-/*
- * Narrow (and 200% zoom on laptops): entries stack, each with a full-width
- * 2022 → present gauge. Every gauge uses the same scale, so overlaps still
- * read down the column. Each gauge has its own --f (ExperienceMotion): it
- * starts compressed toward 2022 and opens to full width, so nothing on it
- * ever runs off the screen.
- */
 /* The field layout: one --space-lg on top, so the time field follows
    Plannr's release closely instead of after a blank screen. */
 @media (min-width: 60.001rem) {
@@ -358,6 +371,13 @@
   }
 }
 
+/*
+ * Narrow (and 200% zoom on laptops): entries stack, each with a full-width
+ * 2022 → present gauge. Every gauge uses the same scale, so overlaps still
+ * read down the column. Each gauge has its own --f (ExperienceMotion): it
+ * starts compressed toward 2022 and opens to full width, so nothing on it
+ * ever runs off the screen.
+ */
 @media (max-width: 60rem) {
   .scale {
     display: none;
@@ -447,7 +467,7 @@
     font-size: min(calc(9 * var(--cq, 1cqi)), 3rem);
   }
 
-  .kind {
+  .role {
     margin-block-start: var(--space-md);
   }
 }

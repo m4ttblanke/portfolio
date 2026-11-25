@@ -25,7 +25,11 @@ type DatePoint = {
 export type ExperienceEntry = {
   readonly id: string;
   readonly kind: ExperienceKind;
-  /** Visible kind label: entries are different kinds of experience. */
+  /**
+   * Visible kind label: entries are different kinds of experience (it keeps
+   * the sponsored project from reading as employment). Shown in the dates
+   * row.
+   */
   readonly kindLabel: string;
   readonly organization: string;
   /** A second organization the work is shared with, shown as "A × B". */
@@ -61,7 +65,8 @@ export const experience = [
     role: "Math and physics tutor",
     start: { iso: "2024-08", label: "August 2024" },
     end: { iso: "2025-05", label: "May 2025" },
-    signal: "Tutored mathematics, mechanics and introductory physics.",
+    // The role says "tutor"; the signal names the subjects.
+    signal: "Mathematics, mechanics and introductory physics.",
   },
   {
     id: "spacecomputer-ucsb",
@@ -74,7 +79,9 @@ export const experience = [
     // September; the label stays at that precision.
     start: { iso: "2026-09", label: "Fall 2026" },
     end: "present",
+    // The scanning layer (approved at Gate C); Orbitport and the
+    // architecture are deliberately left out of it.
     signal:
-      "Built an end-to-end flow where Cedar policy decides whether an agent’s request reaches SpaceComputer KMS through Orbitport, auditing every allow and deny.",
+      "Built Cedar-gated KMS access for AI agents, auditing every allow/deny decision.",
   },
 ] as const satisfies readonly ExperienceEntry[];

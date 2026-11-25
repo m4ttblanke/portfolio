@@ -36,7 +36,7 @@ export function RankleProject({ heading }: { heading: ReactNode }) {
             </span>
           </h3>
           <p className={styles.summary}>{rankle.summary}</p>
-          <p className={styles.visuallyHidden}>{rankle.comparison}</p>
+          <p className="visually-hidden">{rankle.comparison}</p>
           <p className={styles.meta}>
             <span>{rankle.stack.join(" / ")}</span>
             <a className={styles.link} href={rankle.href}>

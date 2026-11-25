@@ -297,7 +297,7 @@ export function ChapterNavigator() {
         </span>
       </button>
 
-      <ol id={LIST_ID} className={styles.list}>
+      <ol id={LIST_ID} className={styles.list} data-lenis-prevent>
         {chapters.map((chapter) => {
           const isActive = chapter.id === activeId;
           const isExpanded = expanded === chapter.id;
@@ -336,7 +336,16 @@ export function ChapterNavigator() {
                     <span className="visually-hidden">
                       {chapter.label} sections
                     </span>
-                    <span aria-hidden="true" className={styles.branch} />
+                    {/* A miniature of the group: one leaf per subsection. */}
+                    <span aria-hidden="true" className={styles.branch}>
+                      {chapter.sections.map((section, index) => (
+                        <span
+                          key={section.id}
+                          className={styles.leaf}
+                          style={{ "--k": index } as CSSProperties}
+                        />
+                      ))}
+                    </span>
                   </button>
                 )}
               </div>

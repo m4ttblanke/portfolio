@@ -282,7 +282,7 @@ Three.js
 React Three Fiber
 ```
 
-Drei and Lenis were evaluated and not adopted.
+Drei was evaluated and not adopted. Lenis was not adopted in P1 and was added afterwards for canvas sync (`decisions/005`).
 
 This is already a substantial visual stack.
 
@@ -484,7 +484,9 @@ Potential strategies:
 
 R3F's render behavior should be configured based on actual scene needs.
 
-Implemented: `frameloop="demand"` for the whole canvas, and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, WebGL Scope After Projects, and `decisions/003`). Scrolling Experience → Contact draws and clears nothing, and layout changes there (lazy images) no longer wake it either.
+Implemented: demand rendering for the whole canvas (since `decisions/005`, `frameloop="never"` with frames requested through `requestFrame()` and drawn on the GSAP ticker by `FrameDriver`, after Lenis and the timelines), and no scroll- or pointer-driven frames past the P1 scenes (`sceneInView()` in `canvas/anchors.ts`; see ARCHITECTURE.md, WebGL Scope After Projects, and `decisions/003`). Scrolling Experience → Contact draws and clears nothing, and layout changes there (lazy images) no longer wake it either. Requests made there anyway (timelines still catching up after leaving Plannr) are dropped by the driver once a frame has cleared the canvas: 1 draw past Plannr's block in a full wheel pass (2026-11-25).
+
+Implemented: GPU prewarm at startup (`Prewarm` in `canvas/JourneyScene.tsx`). Rankle and Plannr stay hidden until reached, and three.js prepares a material's program and textures only on first draw, so the first pass compiled three programs and uploaded the five label textures mid-scroll (at ≈1,400, 2,200 and 4,800 px at 1440×900), the hitches that made the first scroll feel worst. After the environment and scenes mount, every texture is uploaded with `initTexture` and every material is compiled with `compileAsync` (which covers hidden objects and uses `KHR_parallel_shader_compile` where available). It is repeated after a context restore. Measured on a production build (2026-11-25): 10 programs and 6 texture uploads at load, 0 of either during a full first scroll (before: 7 at load, 3 programs and 5 uploads mid-scroll). Geometry buffers still upload on first draw; Rankle's are small.
 
 ---
 
@@ -557,18 +559,16 @@ Measure complex effects instead of assuming.
 
 # Lenis Performance
 
-Not adopted in P1 (`decisions/001`); scrolling is native.
+Adopted after P1 (`decisions/005`). With native scrolling the page moved on the compositor at once and the canvas drew a frame later on the main thread, so the kit trailed the type it registers with. Lenis moves the scroll on the main thread, on the GSAP ticker, and the canvas draws right after it in the same tick.
 
-A smooth-scroll layer would only be justified if it improved the experience without introducing:
+Cost: the GSAP ticker now runs every animation frame (a no-op when nothing moved). Only fine pointers with motion allowed get it. It must not introduce:
 
 - input latency
 - mobile issues
 - scroll desynchronization
 - excessive main-thread work
 
-Native scroll is acceptable.
-
-A smooth-scroll library is not mandatory.
+If it ever does, remove `SmoothScroll`; the ticker-driven canvas works the same without it.
 
 ---
 
@@ -955,7 +955,7 @@ Production build on localhost, Playwright Chromium (GPU) unless noted, with auto
 
 **Layout stability.** CLS 0.014 over a full scroll at 1440 (0.0001–0.0008 per frame) and 0 at 390. The desktop shifts are Education's interpolation: as the first phrase of a line widens, the second phrase on the same line moves along it. Phones stack the phrases, so nothing shifts. No other P2.5 motion shifts layout (transforms only).
 
-**Console.** No hydration warnings and no new messages; the THREE.Clock deprecation and GPU driver notices are from P1.
+**Console.** No hydration warnings and no new messages; the THREE.Clock deprecation (R3F's own, accepted as third-party; see DEVELOPMENT.md) and GPU driver notices are from P1.
 
 ## P2.6 Gate A — Navigation Travel (2026-11-02)
 
@@ -970,7 +970,7 @@ Production build on localhost, Playwright Chromium (headless, software WebGL), u
 | Computer Science → Mathematics + Physics | 0.17 vh | 0.8 s | 0 | 9 |
 
 - 1280×800 matches within 50 ms (Hero → Contact 2.23 s, Rankle → Plannr 1.42 s, Games → Vinyl 0.8 s). The phone sizes do too (390×844 Hero → Contact 2.22 s, 0 frames over 20 ms).
-- The first Hero → Contact after load had longer frames (11 over 20 ms, max 125 ms). The Rankle and Plannr scenes compile on their first appearance, as they do when scrolling by hand.
+- The first Hero → Contact after load had longer frames (11 over 20 ms, max 125 ms). The Rankle and Plannr scenes compiled on their first appearance, as they did when scrolling by hand. Since 2026-11-25 they are prewarmed at startup (see Render Loop).
 - No React state changes per frame. The navigator re-renders only when the current chapter or subsection changes: one change for each chapter crossed during a trip.
 - **WebGL:** a trip through Projects renders the P1 scenes frame by frame, as manual scrolling would (Hero → Contact: about 5,000 draws). The last draw happens at scroll 6,286, inside Plannr's block (bottom 6,300). Past that there are 0 draws. Trips within P2 issue 0 draws and 0 clears (`decisions/003` unchanged).
 - **Interruption:** wheel, touch and keyboard input, and an external scroll, each stop the trip on the next frame.
@@ -1041,6 +1041,18 @@ Production build on localhost, Chromium with GPU rendering, 1440×900 and 390×8
 - **P1 startup:** 10 of 10 root loads and 3 of 3 each for direct `#rankle`, `#plannr` and `#experience` went live and drew. Context loss and restore recovers with labels intact. The forced restore logs WebGL "object does not belong to this context" warnings; `main` logs the same count, so they predate Gate B.
 - **Payload:** Rankle fallbacks 54 KB (desktop) / 35 KB (mobile), up from 45 / 26 KB because the renders now carry text. No new chunk or dependency.
 
+## Usability Gate C — Experience, Off the Clock, Navigator (2026-11-04)
+
+Production build on localhost, Chromium with GPU rendering.
+
+- **Off the Clock without the display title** (1440, the same scripted scroll and pointer pass over the chapter, three runs each, compared with the Gate B build):
+  - Raster tasks: 666 → 532 per pass (−20%), 141 → 135 ms. The large title no longer re-rasterizes when its whole-pixel offset changes.
+  - Paint: 349 → 358 records, 43 ms either way, so unchanged within noise.
+  - Style recalculation: 457 → 445 (264 vs 303 ms), and layout and script are unchanged within run-to-run noise. The title was one scrubbed tween and two `quickTo` setters, which is too little JavaScript to measure.
+- **CLS** (full scroll, attributed by the shifted nodes): Experience 0 and Off the Clock 0 at 1440, 1280, 961 and 390. The Experience clipping fix is still transforms only. All remaining CLS is Education's accepted width interpolation (0.037 at 1440, 0 on phones).
+- **WebGL:** peak 61 draw calls (unchanged). Idle is 0 frames at the top and at the Rankle hold. P2 issues 0 draws and 0 clears across scroll, pointer and idle.
+- No new dependency, chunk or asset.
+
 ---
 
 # Performance Decision Gate
@@ -1061,9 +1073,9 @@ After P1, ask:
 
 P1 answers:
 
-- Lenis: not adopted.
+- Lenis: not adopted in P1; adopted afterwards for canvas sync (`decisions/005`).
 - Postprocessing: none.
-- DPR: capped at 1.5; no further reduction was needed in P1 measurements.
+- DPR: capped at 1.5; no further reduction was needed in P1 measurements. Since 2026-11-25, MSAA is on only below 1.5 device pixels per CSS pixel (`decisions/005`).
 - Models: none were needed; scenes are procedural.
 
 ### Are postprocessing effects necessary?
@@ -1149,9 +1161,9 @@ Before launch:
 
 Settled in P1 (see the baseline above):
 
-- DPR cap: 1.5
-- Lenis: not adopted
-- demand rendering for the whole canvas
+- DPR cap: 1.5 (MSAA below 1.5 device pixels per CSS pixel only, `decisions/005`)
+- Lenis: not adopted in P1; adopted for wheel smoothing afterwards (`decisions/005`)
+- demand rendering for the whole canvas (drawn on the GSAP ticker since `decisions/005`)
 - no postprocessing
 - the hero scene loads lazily after hydration, behind its static render
 

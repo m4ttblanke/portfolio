@@ -1,4 +1,5 @@
 import { REDUCED_MOTION } from "./presentation";
+import { settleSmoothScroll } from "./smooth-scroll";
 
 /*
  * Choreographed navigation travel (decisions/004). A deliberate navigator
@@ -135,6 +136,9 @@ export function travelTo(
   { onArrive }: { onArrive?: () => void } = {},
 ) {
   cancelTravel();
+  // Wheel smoothing still easing toward its own target would read as the
+  // visitor's drift and stop the trip on its first frame.
+  settleSmoothScroll();
   const from = window.scrollY;
   const viewports =
     Math.abs(destinationOf(element) - from) / window.innerHeight;

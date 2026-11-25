@@ -3,8 +3,8 @@
  *
  * A plain mutable object, never React state: scroll timelines write progress,
  * pointer listeners write the pointer, and the canvas reads both inside its
- * frame loop. The canvas registers its invalidate function so writes wake the
- * demand-driven render loop without importing the 3D runtime here.
+ * frame loop. Writes request a canvas frame through `requestFrame`, without
+ * importing the 3D runtime here.
  */
 export const scene = {
   /** Hero exit, 0 (composed hero) → 1 (pieces arrived at Rankle). */
@@ -22,17 +22,30 @@ export const scene = {
 
 type SceneKey = keyof typeof scene;
 
-let invalidate = () => {};
+/*
+ * Demand rendering on the GSAP ticker (decisions/005). Anything that changes
+ * what the canvas shows (scroll, layout, pointer, progress, damping) asks for
+ * a frame; the canvas draws at most one per tick, and only when asked. The
+ * ticker runs Lenis first, then the GSAP timelines, then the canvas, so a
+ * smoothed scroll position and the frame drawn for it reach the screen
+ * together. A request made before the canvas registers is kept, so the first
+ * frame is never lost.
+ */
+let pending = false;
 
-export function registerInvalidate(fn: () => void) {
-  invalidate = fn;
-  return () => {
-    invalidate = () => {};
-  };
+export function requestFrame() {
+  pending = true;
+}
+
+/** True once per requested frame: clears the request. */
+export function takeFrameRequest() {
+  const requested = pending;
+  pending = false;
+  return requested;
 }
 
 export function setScene(key: SceneKey, value: number) {
   if (scene[key] === value) return;
   scene[key] = value;
-  invalidate();
+  requestFrame();
 }
